@@ -1,6 +1,22 @@
+// Copyright: (c) 2021, SOLO motor controllers project
+// GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+/*
+*    Title: SOLO Motor Controller Arduino Library
+*    Author: SOLOMOTORCONTROLLERS
+*    Date: 2021
+*    Code version: 1.0.1
+*    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
+
+This Library is made by SOLOMOTORCONTROLLERS.COM
+It can be used with UART line of Arduino or any similar controller to control, command
+or read all the parameters that are stored or existing in command set of SOLO. to learn more
+please visit:  https://www.solomotorcontrollers.com/
+
+*/
+
 #include <stdint.h>
 #include "Arduino.h"
-//#include "HardwareSerial.h"
 
 #define ReadData                            0x00 // 0x00000000
 #define INITIATOR                           0xFF //0xFFFF
@@ -62,14 +78,12 @@
 #define ReadInductance                      0x95
 #define ReadSpeed                           0x96
 #define ReadMotorType                       0x97
-        //TODO: 0x98 !?
 #define ReadSpeedControlMode                0x99
 #define ReadCommandMode                     0x9A
 #define ReadControlMode                     0x9B
 #define ReadSpeedLimit                      0x9C
 #define ReadPositionControllerKp            0x9D
 #define ReadPositionControllerKi            0x9E
-        //TODO: 0x9F !?
 #define ReadEncoderPosition                 0xA0
 #define ReadErrorRegister                   0xA1
 #define ReadFirmwareVersion                 0xA2
@@ -157,7 +171,6 @@ long  GetControlMode();
 long  GetSpeedLimit();
 float GetPositionControllerKp();
 float GetPositionControllerKi();
- //TODO: ()9F !?
 long  GetEncoderPosition();
 long  GetErrorRegister();//TODO
 long  GetFirmwareVersion();

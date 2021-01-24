@@ -5,8 +5,8 @@
 *    Title: SOLO Motor Controller Arduino Library
 *    Author: SOLOMOTORCONTROLLERS
 *    Date: 2021
-*    Code version: 1.0.0
-*    Availability: https://gitlab.com/francescotobia.liuzzi/solo-arduino-library
+*    Code version: 1.0.1
+*    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMOTORCONTROLLERS.COM
 It can be used with UART line of Arduino or any similar controller to control, command
@@ -361,7 +361,7 @@ bool SOLOMotorController::SetMotorType(long type)
 
     unsigned char data[4];
     ConvertToData(type, data);
-    unsigned char cmd[] = {addr,WriteSpeedLimit,data[0],data[1],data[2],data[3]};
+    unsigned char cmd[] = {addr,WriteMotorType,data[0],data[1],data[2],data[3]};
     
     return SOLOMotorController::ExeCMD(cmd);
 }
