@@ -14,7 +14,6 @@ or read all the parameters that are stored or existing in command set of SOLO. t
 please visit:  https://www.solomotorcontrollers.com/
 
 */
-
 #include <SOLOMotorController.h>
 // -------------------- constructor & destructor --------------------
 SOLOMotorController::SOLOMotorController(unsigned char _addr){
@@ -24,8 +23,18 @@ SOLOMotorController::SOLOMotorController(unsigned char _addr){
 bool SOLOMotorController::Test()
 {
     
-    char cmd[] = {0xFF,0xFF,65,66,67,68,69,70,0,0xFE};
+    char cmd[] = {0xFF,0xFF,65,66,67,68,69,70,0,0xEF};
+    //cmd = 22;
+    //Serial.write(cmd,10);
+    //Serial21.begin(9600);
+    //Serial21.write(cmd,10);
     int i=0;
+    //String str;
+    /*while(Serial.available()<=0);
+    if(Serial.available()>0)
+    {
+       str = Serial.readString();
+    }*/
     if(WriteAddress == 0x01)
         return true;
     else return false;
@@ -35,13 +44,13 @@ bool SOLOMotorController::ExeCMD(unsigned char cmd[])
 {
     unsigned char _cmd[] = {INITIATOR,INITIATOR,cmd[0],cmd[1],cmd[2],cmd[3],cmd[4],cmd[5],CRC,ENDING};
     unsigned char _readPacket[10];
-	int serialReadCounts = 0;
-	
+    
     Serial.write(_cmd,10);
-    while(Serial.availableForWrite() == 0); // wait till end of writing
+    
+    while(Serial.available()<=0); // wait for respons
     Serial.readBytes(_readPacket, 10);  //read received data 
-	
-	if  (_readPacket[0] == _cmd[0] && _readPacket[1] == _cmd[1] 
+    //Serial.write(_readPacket,10);return;
+    if(_readPacket[0] == _cmd[0] && _readPacket[1] == _cmd[1] 
         && _readPacket[2] == _cmd[2] && _readPacket[3] == _cmd[3]
         && _readPacket[8] == _cmd[8] && _readPacket[9] == _cmd[9])
         {
@@ -52,17 +61,16 @@ bool SOLOMotorController::ExeCMD(unsigned char cmd[])
             cmd[4] = _readPacket[6];
             cmd[5] = _readPacket[7];
         }
-	
         else
         {
-            cmd[0] = 0xEE;
-            cmd[1] = 0xEE;
-            cmd[2] = 0xEE;
-            cmd[3] = 0xEE;
-            cmd[4] = 0xEE;
-            cmd[5] = 0xEE;
+            cmd[0] = ERROR;
+            cmd[1] = ERROR;
+            cmd[2] = ERROR;
+            cmd[3] = ERROR;
+            cmd[4] = ERROR;
+            cmd[5] = ERROR;
         }
-		
+
     if(cmd[2] == ERROR && cmd[3] == ERROR && cmd[4] == ERROR && cmd[5] == ERROR)
             return false;
         else
@@ -361,7 +369,7 @@ bool SOLOMotorController::SetMotorType(long type)
 
     unsigned char data[4];
     ConvertToData(type, data);
-    unsigned char cmd[] = {addr,WriteMotorType,data[0],data[1],data[2],data[3]};
+    unsigned char cmd[] = {addr,WriteSpeedLimit,data[0],data[1],data[2],data[3]};
     
     return SOLOMotorController::ExeCMD(cmd);
 }
@@ -471,6 +479,86 @@ bool SOLOMotorController::ResetPositionToZero()
 bool SOLOMotorController::OverwriteTheErrors()
 {
     unsigned char cmd[] = {addr,WriteOverwriteTheErrors,0x00,0x00,0x00,0x00};
+    
+    return SOLOMotorController::ExeCMD(cmd);
+}
+// SOG => Sensorless Observer Gain 
+bool SOLOMotorController::SetSOGNormalBrushlessMotor(float G)
+{
+    if (G < 0.01 || G > 1000)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(G, data);
+    unsigned char cmd[] = {addr,WriteGainNormalBrushless,data[0],data[1],data[2],data[3]};
+    
+    return SOLOMotorController::ExeCMD(cmd);
+}
+bool SOLOMotorController::SetSOGUltraFastBrushlessMotor(float G)
+{
+    if (G < 0.01 || G > 1000)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(G, data);
+    unsigned char cmd[] = {addr,WriteGainUltraFastBrushless,data[0],data[1],data[2],data[3]};
+    
+    return SOLOMotorController::ExeCMD(cmd);
+}
+bool SOLOMotorController::SetSOGDCMotor(float G)
+{
+    if (G < 0.01 || G > 1000)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(G, data);
+    unsigned char cmd[] = {addr,WriteGainDC,data[0],data[1],data[2],data[3]};
+    
+    return SOLOMotorController::ExeCMD(cmd);
+}
+// SOFG => Sensorless Observer Filter Gain
+bool SOLOMotorController::SetSOFGNormalBrushlessMotor(float G)
+{
+    if (G < 0.01 || G > 16000)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(G, data);
+    unsigned char cmd[] = {addr,WriteFilterGainNormalBrushless,data[0],data[1],data[2],data[3]};
+    
+    return SOLOMotorController::ExeCMD(cmd);
+}
+bool SOLOMotorController::SetSOFGUltraFastBrushlessMotor(float G)
+{
+    if (G < 0.01 || G > 16000)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(G, data);
+    unsigned char cmd[] = {addr,WriteFilterGainUltraFastBrushless,data[0],data[1],data[2],data[3]};
+    
+    return SOLOMotorController::ExeCMD(cmd);
+}
+bool SOLOMotorController::SetUARTBaudrate(long baudrate)
+{
+    if (baudrate != 0 || baudrate != 1)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(baudrate, data);
+    unsigned char cmd[] = {addr,WriteUartBaudRate,data[0],data[1],data[2],data[3]};
     
     return SOLOMotorController::ExeCMD(cmd);
 }
@@ -604,7 +692,7 @@ long SOLOMotorController::GetPWMFrequency()
     {
         unsigned char data[4];
         SOLOMotorController::SplitData(data,cmd);
-        return (SOLOMotorController::ConvertToLong(data)/1000L); //PWM reading is in Hz
+        return SOLOMotorController::ConvertToLong(data);
     }
     else return -1;
 }
@@ -656,7 +744,7 @@ long SOLOMotorController::GetNumberOfPoles()
     }
     else return -1;
 }
-long SOLOMotorController::GetEncoderLines()
+long SOLOMotorController::GetEncoderLine()
 {
     unsigned char cmd[] = {addr,ReadEncoderLine,0x00,0x00,0x00,0x00};
     
@@ -852,6 +940,162 @@ long SOLOMotorController::GetErrorRegister()
 long SOLOMotorController::GetFirmwareVersion()
 {
     unsigned char cmd[] = {addr,ReadFirmwareVersion,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToLong(data);
+    }
+    else return -1;
+}
+long SOLOMotorController::GetHardwareVersion()
+{
+    unsigned char cmd[] = {addr,ReadHardwareVersion,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToLong(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetTorqueReference()
+{
+    unsigned char cmd[] = {addr,ReadTorque,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+long SOLOMotorController::GetSpeedReference()
+{
+    unsigned char cmd[] = {addr,ReadSpeedReference,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToLong(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetMagnetizingCurrent()
+{
+    unsigned char cmd[] = {addr,ReadMagnetizingCurrent,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+long SOLOMotorController::GetPositionReference()
+{
+    unsigned char cmd[] = {addr,ReadPositionReference,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToLong(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetPowerReference()
+{
+    unsigned char cmd[] = {addr,ReadPowerReference,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+long SOLOMotorController::GetDirectionRotation()
+{
+    unsigned char cmd[] = {addr,ReadDirectionRotation,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToLong(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetSOGNormalBrushlessMotor()
+{
+    unsigned char cmd[] = {addr,ReadGainNormalBrushless,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetSOGUltraFastBrushlessMotor()
+{
+    unsigned char cmd[] = {addr,ReadGainUltraFastBrushless,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetSOGDCMotor()
+{
+    unsigned char cmd[] = {addr,ReadGainDC,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetSOFGNormalBrushlessMotor()
+{
+    unsigned char cmd[] = {addr,ReadFilterGainNormalBrushless,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+float SOLOMotorController::GetSOFGUltraFastBrushlessMotor()
+{
+    unsigned char cmd[] = {addr,ReadFilterGainUltraFastBrushless,0x00,0x00,0x00,0x00};
+    
+    if(SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data,cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else return -1;
+}
+long SOLOMotorController::GetUARTBaudrate()
+{
+    unsigned char cmd[] = {addr,ReadUartBaudRate,0x00,0x00,0x00,0x00};
     
     if(SOLOMotorController::ExeCMD(cmd))
     {
