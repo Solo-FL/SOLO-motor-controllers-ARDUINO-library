@@ -1,12 +1,12 @@
 /*
-*    Title: Controlling the speed of a Brushless Motor using Arduino in Sensorless Mode
-*    Author: SOLOMOTORCONTROLLERS.COM
+*    Title: How to Drive Fast Drone or RC car Brushless Motors using ARDUINO and SOLO in Sensoless Mode
+*    Author: SOLOMOTORCONTROLLERS
 *    Date: 2021
 *    Code version: 1.0.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
-*    The Code below has been tested on Arduino UNO, The Motor used for Testings: teknic m-2310P-LN-04K
-*    Read more about this code here: https://www.solomotorcontrollers.com/sensorless-control-brushless-motor-arduino-solo-digital-mode-uart/
+*    The Code below has been tested on Arduino UNO, The Motor used for Testings: 4150KV, 4x4 SCT 550
+*    Read more about this code here:https://www.solomotorcontrollers.com/drive-fast-drone-rc-car-brushless-motors-arduino-solo-sensorless
 */
 
 #include <SOLOMotorController.h>
@@ -18,22 +18,22 @@ SOLOMotorController *SOLO_Obj1;
 unsigned char SOLO_address1=0; 
 
 //Desired Switching or PWM Frequency at Output
-long pwmFrequency=75; 
+long pwmFrequency=79; 
 
 //Motor's Number of Poles
-long numberOfPoles = 8; 
+long numberOfPoles = 2; 
 
-//Select the Normal BLDC_PMSM motor type
-long motorType= 1; 
+//Select the Ultarfast BLDC_PMSM motor type
+long motorType= 3; 
 
 //Speed controller Kp
-float speedControllerKp = 0.04; 
+float speedControllerKp = 0.03; 
 
 //Speed controller Ki
-float speedControllerKi = 0.006; 
+float speedControllerKi = 0.001; 
 
 // Current Limit of the Motor
-float currentLimit= 16.55; 
+float currentLimit= 32.0; 
 
 // Battery of Bus Voltage
 float busVoltage = 0; 
@@ -113,12 +113,12 @@ void loop() {
   //set the Direction on C.W. 
   SOLO_Obj1->SetDirection(0); 
 
-  //set a new reference for speed
-  desiredMotorSpeed = 5000;
+  //set a new reference for speed [RPM]
+  desiredMotorSpeed = 10000;
   SOLO_Obj1->SetSpeedReference(desiredMotorSpeed);
 
   // wait till motor reaches to the reference 
-  delay(2000); 
+  delay(5000); 
 
   actualMotorSpeed = SOLO_Obj1->GetSpeed();
   Serial.println("\n Motor Speed: ");
@@ -130,12 +130,12 @@ void loop() {
   //set the Direction on C.C.W. 
   SOLO_Obj1->SetDirection(1);
 
-  //set a new reference for speed
-  desiredMotorSpeed = 1500;
+  //set a new reference for speed [RPM]
+  desiredMotorSpeed = 30000;
   SOLO_Obj1->SetSpeedReference(desiredMotorSpeed);
 
   // wait till motor reaches to the reference 
-  delay(2000);
+  delay(5000);
 
   actualMotorSpeed = SOLO_Obj1->GetSpeed();
   Serial.println("\n Motor Speed: ");
@@ -148,5 +148,4 @@ void loop() {
   desiredMotorSpeed = 0;
   SOLO_Obj1->SetSpeedReference(desiredMotorSpeed);
   delay(2000);
-
 }
