@@ -20,26 +20,6 @@ SOLOMotorController::SOLOMotorController(unsigned char _addr){
     addr = _addr;
 }
 
-bool SOLOMotorController::Test()
-{
-    
-    char cmd[] = {0xFF,0xFF,65,66,67,68,69,70,0,0xEF};
-    //cmd = 22;
-    //Serial.write(cmd,10);
-    //Serial21.begin(9600);
-    //Serial21.write(cmd,10);
-    int i=0;
-    //String str;
-    /*while(Serial.available()<=0);
-    if(Serial.available()>0)
-    {
-       str = Serial.readString();
-    }*/
-    if(WriteAddress == 0x01)
-        return true;
-    else return false;
-}
-
 bool SOLOMotorController::ExeCMD(unsigned char cmd[])
 {
     unsigned char _cmd[] = {INITIATOR,INITIATOR,cmd[0],cmd[1],cmd[2],cmd[3],cmd[4],cmd[5],CRC,ENDING};
@@ -692,7 +672,7 @@ long SOLOMotorController::GetPWMFrequency()
     {
         unsigned char data[4];
         SOLOMotorController::SplitData(data,cmd);
-        return SOLOMotorController::ConvertToLong(data);
+        return SOLOMotorController::ConvertToLong(data/1000L); //PWM reading is in Hz
     }
     else return -1;
 }
@@ -744,7 +724,7 @@ long SOLOMotorController::GetNumberOfPoles()
     }
     else return -1;
 }
-long SOLOMotorController::GetEncoderLine()
+long SOLOMotorController::GetEncoderLines()
 {
     unsigned char cmd[] = {addr,ReadEncoderLine,0x00,0x00,0x00,0x00};
     
