@@ -177,7 +177,7 @@ float GetCurrentLimit();
 float GetQuadratureCurrent();
 float GetDirectCurrent(); //Magnetizing
 long  GetNumberOfPoles();
-long  GetEncoderLine();
+long  GetEncoderLines();
 float GetCurrentControllerKp();
 float GetCurrentControllerKi();
 float GetTemperature();
