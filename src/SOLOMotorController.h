@@ -55,6 +55,13 @@ please visit:  https://www.solomotorcontrollers.com/
 #define WritePositionControllerKi           0x1D
 #define WriteResetPositionToZero            0x1F //Home
 #define WriteOverwriteTheErrors             0x20
+#define WriteGainNormalBrushless            0x21 //Set Sensorless Observer Gain for Normal Brushless Motor
+#define WriteGainUltraFastBrushless         0x22 //Set Sensorless Observer Gain for Ultra-Fast Brushless Motor
+#define WriteGainDC                         0x23 //Set Sensorless Observer Gain for DC Motor
+#define WriteFilterGainNormalBrushless      0x24 //Set Sensorless Observer Filter Gain for Normal Brushless Motor
+#define WriteFilterGainUltraFastBrushless   0x25 //Set Sensorless Observer Filter Gain for ultra-fast Brushless Motor
+#define WriteUartBaudRate                   0x26 //Set UART line baud-rate - 937500 / 115200 [ bits/s]
+
 #define ReadAddress                         0x81
 #define ReadVoltageA                        0x82
 #define ReadVoltageB                        0x83
@@ -70,7 +77,7 @@ please visit:  https://www.solomotorcontrollers.com/
 #define ReadQuadratureCurrent               0x8D
 #define ReadDirectCurrent                   0x8E //Magnetizing
 #define ReadNumberOfPoles                   0x8F
-#define ReadEncoderLine                     0x90
+#define ReadEncoderLines                    0x90
 #define ReadCurrentControllerKp             0x91
 #define ReadCurrentControllerKi             0x92
 #define ReadTemperature                     0x93
@@ -87,13 +94,21 @@ please visit:  https://www.solomotorcontrollers.com/
 #define ReadEncoderPosition                 0xA0
 #define ReadErrorRegister                   0xA1
 #define ReadFirmwareVersion                 0xA2
+#define ReadHardwareVersion                 0xA3
+#define ReadTorque                          0xA4 // Read Torque /“Iq” Reference
+#define ReadSpeedReference                  0xA5 // Read Speed Reference
+#define ReadMagnetizingCurrent              0xA6 // Read Magnetizing Current / “Id” Reference
+#define ReadPositionReference               0xA7
+#define ReadPowerReference                  0xA8
+#define ReadDirectionRotation               0xA9
+#define ReadGainNormalBrushless             0xAA // Read the Non-linear observer Gain for Normal Brushless motor in Sensorless mode
+#define ReadGainUltraFastBrushless          0xAB // Read the Non-linear observer Gain for Ultra-fast Brushless motor in Sensorless mode
+#define ReadGainDC                          0xAC // Read the Non-linear observer Gain for DC motor in Sensorless mode
+#define ReadFilterGainNormalBrushless       0xAD // Read the Non-linear observer Filter Gain for Normal Brushless motor in Sensorless mode
+#define ReadFilterGainUltraFastBrushless    0xAE // Read the Non-linear Filter Gain for Ultra-fast Brushless motor in Sensorless mode
+#define ReadUartBaudRate                    0xB3 // 0 / 1 ( 937500 / 115200 [bits/s] )
  
- /*struct SoloResult
- {
-     bool Success;
-     string Error;
-     byte Data;
- }*/
+
 class SOLOMotorController {   
 
 private:
@@ -141,6 +156,12 @@ bool SetPositionControllerKp(float Kp);
 bool SetPositionControllerKi(float Ki);
 bool ResetPositionToZero(); //Home
 bool OverwriteTheErrors();
+bool SetSOGNormalBrushlessMotor(float G);
+bool SetSOGUltraFastBrushlessMotor(float G);
+bool SetSOGDCMotor(float G);
+bool SetSOFGNormalBrushlessMotor(float G);
+bool SetSOFGUltraFastBrushlessMotor(float G);
+bool SetUARTBaudrate(long baudrate);
 //----------Read----------
 long GetAddress(long _addr);
 float GetVoltageA();
@@ -174,5 +195,18 @@ float GetPositionControllerKi();
 long  GetEncoderPosition();
 long  GetErrorRegister();//TODO
 long  GetFirmwareVersion();
+long  GetHardwareVersion();
+float GetTorqueReference();
+long  GetSpeedReference();
+float GetMagnetizingCurrent();
+long  GetPositionReference();
+float GetPowerReference();
+long  GetDirectionRotation();
+float GetSOGNormalBrushlessMotor();
+float GetSOGUltraFastBrushlessMotor();
+float GetSOGDCMotor();
+float GetSOFGNormalBrushlessMotor();
+float GetSOFGUltraFastBrushlessMotor();
+long  GetUARTBaudrate();
 
 };
