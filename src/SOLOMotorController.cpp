@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controller Arduino Library
 *    Author: SOLOMOTORCONTROLLERS
 *    Date: 2021
-*    Code version: 1.0.1
+*    Code version: 1.0.2
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMOTORCONTROLLERS.COM
@@ -120,17 +120,13 @@ long SOLOMotorController::ConvertToLong(unsigned char data[])
 void SOLOMotorController::ConvertToData(long l, unsigned char data[])
 {
     long dec = l;
-    if(dec<0) 
-    {
-        dec*=-1;
-        dec = 0xFFFFFFFF - dec + 1;
-    }
+	
     //char data[4] = {0x00,0x00,0x00,0x00};
-    data[0] = (dec/16777216);
+    data[0] = (dec>>24);
     dec = dec%16777216;
-    data[1] = (dec/65536);
+    data[1] = (dec>>16);
     dec = dec%65536;
-    data[2] = (dec/256);
+    data[2] = (dec>>8);
     dec = dec%256;
     data[3] = (dec);
 }
@@ -309,7 +305,7 @@ bool SOLOMotorController::SetNumberOfPoles(long poles)
 }
 bool SOLOMotorController::SetEncoderLines(long enc)
 {
-    if (enc < 1 || enc > 40000)
+    if (enc < 1 || enc > 200000)
     {
         return false;
     }
@@ -341,6 +337,12 @@ bool SOLOMotorController::ResetAddress()
 }
 bool SOLOMotorController::SetSpeedControlMode(bool mode)
 {
+	/*
+	mode:
+	0 for Sensorless Mode
+	1 for Using Encoders Mode
+	2 for Using Hall Sensors Mode
+	*/
     unsigned char cmd[] = {addr,WriteSpeedControlMode,0x00,0x00,0x00,mode};
     
     return SOLOMotorController::ExeCMD(cmd);
@@ -353,6 +355,13 @@ bool SOLOMotorController::ResetToFactory()
 }
 bool SOLOMotorController::SetMotorType(long type)
 {
+	/*
+	type:
+	0 for DC Brushed
+	1 for BLDC-PMSM Normal
+	2 for ACIM
+	3 for BLDC-PMSM Ultrafast
+	*/
     if (type < 0 || type > 3)
     {
         return false;
@@ -366,6 +375,12 @@ bool SOLOMotorController::SetMotorType(long type)
 }
 bool SOLOMotorController::SetControlMode(long mode)
 {
+	/*
+	mode:
+	0 for Speed Mode
+	1 for Torque Mode
+	2 for Position Mode
+	*/
     if (mode < 0 || mode > 2)
     {
         return false;
