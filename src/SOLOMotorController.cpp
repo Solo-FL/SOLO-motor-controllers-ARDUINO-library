@@ -335,7 +335,7 @@ bool SOLOMotorController::ResetAddress()
     
     return SOLOMotorController::ExeCMD(cmd);
 }
-bool SOLOMotorController::SetSpeedControlMode(bool mode)
+bool SOLOMotorController::SetSpeedControlMode(long mode)
 {
 	/*
 	mode:
@@ -343,9 +343,17 @@ bool SOLOMotorController::SetSpeedControlMode(bool mode)
 	1 for Using Encoders Mode
 	2 for Using Hall Sensors Mode
 	*/
-    unsigned char cmd[] = {addr,WriteSpeedControlMode,0x00,0x00,0x00,mode};
+	if (mode < 0 || mode > 2)
+    {
+        return false;
+    }
+	
+	unsigned char data[4];
+    ConvertToData(mode, data);
+    unsigned char cmd[] = {addr,WriteSpeedControlMode,data[0],data[1],data[2],data[3]};
     
     return SOLOMotorController::ExeCMD(cmd);
+	
 }
 bool SOLOMotorController::ResetToFactory()
 {
