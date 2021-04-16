@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controller Arduino Library
 *    Author: SOLOMOTORCONTROLLERS
 *    Date: 2021
-*    Code version: 1.0.2
+*    Code version: 1.1.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMOTORCONTROLLERS.COM
@@ -143,7 +143,7 @@ bool SetNumberOfPoles(long poles);
 bool SetEncoderLines(long enc);
 bool SetSpeedLimit(long speed);
 bool ResetAddress();
-bool SetSpeedControlMode(bool mode); 
+bool SetSpeedControlMode(long mode); 
 bool ResetToFactory();
 bool SetMotorType(long type); 
 bool SetControlMode(long mode); 
