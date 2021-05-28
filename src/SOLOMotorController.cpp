@@ -576,7 +576,45 @@ bool SOLOMotorController::SetUARTBaudrate(long baudrate)
 
     return SOLOMotorController::ExeCMD(cmd);
 }
+bool SOLOMotorController::StartENCHallCalibration(long cal)
+{
+    if (cal < 0 || cal > 2)
+    {
+        return false;
+    }
 
+    unsigned char data[4];
+    ConvertToData(cal, data);
+    unsigned char cmd[] = {addr, WriteStartENCHallCalibration, data[0], data[1], data[2], data[3]};
+
+    return SOLOMotorController::ExeCMD(cmd);
+}
+bool SOLOMotorController::SetENCHallCCWOffset(float offset)
+{
+    if (offset <= 0 || offset >= 1)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(offset, data);
+    unsigned char cmd[] = {addr, WriteSetENCHallCCWOffset, data[0], data[1], data[2], data[3]};
+
+    return SOLOMotorController::ExeCMD(cmd);
+}
+bool SOLOMotorController::SetENCHallCWOffset(float offset)
+{
+    if (offset <= 0 || offset >= 1)
+    {
+        return false;
+    }
+
+    unsigned char data[4];
+    ConvertToData(offset, data);
+    unsigned char cmd[] = {addr, WriteSetENCHallCWOffset, data[0], data[1], data[2], data[3]};
+
+    return SOLOMotorController::ExeCMD(cmd);
+}
 //----------Read----------
 long SOLOMotorController::GetAddress(long _addr)
 {
@@ -1107,6 +1145,45 @@ float SOLOMotorController::GetSOFGUltraFastBrushlessMotor()
         return SOLOMotorController::ConvertToFloat(data);
     }
     else return -1;
+}
+float SOLOMotorController::Get3PhaseMotorAngle()
+{
+    unsigned char cmd[] = {addr, Read3PhaseMotorAngle, 0x00, 0x00, 0x00, 0x00};
+
+    if (SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data, cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else
+        return -1;
+}
+float SOLOMotorController::GetENCHallCCWOffset()
+{
+    unsigned char cmd[] = {addr, ReadENCHallCCWOffset, 0x00, 0x00, 0x00, 0x00};
+
+    if (SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data, cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else
+        return -1;
+}
+float SOLOMotorController::GetENCHallCWOffset()
+{
+    unsigned char cmd[] = {addr, ReadENCHallCWOffset, 0x00, 0x00, 0x00, 0x00};
+
+    if (SOLOMotorController::ExeCMD(cmd))
+    {
+        unsigned char data[4];
+        SOLOMotorController::SplitData(data, cmd);
+        return SOLOMotorController::ConvertToFloat(data);
+    }
+    else
+        return -1;
 }
 long SOLOMotorController::GetUARTBaudrate()
 {
