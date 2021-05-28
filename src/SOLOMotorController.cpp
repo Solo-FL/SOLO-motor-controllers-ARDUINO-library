@@ -92,13 +92,12 @@ void SOLOMotorController::ConvertToData(float f, unsigned char data[])
         dec*=-1;
         dec = 0xFFFFFFFF - dec;
     }
-    data[0] = (dec/16777216);
+    data[0] = dec>>24;
     dec = dec%16777216;
-    data[1] = (dec/65536);
+    data[1] = dec>>16;
     dec = dec%65536;
-    data[2] = (dec/256);
-    dec = dec%256;
-    data[3] = (dec);
+    data[2] = dec>>8;
+    data[3] = dec%256;
 }
 long SOLOMotorController::ConvertToLong(unsigned char data[])
 {
@@ -120,15 +119,17 @@ long SOLOMotorController::ConvertToLong(unsigned char data[])
 void SOLOMotorController::ConvertToData(long l, unsigned char data[])
 {
     long dec = l;
-	
-    //char data[4] = {0x00,0x00,0x00,0x00};
-    data[0] = (dec>>24);
+    if(dec<0) 
+    {
+        dec*=-1;
+        dec = 0xFFFFFFFF - dec + 1;
+    }
+    data[0] = dec>>24;
     dec = dec%16777216;
-    data[1] = (dec>>16);
+    data[1] = dec>>16;
     dec = dec%65536;
-    data[2] = (dec>>8);
-    dec = dec%256;
-    data[3] = (dec);
+    data[2] = dec>>8;
+    data[3] = dec%256;
 }
 void SOLOMotorController::SplitData(unsigned char data[], unsigned char cmd[])
 {
