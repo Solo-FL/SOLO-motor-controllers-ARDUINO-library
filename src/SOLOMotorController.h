@@ -61,6 +61,9 @@ please visit:  https://www.solomotorcontrollers.com/
 #define WriteFilterGainNormalBrushless      0x24 //Set Sensorless Observer Filter Gain for Normal Brushless Motor
 #define WriteFilterGainUltraFastBrushless   0x25 //Set Sensorless Observer Filter Gain for ultra-fast Brushless Motor
 #define WriteUartBaudRate                   0x26 //Set UART line baud-rate - 937500 / 115200 [ bits/s]
+#define WriteStartENCHallCalibration        0x27
+#define WriteSetENCHallCCWOffset            0x28
+#define WriteSetENCHallCWOffset             0x29
 
 #define ReadAddress                         0x81
 #define ReadVoltageA                        0x82
@@ -106,6 +109,9 @@ please visit:  https://www.solomotorcontrollers.com/
 #define ReadGainDC                          0xAC // Read the Non-linear observer Gain for DC motor in Sensorless mode
 #define ReadFilterGainNormalBrushless       0xAD // Read the Non-linear observer Filter Gain for Normal Brushless motor in Sensorless mode
 #define ReadFilterGainUltraFastBrushless    0xAE // Read the Non-linear Filter Gain for Ultra-fast Brushless motor in Sensorless mode
+#define Read3PhaseMotorAngle                0xB0 // Read Estimated or Measured Rotor Angle
+#define ReadENCHallCCWOffset                0xB1
+#define ReadENCHallCWOffset                 0xB2
 #define ReadUartBaudRate                    0xB3 // 0 / 1 ( 937500 / 115200 [bits/s] )
  
 
@@ -162,8 +168,11 @@ bool SetSOGDCMotor(float G);
 bool SetSOFGNormalBrushlessMotor(float G);
 bool SetSOFGUltraFastBrushlessMotor(float G);
 bool SetUARTBaudrate(long baudrate);
-//----------Read----------
-long GetAddress(long _addr);
+bool StartENCHallCalibration(long cal);
+bool SetENCHallCCWOffset(float offset);
+bool SetENCHallCWOffset(float offset);
+    //----------Read----------
+long  GetAddress(long _addr);
 float GetVoltageA();
 float GetVoltageB();
 float GetCurrentA();
@@ -207,6 +216,8 @@ float GetSOGUltraFastBrushlessMotor();
 float GetSOGDCMotor();
 float GetSOFGNormalBrushlessMotor();
 float GetSOFGUltraFastBrushlessMotor();
+float Get3PhaseMotorAngle(); // Read Estimated or Measured Rotor Angle
+float GetENCHallCCWOffset(); 
+float GetENCHallCWOffset();
 long  GetUARTBaudrate();
-
 };
