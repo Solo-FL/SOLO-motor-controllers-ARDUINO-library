@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controller Arduino Library
 *    Author: SOLOMOTORCONTROLLERS
 *    Date: 2021
-*    Code version: 1.1.0
+*    Code version: 1.1.1
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMOTORCONTROLLERS.COM
@@ -70,10 +70,11 @@ bool SOLOMotorController::ExeCMD(unsigned char cmd[])
 float SOLOMotorController::ConvertToFloat(unsigned char data[])
 {
     long dec = 0;
-    dec = (data[0]/16)*268435456 + (data[0]%16)*16777216 +
-          (data[1]/16)*1048576 + (data[1]%16)*65536 +
-          (data[2]/16)*4096 + (data[2]%16)*256 +
-          (data[3]/16)*16 + (data[3]%16)*1;
+	dec = (long)data[0]<<24;
+	dec+= (long)data[1]<<16;
+	dec+= (long)data[2]<<8;
+	dec+= (long)data[3];
+	
     if(dec <= 0x7FFE0000)
     {
         return (float)dec/131072.0;
@@ -102,10 +103,11 @@ void SOLOMotorController::ConvertToData(float f, unsigned char data[])
 long SOLOMotorController::ConvertToLong(unsigned char data[])
 {
     long dec = 0;
-    dec = (data[0]/16)*268435456 + (data[0]%16)*16777216 +
-          (data[1]/16)*1048576 + (data[1]%16)*65536 +
-          (data[2]/16)*4096 + (data[2]%16)*256 +
-          (data[3]/16)*16 + (data[3]%16)*1;
+	dec = (long)data[0]<<24;
+	dec+= (long)data[1]<<16;
+	dec+= (long)data[2]<<8;
+	dec+= (long)data[3];
+	
     if(dec <= 2147483647/*0x7FFFFFFF*/)
     {
         return dec;
