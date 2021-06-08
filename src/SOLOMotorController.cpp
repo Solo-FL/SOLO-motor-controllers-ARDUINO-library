@@ -17,9 +17,10 @@ please visit:  https://www.solomotorcontrollers.com/
 
 #include <SOLOMotorController.h>
 // -------------------- constructor & destructor --------------------
-SOLOMotorController::SOLOMotorController(unsigned char _addr){
-    addr = _addr;
-}
+SOLOMotorController::SOLOMotorController(unsigned char _addr, HardwareSerial& _serial)
+    :addr( _addr )
+    ,serial(_serial)
+{}
 
 bool SOLOMotorController::Test()
 {
@@ -35,10 +36,10 @@ bool SOLOMotorController::ExeCMD(unsigned char cmd[])
 {
     unsigned char _cmd[] = {INITIATOR,INITIATOR,cmd[0],cmd[1],cmd[2],cmd[3],cmd[4],cmd[5],CRC,ENDING};
     unsigned char _readPacket[10];
-	
-    Serial.write(_cmd,10);
-    while(Serial.availableForWrite() == 0); // wait till end of writing
-    Serial.readBytes(_readPacket, 10);  //read received data 
+
+    serial.write(_cmd,10);
+    while(serial.availableForWrite() == 0); // wait till end of writing
+    serial.readBytes(_readPacket, 10);  //read received data 
 	
 	if  (_readPacket[0] == _cmd[0] && _readPacket[1] == _cmd[1] 
         && _readPacket[2] == _cmd[2] && _readPacket[3] == _cmd[3]

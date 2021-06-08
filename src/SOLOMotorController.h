@@ -118,11 +118,12 @@ please visit:  https://www.solomotorcontrollers.com/
 class SOLOMotorController {   
 
 private:
-    unsigned char addr;
+    unsigned char   addr;
+    HardwareSerial& serial;
     
 public:
     //static HardwareSerial Serial21; 
-    SOLOMotorController(unsigned char _addr = 0);
+    SOLOMotorController(unsigned char _addr = 0, HardwareSerial& _serial = Serial);
 public:
 bool Test();
 bool ExeCMD(unsigned char cmd[]);
