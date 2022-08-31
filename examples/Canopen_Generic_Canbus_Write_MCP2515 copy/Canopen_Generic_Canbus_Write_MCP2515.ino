@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2022
-*    Code version: 4.0.2
+*    Code version: 4.0.3
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -13,7 +13,7 @@ please visit:  https://www.SOLOMotorControllers.com/
 
 */
 
-// EXAMPLE of how to READ a Generic message on CANBus using SOLO CAN library for MCP2515
+// EXAMPLE of how to WRITE a Generic message on CANBus using SOLO CAN library for MCP2515
 // In this Example, the line is read continously and ID, DCL and all the  data bytes recieved are printed
 // The user can use this example to work with other CAN MODULES in the Line except SOLO
 
@@ -24,10 +24,12 @@ please visit:  https://www.SOLOMotorControllers.com/
 // instanciate a SOLO object as Canopen IMPORTANT
 SOLOMotorControllersCanopen *SOLO_Obj1; 
 
-//Init reading variable
-uint16_t ID_Read;
-uint8_t  DLC_Read;
-uint8_t  DataRead[8]  = {0,0,0,0,0,0,0,0};
+//Init writing variable
+uint16_t ID_Write = 605; //int 
+uint8_t  DLC_Write = 8;
+uint8_t  DataWrite[8]  = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07};
+int ErrorWrite = 0; 
+String SOLOMotorControllersErrors[10] = {"noErrorDetected","generalError","noProcessedCommand","outOfRengeSetting","packetFailureTrialAttemptsOverflow","recieveTimeOutError","Abort_Object","Abort_Value","MCP2515_Transmit_ArbitrationLost","MCP2515_Transmit_Error"};
 
 void setup() {
   Serial.begin(115200);
@@ -39,23 +41,9 @@ void setup() {
 }
   
 void loop() {
-  //Reading
-  Serial.println("NEW READING");
-  SOLO_Obj1->Generic_Canbus_Read_MCP2515(&ID_Read , &DLC_Read , DataRead);
-
-  if(ID_Read!=0){ //if ID_Read == 0 mean no data recived
-    //Printing ID
-    Serial.print("ID: ");
-    Serial.println(ID_Read,HEX); 
-    //Printing DLC
-    Serial.print("DLC: ");
-    Serial.println(DLC_Read);
-    //Printing Data Read
-    for(int i = 0 ; i < DLC_Read; i++){
-      Serial.print((String)"Byte["+i+"]: ");
-      Serial.println(DataRead[i],HEX);
-    }
-  }
-
-  delay(100);
+  //writing
+  Serial.print("NEW WRITE: ");
+  SOLO_Obj1->Generic_Canbus_Write_MCP2515(ID_Write , &DLC_Write , DataWrite, ErrorWrite);
+  Serial.println(SOLOMotorControllersErrors[ErrorWrite]);
+  delay(1000);
 }

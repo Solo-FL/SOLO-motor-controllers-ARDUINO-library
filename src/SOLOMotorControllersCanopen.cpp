@@ -1554,11 +1554,15 @@ uint8_t SOLOMotorControllersCanopen::MCP2515_Read_TransmitErrorCounter()
 {
     return _MCP2515->MCP2515_Read_TransmitErrorCounter();
 }
-void  SOLOMotorControllersCanopen::Generic_Canbus_Read_MCP2515( uint16_t *_ID , uint8_t *_DLC , uint8_t *_Data)
+void SOLOMotorControllersCanopen::Generic_Canbus_Read_MCP2515(uint16_t *_ID , uint8_t *_DLC, uint8_t *_Data)
 {
     *_ID = 0;
     *_DLC = 0;
     if((_MCP2515->MCP2515_Read_RX_Status() & (1<<6))){
         _MCP2515->MCP2515_Receive_Frame(_MCP2515->MCP2515_RX_BUF::RX_BUFFER_0,_ID,_DLC,_Data);
     }
+}
+void SOLOMotorControllersCanopen::Generic_Canbus_Write_MCP2515(uint16_t _ID, uint8_t *_DLC, uint8_t *_Data, int &error)
+{
+    _MCP2515->MCP2515_Transmit_Frame(_MCP2515->MCP2515_TX_BUF::TX_BUFFER_0, _ID, _DLC, _Data, error);
 }

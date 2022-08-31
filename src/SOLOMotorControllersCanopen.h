@@ -317,7 +317,8 @@ public:
     bool  CommunicationIsWorking();
     long  GetEncoderIndexCounts(int &error);
     long  GetEncoderIndexCounts();
-    void  Generic_Canbus_Read_MCP2515( uint16_t *_ID , uint8_t *_DLC , uint8_t *_Data);
+    void  Generic_Canbus_Read_MCP2515(uint16_t *_ID, uint8_t *_DLC, uint8_t *_Data);
+    void  Generic_Canbus_Write_MCP2515(uint16_t _ID, uint8_t *_DLC, uint8_t *_Data, int &error);
 };
 
 
