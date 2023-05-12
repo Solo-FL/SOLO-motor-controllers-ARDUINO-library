@@ -1,17 +1,19 @@
-// Copyright: (c) 2021, SOLO motor controllers project
-// GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+/**
+ *******************************************************************************
+ * @file    SOLOMotorControllersUtils.cpp
+ * @authors SOLO Motor Controllers
+ * @brief   This file contains all the functions for converting data
+ *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
+ * 
+ * @date    Date: 2023
+ * @version 4.3.0
+ * *******************************************************************************    
+ * @attention
+ * Copyright: (c) 2021-2023, SOLO motor controllers project
+ * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+ ******************************************************************************* 
+ */
 
-/*
-*    Title: SOLO Motor Controllers Arduino Library
-*    Author: SOLOMotorControllers
-*    Date: 2022
-*    Code version: 4.0.0
-*    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
-
-This Library is made by SOLOMotorControllers.COM
-please visit:  https://www.SOLOMotorControllers.com/
-
-*/
 #include "SOLOMotorControllersUtils.h"
 
 float SOLOMotorControllersUtils::ConvertToFloat(unsigned char data[])
@@ -370,6 +372,62 @@ bool SOLOMotorControllersUtils::SetSpeedAccelerationValueInputValidation(float s
 bool SOLOMotorControllersUtils::SetSpeedDecelerationValueInputValidation(float speedDecelerationValue, int &error)
 {
     if (speedDecelerationValue < 0 || speedDecelerationValue > 1600)
+    {
+        error = SOLOMotorControllers::Error::outOfRengeSetting;
+        return false;
+    }
+    return true;
+}
+
+bool SOLOMotorControllersUtils::SetAnalogueSpeedResolutionDivisionCoefficientInputValidation(float divisionCoefficient, int &error)
+{
+    if (divisionCoefficient < 0.0001 || divisionCoefficient > 10000)
+    {
+        error = SOLOMotorControllers::Error::outOfRengeSetting;
+        return false;
+    }
+    return true;
+}
+
+bool SOLOMotorControllersUtils::SetMotionProfileVariable1InputValidation(float MotionProfileVariable1, int &error)
+{
+    if (MotionProfileVariable1 < 0 || MotionProfileVariable1 > 16000)
+    {
+        error = SOLOMotorControllers::Error::outOfRengeSetting;
+        return false;
+    }
+    return true;   
+}
+bool SOLOMotorControllersUtils::SetMotionProfileVariable2InputValidation(float MotionProfileVariable2, int &error)
+{
+    if (MotionProfileVariable2 < 0 || MotionProfileVariable2 > 16000)
+    {
+        error = SOLOMotorControllers::Error::outOfRengeSetting;
+        return false;
+    }
+    return true;
+}
+bool SOLOMotorControllersUtils::SetMotionProfileVariable3InputValidation(float MotionProfileVariable3, int &error)
+{
+    if (MotionProfileVariable3 < 0 || MotionProfileVariable3 > 16000)
+    {
+        error = SOLOMotorControllers::Error::outOfRengeSetting;
+        return false;
+    }
+    return true;
+}
+bool SOLOMotorControllersUtils::SetMotionProfileVariable4InputValidation(float MotionProfileVariable4, int &error)
+{
+    if (MotionProfileVariable4 < 0 || MotionProfileVariable4 > 16000)
+    {
+        error = SOLOMotorControllers::Error::outOfRengeSetting;
+        return false;
+    }
+    return true;
+}
+bool SOLOMotorControllersUtils::SetMotionProfileVariable5InputValidation(float MotionProfileVariable5, int &error)
+{
+    if (MotionProfileVariable5 < 0 || MotionProfileVariable5 > 16000)
     {
         error = SOLOMotorControllers::Error::outOfRengeSetting;
         return false;

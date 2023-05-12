@@ -1,17 +1,20 @@
-// Copyright: (c) 2021, SOLO motor controllers project
-// GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+/**
+ *******************************************************************************
+ * @file    SOLOMotorControllersCanopen.h
+ * @authors SOLO Motor Controllers
+ * @brief   This file contains all the functions prototypes for the Solo Drivers
+ *          canopen communications.
+ *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
+ * 
+ * @date    Date: 2023
+ * @version 4.3.0
+ *******************************************************************************    
+ * @attention
+ * Copyright: (c) 2021-2023, SOLO motor controllers project
+ * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+ ******************************************************************************* 
+ */
 
-/*
-*    Title: SOLO Motor Controllers Arduino Library
-*    Author: SOLOMotorControllers
-*    Date: 2022
-*    Code version: 3.0
-*    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
-
-This Library is made by SOLOMotorControllers.COM
-please visit:  https://www.SOLOMotorControllers.com/
-
-*/
 #include <stdint.h>
 #include "MCP2515.hpp"
 #include "Arduino.h"
@@ -22,12 +25,20 @@ please visit:  https://www.SOLOMotorControllers.com/
 #define SOLOMOTORCONTROLLERSCANOPEN_H
 
 //SOLO Object Index
-//***** NMT Control Objects
+/** @addtogroup NMT_Control_Objects NMT Control Objects
+  * @{
+  */    
 #define Object_ReadErrorRegister                       0x1001
 #define Object_GuardTime                               0x100C
 #define Object_LifeTimeFactor                          0x100D
 #define Object_ProducerHeartbeatTime                   0x1017
-//***** SOLO UNO CANOPEN Objects
+/**
+  * @}
+  */
+
+/** @addtogroup SOLO_UNO_CANOPEN_Objects SOLO UNO CANOPEN Objects
+  * @{
+  */  
 #define Object_SetDeviceAddress                        0x3001
 #define Object_CommandMode                             0x3002
 #define Object_CurrentLimit                            0x3003
@@ -89,6 +100,20 @@ please visit:  https://www.SOLOMotorControllers.com/
 #define Object_DeviceHardwareVersion                   0x303B
 #define Object_EncoderIndexCounts                      0x303D
 
+#define Object_ASRDC                                   0x303E
+#define Object_MotionProfileMode                       0x303F
+#define Object_MotionProfileVariable1                  0x3040
+#define Object_MotionProfileVariable2                  0x3041
+#define Object_MotionProfileVariable3                  0x3042
+#define Object_MotionProfileVariable4                  0x3043
+#define Object_MotionProfileVariable5                  0x3044
+/**
+  * @}
+  */
+
+/**
+ * @brief a class for handle canopen communication
+ * */ 
 class SOLOMotorControllersCanopen : public SOLOMotorControllers
 {
 
@@ -108,6 +133,10 @@ private :
     void  ConvertToData(long l, unsigned char data[]);
     void  ExtractData(unsigned char _Data[] , unsigned char _ExtractedData[]);
 public:
+
+/** @addtogroup SOLOMotorControllersCanopen_Write_Functions SOLOMotorControllersCanopen Write Functions
+  * @{
+  */ 
     //----------Write  SOLOMotorControllersCanopen----------
     bool SetGuardTime(long guardtime, int &error);
     bool SetGuardTime(long guardtime);
@@ -115,6 +144,13 @@ public:
     bool SetLifeTimeFactor(long lifeTimeFactor);
     bool SetProducerHeartbeatTime(long producerHeartbeatTime, int &error);
     bool SetProducerHeartbeatTime(long producerHeartbeatTime);
+/**
+  * @}
+  */
+
+/** @addtogroup SOLOMotorControllers_Write_Functions SOLOMotorControllers Write Functions
+  * @{
+  */
     //----------Write  SOLOMotorControllers----------   
     bool SetDeviceAddress(unsigned char deviceAddress, int &error);
     bool SetDeviceAddress(unsigned char deviceAddress);
@@ -200,10 +236,38 @@ public:
     bool SetSpeedDecelerationValue(float speedDecelerationValue);
     bool SetCanbusBaudrate(SOLOMotorControllers::CanbusBaudrate canbusBaudrate, int &error);
     bool SetCanbusBaudrate(SOLOMotorControllers::CanbusBaudrate canbusBaudrate);
+    bool SetAnalogueSpeedResolutionDivisionCoefficient(long divisionCoefficient, int &error);
+    bool SetAnalogueSpeedResolutionDivisionCoefficient(long divisionCoefficient);
+    bool SetMotionProfileMode( MotionProfileMode motionProfileMode, int &error);
+    bool SetMotionProfileMode( MotionProfileMode motionProfileMode);
+    bool SetMotionProfileVariable1(float MotionProfileVariable1, int &error);
+    bool SetMotionProfileVariable1(float MotionProfileVariable1);
+    bool SetMotionProfileVariable2(float MotionProfileVariable2, int &error);
+    bool SetMotionProfileVariable2(float MotionProfileVariable2);
+    bool SetMotionProfileVariable3(float MotionProfileVariable3, int &error);
+    bool SetMotionProfileVariable3(float MotionProfileVariable3);
+    bool SetMotionProfileVariable4(float MotionProfileVariable4, int &error);
+    bool SetMotionProfileVariable4(float MotionProfileVariable4);
+    bool SetMotionProfileVariable5(float MotionProfileVariable5, int &error);
+    bool SetMotionProfileVariable5(float MotionProfileVariable5);
+/**
+  * @}
+  */
+
+ /** @addtogroup SOLOMotorControllersCanopen_Read_Functions SOLOMotorControllersCanopen Read Functions
+  * @{
+  */
     //----------Read SOLOMotorControllersCanopen----------
     void  MCP2515_ReadErrorMode(int &errorMode);
     uint8_t MCP2515_Read_ReceiveErrorCounter();
     uint8_t MCP2515_Read_TransmitErrorCounter();
+/**
+  * @}
+  */
+
+/** @addtogroup SOLOMotorControllers_Read_Functions SOLOMotorControllers Read Functions
+  * @{
+  */
     //----------Read SOLOMotorControllers----------
     long  GetReadErrorRegister(int &error);
     long  GetReadErrorRegister();
@@ -313,13 +377,32 @@ public:
     float GetSpeedAccelerationValue();
     float GetSpeedDecelerationValue(int &error);
     float GetSpeedDecelerationValue();
+	long  GetCanbusBaudrate(int &error);
+	long  GetCanbusBaudrate();
+    long  GetAnalogueSpeedResolutionDivisionCoefficient(int &error);
+    long  GetAnalogueSpeedResolutionDivisionCoefficient();
     bool  CommunicationIsWorking(int &error);
     bool  CommunicationIsWorking();
+    long GetMotionProfileMode(int &error);
+    long GetMotionProfileMode();
+    float GetMotionProfileVariable1(int &error);
+    float GetMotionProfileVariable1();
+    float GetMotionProfileVariable2(int &error);
+    float GetMotionProfileVariable2();
+    float GetMotionProfileVariable3(int &error);
+    float GetMotionProfileVariable3();
+    float GetMotionProfileVariable4(int &error);
+    float GetMotionProfileVariable4();
+    float GetMotionProfileVariable5(int &error);
+    float GetMotionProfileVariable5();
     long  GetEncoderIndexCounts(int &error);
     long  GetEncoderIndexCounts();
     void  Generic_Canbus_Read_MCP2515(uint16_t *_ID, uint8_t *_DLC, uint8_t *_Data);
     void  Generic_Canbus_Write_MCP2515(uint16_t _ID, uint8_t *_DLC, uint8_t *_Data, int &error);
 };
+/**
+  * @}
+  */
 
 
 
