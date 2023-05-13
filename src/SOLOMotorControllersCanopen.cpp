@@ -3177,6 +3177,11 @@ long SOLOMotorControllersCanopen::GetAnalogueSpeedResolutionDivisionCoefficient(
     return SOLOMotorControllersCanopen::GetAnalogueSpeedResolutionDivisionCoefficient(error);
 }
 
+/**
+ * 
+  * @brief  This command test if the communication is working   
+  * @retval bool 0 not working / 1 for working
+  */
 bool SOLOMotorControllersCanopen::CommunicationIsWorking(int &error)
 {
     error = SOLOMotorControllers::Error::noProcessedCommand;
@@ -3187,6 +3192,11 @@ bool SOLOMotorControllersCanopen::CommunicationIsWorking(int &error)
     return false;
 }
 
+/**
+ * 
+  * @brief  This command test if the communication is working   
+  * @retval bool 0 not working / 1 for working
+  */
 bool SOLOMotorControllersCanopen::CommunicationIsWorking()
 {
     int error = SOLOMotorControllers::Error::noProcessedCommand;

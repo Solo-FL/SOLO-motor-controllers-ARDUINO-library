@@ -3505,6 +3505,11 @@ long SOLOMotorControllersUart::GetEncoderIndexCounts()
     return SOLOMotorControllersUart::GetEncoderIndexCounts(error);
 }
 
+/**
+ * 
+  * @brief  This command test if the communication is working   
+  * @retval bool 0 not working / 1 for working
+  */
 bool SOLOMotorControllersUart::CommunicationIsWorking(int &error)
 {
     error = SOLOMotorControllers::Error::noProcessedCommand;
@@ -3515,6 +3520,11 @@ bool SOLOMotorControllersUart::CommunicationIsWorking(int &error)
     return false;
 }
 
+/**
+ * 
+  * @brief  This command test if the communication is working   
+  * @retval bool 0 not working / 1 for working
+  */
 bool SOLOMotorControllersUart::CommunicationIsWorking()
 {
     int error = SOLOMotorControllers::Error::noProcessedCommand;
