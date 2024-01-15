@@ -46,7 +46,6 @@ SetMagnetizingCurrentIdReference KEYWORD2
 SetPositionReference KEYWORD2
 SetPositionControllerKp KEYWORD2
 SetPositionControllerKi KEYWORD2
-ResetPositionToZero KEYWORD2
 OverwriteErrorRegister KEYWORD2
 SetObserverGainBldcPmsm KEYWORD2
 SetObserverGainBldcPmsmUltrafast KEYWORD2
@@ -129,3 +128,23 @@ GetMotionProfileVariable2 KEYWORD2
 GetMotionProfileVariable3 KEYWORD2
 GetMotionProfileVariable4 KEYWORD2
 GetMotionProfileVariable5 KEYWORD2
+
+# CANOPEN
+GetGuardTime KEYWORD2
+GetLifeTimeFactor KEYWORD2
+GetProducerHeartbeatTime KEYWORD2
+Mcp2515ReadErrorMode KEYWORD2
+Mcp2515ReadReceiveErrorCounter KEYWORD2
+Mcp2515ReadTransmitErrorCounter KEYWORD2
+
+#PDO
+SendPdoSync KEYWORD2
+SendPdoRtr KEYWORD2
+GetPdoPositionCountsFeedback KEYWORD2
+GetPdoSpeedFeedback KEYWORD2
+GetPdoQuadratureCurrentIqFeedback KEYWORD2
+GetPdoMagnetizingCurrentIdFeedback KEYWORD2
+GetPdoErrorRegister KEYWORD2
+GetPdoBoardTemperature KEYWORD2
+GetPdoParameterConfig KEYWORD2
+UpdatePdoParameterCobIdByPdoParameterName KEYWORD2
