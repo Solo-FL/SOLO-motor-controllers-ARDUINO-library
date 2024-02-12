@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.0.0
+ * @version 5.1.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -17,7 +17,6 @@
 
 #include "SOLOMotorControllersUart.h"
 #include <stdint.h>
-#include "Arduino.h"
 
 // -------------------- constructor & destructor --------------------
 SOLOMotorControllersUart::SOLOMotorControllersUart(unsigned char _deviceAddress, HardwareSerial &_serial, SOLOMotorControllers::UartBaudrate _baudrate, long _millisecondsTimeout, int _packetFailureTrialAttempts)
@@ -35,9 +34,18 @@ SOLOMotorControllersUart::SOLOMotorControllersUart(unsigned char _deviceAddress,
     baudrate = 115200;
     break;
   }
+  
+  //Some Arduino (UNO WIFI R4, MINIMA) have Tx0 and Tx1 at Serial1 not Serial
+  #if defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) // For LEONARDO: || defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__)
+    if(_serial == Serial){
+      serialToUse=&Serial1;
+    }
+  #endif
+
   serialToUse->begin(baudrate);
   serialToUse->setTimeout(millisecondsTimeout);
   soloUtils = new SOLOMotorControllersUtils();
+  delay(1000);
 }
 
 bool SOLOMotorControllersUart::ExeCMD(unsigned char cmd[], int &error)

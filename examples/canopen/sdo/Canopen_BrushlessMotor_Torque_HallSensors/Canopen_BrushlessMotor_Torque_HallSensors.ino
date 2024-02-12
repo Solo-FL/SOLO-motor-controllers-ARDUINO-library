@@ -84,7 +84,6 @@ void setup()
   int SOLOdeviceAddress = 0;
   int chipSelectPin = 9;
   SOLO_Obj1 = new SOLOMotorControllersCanopen(SOLOdeviceAddress, chipSelectPin);
-  delay(1000);
 
   Serial.println("\n Trying to Connect To SOLO");
   delay(1000);
@@ -156,7 +155,7 @@ void loop()
 
   actualMotorTorque_Iq = SOLO_Obj1->GetQuadratureCurrentIqFeedback();
   Serial.println("\n Torque (Iq): ");
-  Serial.print(actualMotorTorque_Iq, 7);
+  Serial.print(actualMotorTorque_Iq, 2);
 
   // wait for user to read
   delay(3000);
@@ -178,7 +177,7 @@ void loop()
 
   actualMotorTorque_Iq = SOLO_Obj1->GetQuadratureCurrentIqFeedback();
   Serial.println("\n Torque (Iq): ");
-  Serial.print(actualMotorTorque_Iq, 7);
+  Serial.print(actualMotorTorque_Iq, 2);
 
   // wait for user to read
   delay(3000);

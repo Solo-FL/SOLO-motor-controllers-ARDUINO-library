@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.0.0
+ * @version 5.1.0
  *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -14,7 +14,6 @@
  *******************************************************************************
  */
 
-#include <Arduino.h>
 #include <SPI.h>
 #include "MCP2515.hpp"
 #include "SOLOMotorControllersCanopen.h"
@@ -26,6 +25,8 @@ extern volatile uint8_t canIntFlag;
 extern volatile uint8_t canBuf[CAN_BUFF_SIZE][12];
 extern volatile bool isCanBufEmpty[CAN_BUFF_SIZE]; // init at all as true
 
+SPISettings spiSettings(8000000, MSBFIRST, SPI_MODE0);
+
 MCP2515::MCP2515(uint8_t _chipSelectPin, long _countTimeout)
 {
     chipSelectPin = _chipSelectPin;
@@ -35,14 +36,14 @@ MCP2515::MCP2515(uint8_t _chipSelectPin, long _countTimeout)
 
 void MCP2515::StartSPI()
 {
-    SPI.begin();
+    SPI.beginTransaction(spiSettings);
     digitalWrite(chipSelectPin, LOW);
 }
 
 void MCP2515::EndSPI()
 {
     digitalWrite(chipSelectPin, HIGH);
-    SPI.end();
+    SPI.endTransaction();
 }
 
 void MCP2515::MCP2515_Reset()
@@ -507,10 +508,8 @@ void MCP2515::MCP2515_Init(uint16_t baudrate)
     pinMode(chipSelectPin, OUTPUT);
 
     // SPI Initialize
-    SPI.setBitOrder(MSBFIRST);
-    SPI.setDataMode(SPI_MODE0);
-    // SPI.setClockDivider(SPI_CLOCK_DIV2) ;
-    SPI.setClockDivider(SPI_CLOCK_DIV2);
+    SPI.begin();
+
 
     MCP2515_Reset();
     MCP2515_Set_Mode(MCP2515_MODE::CONFIGURATION_MODE);
@@ -840,7 +839,7 @@ bool MCP2515::PDOReceive(long _address, uint8_t *_informationReceived, int &erro
             continue;
         }
 
-        dlc = canBuf[2];
+        dlc = canBuf[i][2];
         ID_High = canBuf[i][0];
         ID_Low = canBuf[i][1];
         ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID

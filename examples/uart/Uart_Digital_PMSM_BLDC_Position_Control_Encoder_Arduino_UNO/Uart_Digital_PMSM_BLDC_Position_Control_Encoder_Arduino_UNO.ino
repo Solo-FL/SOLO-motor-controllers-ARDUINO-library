@@ -80,7 +80,6 @@ void setup()
 
   // Initialize the SOLO object
   SOLO_Obj1 = new SOLOMotorControllersUart(SOLO_address1);
-  delay(1000);
 
   Serial.println("\n Trying to Connect To SOLO");
   delay(1000);

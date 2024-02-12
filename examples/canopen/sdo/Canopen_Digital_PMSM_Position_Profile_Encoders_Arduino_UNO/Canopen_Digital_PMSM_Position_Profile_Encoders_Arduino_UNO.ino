@@ -79,7 +79,6 @@ void setup()
   int SOLOdeviceAddress = 0;
   int chipSelectPin = 9; // SPI CS pin for CANshield
   SOLO_Obj1 = new SOLOMotorControllersCanopen(SOLOdeviceAddress, chipSelectPin);
-  delay(1000);
 
   Serial.println("\n Trying to Connect To SOLO");
   delay(1000);

@@ -82,7 +82,6 @@ void setup()
 
   // Initialize the SOLO object
   SOLO_Obj1 = new SOLOMotorControllersUart(SOLO_address1);
-  delay(1000);
 
   Serial.println("\n Trying to Connect To SOLO");
   delay(1000);
@@ -154,7 +153,7 @@ void loop()
 
   actualMotorTorque_Iq = SOLO_Obj1->GetQuadratureCurrentIqFeedback();
   Serial.println("\n Torque (Iq): ");
-  Serial.print(actualMotorTorque_Iq, 7);
+  Serial.print(actualMotorTorque_Iq, 2);
 
   // wait for user to read
   delay(3000);
@@ -176,7 +175,7 @@ void loop()
 
   actualMotorTorque_Iq = SOLO_Obj1->GetQuadratureCurrentIqFeedback();
   Serial.println("\n Torque (Iq): ");
-  Serial.print(actualMotorTorque_Iq, 7);
+  Serial.print(actualMotorTorque_Iq, 2);
 
   // wait for user to read
   delay(3000);

@@ -42,7 +42,7 @@ void loop()
 
   // Print
   Serial.println("Read from SOLO");
-  Serial.println(Temperature, 7);
+  Serial.println(Temperature, 2);
   Serial.println("Error");
   Serial.println(error);
 

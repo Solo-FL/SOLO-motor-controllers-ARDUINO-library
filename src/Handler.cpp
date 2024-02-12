@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.0.0
+ * @version 5.1.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -50,7 +50,7 @@ void ISR_Handler()
         }
     }
 
-    _MCP2515->MCP2515_Receive_Frame_IT(MCP2515::MCP2515_RX_BUF::RX_BUFFER_1, canBuf[writeIndex]);
+    _MCP2515->MCP2515_Receive_Frame_IT(MCP2515::MCP2515_RX_BUF::RX_BUFFER_1,(uint8_t *) canBuf[writeIndex]);
 
     canIntFlag = 1;
 }

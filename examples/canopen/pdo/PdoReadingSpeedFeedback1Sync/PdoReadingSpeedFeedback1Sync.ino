@@ -27,7 +27,7 @@ void setup()
   int SOLOdeviceAddress = 0;
   int chipSelectPin = 9;
   solo = new SOLOMotorControllersCanopen(SOLOdeviceAddress, chipSelectPin);
-
+  
   // 1 time needed CONFIGURATION:
   Serial.println("PdoParameterConfig:");
   PdoParameterConfig config;

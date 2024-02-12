@@ -58,10 +58,10 @@ void loop()
 
   Serial.println("\n List Of some parameters read from SOLO");
 
-  Serial.println(BusVoltage, 7);
-  Serial.println(Temperature, 7);
-  Serial.println(VoltageA, 7);
-  Serial.println(Inductance, 7);
+  Serial.println(BusVoltage, 2);
+  Serial.println(Temperature, 2);
+  Serial.println(VoltageA, 2);
+  Serial.println(Inductance, 2);
   Serial.println(PWMFrequency_read);
   Serial.println(NumberOfPoles_read);
   Serial.println(EncoderLines_read);

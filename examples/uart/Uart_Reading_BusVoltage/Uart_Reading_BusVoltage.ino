@@ -38,7 +38,7 @@ void loop()
 
   // Print
   Serial.println("\n Read from SOLO");
-  Serial.println(BusVoltage, 7);
+  Serial.println(BusVoltage, 2);
 
   delay(1000);
 }

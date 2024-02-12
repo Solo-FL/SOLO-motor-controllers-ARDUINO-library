@@ -28,7 +28,6 @@ void setup()
   //    Serial1 is the Serial port 1. On ARDUINO DUE are PIN 18 19 a reference here: https://www.arduino.cc/reference/en/language/functions/communication/serial/
   //    SOLOMotorControllers::UartBaudrate::RATE_115200 is the baudrate of UART
   SOLO_Obj1 = new SOLOMotorControllersUart(0, Serial1, SOLOMotorControllers::UartBaudrate::RATE_115200); // this line will give error if build selecting ARDUINO UNO
-
   Serial.begin(115200);
 }
 
@@ -39,7 +38,7 @@ void loop()
 
   // Print
   Serial.println("\n Read from SOLO");
-  Serial.println(Temperature, 7);
+  Serial.println(Temperature, 2);
   Serial.println("Error");
   Serial.println(error);
 

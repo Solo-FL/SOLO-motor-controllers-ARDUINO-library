@@ -42,7 +42,7 @@ void loop()
   // response : is the Command Mode reading from SOLO device
   // error : after the execution of the fuction will have the error status of the execution
   commandMode = solo->GetCommandMode(error);
-
+  
   // error is not mandatory, we can call the function without it, as other examples:
   // response = solo->GetCommandMode();
 

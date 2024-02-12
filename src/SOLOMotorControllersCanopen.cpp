@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.0.0
+ * @version 5.1.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -17,7 +17,6 @@
 
 #include "SOLOMotorControllersCanopen.h"
 #include <stdint.h>
-#include <Arduino.h>
 
 extern MCP2515 *_MCP2515;
 
@@ -58,6 +57,7 @@ SOLOMotorControllersCanopen::SOLOMotorControllersCanopen(unsigned char _deviceAd
   _MCP2515->MCP2515_Init(baudrate);
   InitPdoConfig();
   soloUtils = new SOLOMotorControllersUtils();
+  delay(1000);
 }
 bool SOLOMotorControllersCanopen::SetGuardTime(long guardtime, int &error)
 {
@@ -4031,7 +4031,7 @@ void SOLOMotorControllersCanopen::GenericCanbusReadMcp2515(uint16_t *_ID, uint8_
 }
 void SOLOMotorControllersCanopen::GenericCanbusWriteMcp2515(uint16_t _ID, uint8_t *_DLC, uint8_t *_Data, int &error)
 {
-  _MCP2515->MCP2515_Transmit_Frame(_MCP2515->MCP2515_TX_BUF::TX_BUFFER_0, _ID, _DLC, _Data, error);
+  _MCP2515->MCP2515_Transmit_Frame(_MCP2515->MCP2515_TX_BUF::TX_BUFFER_0, _ID, *_DLC, _Data, error);
 }
 
 /**

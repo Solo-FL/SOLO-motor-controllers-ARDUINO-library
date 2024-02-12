@@ -48,14 +48,14 @@ void loop()
 
   // Print
   Serial.print("Read from SOLO 1: ");
-  Serial.println(BusVoltage, 7);
+  Serial.println(BusVoltage, 2);
 
   // Reading
   BusVoltage = SOLO_2->GetBusVoltage();
 
   // Print
   Serial.print("Read from SOLO 2: ");
-  Serial.println(BusVoltage, 7);
+  Serial.println(BusVoltage, 2);
 
   delay(1000);
 }

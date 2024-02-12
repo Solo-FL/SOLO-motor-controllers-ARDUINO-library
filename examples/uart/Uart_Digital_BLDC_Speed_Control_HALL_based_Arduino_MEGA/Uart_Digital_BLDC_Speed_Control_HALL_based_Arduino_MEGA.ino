@@ -68,7 +68,6 @@ void setup()
   int SOLOdeviceAddress = 0;
   int chipSelectPin = 9;
   SOLO_Obj1 = new SOLOMotorControllersUart(0, Serial1, SOLOMotorControllers::UartBaudrate::RATE_115200); // this line will exert error if built with ARDUINO UNO
-  delay(1000);
 
   Serial.println("\n Trying to Connect To SOLO");
   delay(1000);

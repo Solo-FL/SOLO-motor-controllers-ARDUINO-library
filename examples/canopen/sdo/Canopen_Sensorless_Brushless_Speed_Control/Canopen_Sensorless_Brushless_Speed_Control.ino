@@ -58,12 +58,11 @@ void setup()
   // Use this baudrate only for devices that don't support
   // 937500 or 921600 baudrates.
   Serial.begin(115200);
-
+  
   // Initialize the SOLO object
   int SOLOdeviceAddress = 0;
   int chipSelectPin = 9;
   SOLO_Obj1 = new SOLOMotorControllersCanopen(SOLOdeviceAddress, chipSelectPin);
-  delay(1000);
 
   Serial.println("\n Trying to Connect To SOLO");
   delay(1000);
