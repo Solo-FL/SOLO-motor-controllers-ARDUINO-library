@@ -5,7 +5,7 @@
  *    Title: Torque Control of BLDC equipped with HALL snesors using Arduino and SOLO
  *    Author: SOLOMOTORCONTROLLERS
  *    Date: 2022
- *    Code version: 4.0.0
+ *    Code version: 4.1.0
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino MEGA
@@ -18,7 +18,7 @@
 // to know more please read: https://www.solomotorcontrollers.com/hall-sensors-to-solo-for-controlling-speed-torque-brushless-motor/
 
 // instanciate a SOLO object:
-SOLOMotorControllers *SOLO_Obj1;
+SOLOMotorControllersUart *SOLO_Obj1;
 
 // the device address of SOLO:
 unsigned char SOLO_address1 = 0;

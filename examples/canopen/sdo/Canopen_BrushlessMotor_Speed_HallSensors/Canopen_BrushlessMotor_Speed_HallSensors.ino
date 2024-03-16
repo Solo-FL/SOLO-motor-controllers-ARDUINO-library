@@ -5,7 +5,7 @@
  *    Title: Speed Control of a Brushless Motor with Arduino and SOLO using HALL sensors
  *    Author: SOLOMOTORCONTROLLERS
  *    Date: 2022
- *    Code version: 4.0.0
+ *    Code version: 4.1.0
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO
@@ -31,7 +31,7 @@
  */
 
 // instanciate a SOLO object:
-SOLOMotorControllers *SOLO_Obj1;
+SOLOMotorControllersCanopen *SOLO_Obj1;
 
 // the device address of SOLO:
 unsigned char SOLO_address1 = 0;
@@ -129,11 +129,6 @@ void setup()
   pinMode(9, OUTPUT); // current Limit adjuster connected to "P/F" on SOLO UNO
 
   pinMode(2, OUTPUT); // Direction Control Pin
-
-  // declare pin 3 to be a PWM enabled output with 31kHz of fixed Frequency
-  TCCR2B = TCCR2B & 0b11111000 | 0x01;
-  // declare pin 9 to be a PWM enabled output 31kHz of fixed Frequency
-  TCCR1B = TCCR1B & 0b11111000 | 0x01;
 }
 
 void loop()

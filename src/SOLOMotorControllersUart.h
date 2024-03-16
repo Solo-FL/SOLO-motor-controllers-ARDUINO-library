@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.1.0
+ * @version 5.2.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -81,6 +81,7 @@
 #define WriteMotionProfileVariable3 0x33
 #define WriteMotionProfileVariable4 0x34
 #define WriteMotionProfileVariable5 0x35
+#define WriteDigitalOutput 0x38
 
 #define ReadDeviceAddress 0x81
 #define ReadPhaseAVoltage 0x82
@@ -141,6 +142,8 @@
 #define ReadMotionProfileVariable3 0xBE
 #define ReadMotionProfileVariable4 0xBF
 #define ReadMotionProfileVariable5 0xC0
+#define ReadPt1000 0xC3
+#define ReadDigitalOutput 0xC4
 /**
  * @}
  */
@@ -160,111 +163,67 @@ private:
 
 public:
     SOLOMotorControllersUart(unsigned char _deviceAddress = 0, HardwareSerial &_serial = Serial, SOLOMotorControllers::UartBaudrate _baudrate = SOLOMotorControllers::UartBaudrate::RATE_115200, long _millisecondsTimeout = 50, int _packetFailureTrialAttempts = 5);
+    static int lastError;
 
 private:
-    bool ExeCMD(unsigned char cmd[], int &error);
+    bool ExeCMD(unsigned char cmd[], int &error = lastError);
+    uint8_t GetDigitalOutputs(int &error);
+
 
 public:
     /** @addtogroup SOLOMotorControllersUart_Write_Functions SOLOMotorControllersUart Write Functions
      * @{
      */
     //----------Write----------
-    bool SetDeviceAddress(unsigned char deviceAddress, int &error);
-    bool SetDeviceAddress(unsigned char deviceAddress);
-    bool SetCommandMode(CommandMode mode, int &error);
-    bool SetCommandMode(CommandMode mode);
-    bool SetCurrentLimit(float currentLimit, int &error);
-    bool SetCurrentLimit(float currentLimit);
-    bool SetTorqueReferenceIq(float torqueReferenceIq, int &error);
-    bool SetTorqueReferenceIq(float torqueReferenceIq);
-    bool SetSpeedReference(long speedReference, int &error);
-    bool SetSpeedReference(long speedReference);
-    bool SetPowerReference(float powerReference, int &error);
-    bool SetPowerReference(float powerReference);
-    bool MotorParametersIdentification(Action identification, int &error);
-    bool MotorParametersIdentification(Action identification);
-    bool EmergencyStop(int &error);
-    bool EmergencyStop();
-    bool SetOutputPwmFrequencyKhz(long outputPwmFrequencyKhz, int &error);
-    bool SetOutputPwmFrequencyKhz(long outputPwmFrequencyKhz);
-    bool SetSpeedControllerKp(float speedControllerKp, int &error);
-    bool SetSpeedControllerKp(float speedControllerKp);
-    bool SetSpeedControllerKi(float speedControllerKi, int &error);
-    bool SetSpeedControllerKi(float speedControllerKi);
-    bool SetMotorDirection(Direction motorDirection, int &error);
-    bool SetMotorDirection(Direction motorDirection);
-    bool SetMotorResistance(float motorResistance, int &error);
-    bool SetMotorResistance(float motorResistance);
-    bool SetMotorInductance(float motorInductance, int &error);
-    bool SetMotorInductance(float motorInductance);
-    bool SetMotorPolesCounts(long motorPolesCounts, int &error);
-    bool SetMotorPolesCounts(long motorPolesCounts);
-    bool SetIncrementalEncoderLines(long incrementalEncoderLines, int &error);
-    bool SetIncrementalEncoderLines(long incrementalEncoderLines);
-    bool SetSpeedLimit(long speedLimit, int &error);
-    bool SetSpeedLimit(long speedLimit);
-    bool ResetDeviceAddress(int &error);
-    bool ResetDeviceAddress();
-    bool SetFeedbackControlMode(FeedbackControlMode mode, int &error);
-    bool SetFeedbackControlMode(FeedbackControlMode mode);
-    bool ResetFactory(int &error);
-    bool ResetFactory();
-    bool SetMotorType(MotorType motorType, int &error);
-    bool SetMotorType(MotorType motorType);
-    bool SetControlMode(ControlMode controlMode, int &error);
-    bool SetControlMode(ControlMode controlMode);
-    bool SetCurrentControllerKp(float currentControllerKp, int &error);
-    bool SetCurrentControllerKp(float currentControllerKp);
-    bool SetCurrentControllerKi(float currentControllerKi, int &error);
-    bool SetCurrentControllerKi(float currentControllerKi);
-    bool SetMagnetizingCurrentIdReference(float magnetizingCurrentIdReference, int &error);
-    bool SetMagnetizingCurrentIdReference(float magnetizingCurrentIdReference);
-    bool SetPositionReference(long positionReference, int &error);
-    bool SetPositionReference(long positionReference);
-    bool SetPositionControllerKp(float positionControllerKp, int &error);
-    bool SetPositionControllerKp(float positionControllerKp);
-    bool SetPositionControllerKi(float positionControllerKi, int &error);
-    bool SetPositionControllerKi(float positionControllerKi);
-    bool OverwriteErrorRegister(int &error);
-    bool OverwriteErrorRegister();
-    bool SetObserverGainBldcPmsm(float observerGain, int &error);
-    bool SetObserverGainBldcPmsm(float observerGain);
-    bool SetObserverGainBldcPmsmUltrafast(float observerGain, int &error);
-    bool SetObserverGainBldcPmsmUltrafast(float observerGain);
-    bool SetObserverGainDc(float observerGain, int &error);
-    bool SetObserverGainDc(float observerGain);
-    bool SetFilterGainBldcPmsm(float filterGain, int &error);
-    bool SetFilterGainBldcPmsm(float filterGain);
-    bool SetFilterGainBldcPmsmUltrafast(float filterGain, int &error);
-    bool SetFilterGainBldcPmsmUltrafast(float filterGain);
-    bool SetUartBaudrate(UartBaudrate baudrate, int &error);
-    bool SetUartBaudrate(UartBaudrate baudrate);
-    bool SensorCalibration(PositionSensorCalibrationAction calibrationAction, int &error);
-    bool SensorCalibration(PositionSensorCalibrationAction calibrationAction);
-    bool SetEncoderHallCcwOffset(float encoderHallOffset, int &error);
-    bool SetEncoderHallCcwOffset(float encoderHallOffset);
-    bool SetEncoderHallCwOffset(float encoderHallOffset, int &error);
-    bool SetEncoderHallCwOffset(float encoderHallOffset);
-    bool SetSpeedAccelerationValue(float speedAccelerationValue, int &error);
-    bool SetSpeedAccelerationValue(float speedAccelerationValue);
-    bool SetSpeedDecelerationValue(float speedDecelerationValue, int &error);
-    bool SetSpeedDecelerationValue(float speedDecelerationValue);
-    bool SetCanbusBaudrate(CanbusBaudrate canbusBaudrate, int &error);
-    bool SetCanbusBaudrate(CanbusBaudrate canbusBaudrate);
-    bool SetAnalogueSpeedResolutionDivisionCoefficient(long divisionCoefficient, int &error);
-    bool SetAnalogueSpeedResolutionDivisionCoefficient(long divisionCoefficient);
-    bool SetMotionProfileMode(MotionProfileMode motionProfileMode, int &error);
-    bool SetMotionProfileMode(MotionProfileMode motionProfileMode);
-    bool SetMotionProfileVariable1(float MotionProfileVariable1, int &error);
-    bool SetMotionProfileVariable1(float MotionProfileVariable1);
-    bool SetMotionProfileVariable2(float MotionProfileVariable2, int &error);
-    bool SetMotionProfileVariable2(float MotionProfileVariable2);
-    bool SetMotionProfileVariable3(float MotionProfileVariable3, int &error);
-    bool SetMotionProfileVariable3(float MotionProfileVariable3);
-    bool SetMotionProfileVariable4(float MotionProfileVariable4, int &error);
-    bool SetMotionProfileVariable4(float MotionProfileVariable4);
-    bool SetMotionProfileVariable5(float MotionProfileVariable5, int &error);
-    bool SetMotionProfileVariable5(float MotionProfileVariable5);
+    bool SetDeviceAddress(unsigned char deviceAddress, int &error = lastError);
+    bool SetCommandMode(SOLOMotorControllers::CommandMode mode, int &error = lastError);
+    bool SetCurrentLimit(float currentLimit, int &error = lastError);
+    bool SetTorqueReferenceIq(float torqueReferenceIq, int &error = lastError);
+    bool SetSpeedReference(long speedReference, int &error = lastError);
+    bool SetPowerReference(float powerReference, int &error = lastError);
+    bool MotorParametersIdentification(SOLOMotorControllers::Action identification, int &error = lastError);
+    bool EmergencyStop(int &error = lastError);
+    bool SetOutputPwmFrequencyKhz(long outputPwmFrequencyKhz, int &error = lastError);
+    bool SetSpeedControllerKp(float speedControllerKp, int &error = lastError);
+    bool SetSpeedControllerKi(float speedControllerKi, int &error = lastError);
+    bool SetMotorDirection(SOLOMotorControllers::Direction motorDirection, int &error = lastError);
+    bool SetMotorResistance(float motorResistance, int &error = lastError);
+    bool SetMotorInductance(float motorInductance, int &error = lastError);
+    bool SetMotorPolesCounts(long motorPolesCounts, int &error = lastError);
+    bool SetIncrementalEncoderLines(long incrementalEncoderLines, int &error = lastError);
+    bool SetSpeedLimit(long speedLimit, int &error = lastError);
+    bool ResetDeviceAddress(int &error = lastError);
+    bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode mode, int &error = lastError);
+    bool ResetFactory(int &error = lastError);
+    bool SetMotorType(SOLOMotorControllers::MotorType motorType, int &error = lastError);
+    bool SetControlMode(SOLOMotorControllers::ControlMode controlMode, int &error = lastError);
+    bool SetCurrentControllerKp(float currentControllerKp, int &error = lastError);
+    bool SetCurrentControllerKi(float currentControllerKi, int &error = lastError);
+    bool SetMagnetizingCurrentIdReference(float magnetizingCurrentIdReference, int &error = lastError);
+    bool SetPositionReference(long positionReference, int &error = lastError);
+    bool SetPositionControllerKp(float positionControllerKp, int &error = lastError);
+    bool SetPositionControllerKi(float positionControllerKi, int &error = lastError);
+    bool OverwriteErrorRegister(int &error = lastError);
+    bool SetObserverGainBldcPmsm(float observerGain, int &error = lastError);
+    bool SetObserverGainBldcPmsmUltrafast(float observerGain, int &error = lastError);
+    bool SetObserverGainDc(float observerGain, int &error = lastError);
+    bool SetFilterGainBldcPmsm(float filterGain, int &error = lastError);
+    bool SetFilterGainBldcPmsmUltrafast(float filterGain, int &error = lastError);
+    bool SetUartBaudrate(SOLOMotorControllers::UartBaudrate baudrate, int &error = lastError);
+    bool SensorCalibration(SOLOMotorControllers::PositionSensorCalibrationAction calibrationAction, int &error = lastError);
+    bool SetEncoderHallCcwOffset(float encoderHallOffset, int &error = lastError);
+    bool SetEncoderHallCwOffset(float encoderHallOffset, int &error = lastError);
+    bool SetSpeedAccelerationValue(float speedAccelerationValue, int &error = lastError);
+    bool SetSpeedDecelerationValue(float speedDecelerationValue, int &error = lastError);
+    bool SetCanbusBaudrate(SOLOMotorControllers::CanbusBaudrate canbusBaudrate, int &error = lastError);
+    bool SetAnalogueSpeedResolutionDivisionCoefficient(long divisionCoefficient, int &error = lastError);
+    bool SetMotionProfileMode(SOLOMotorControllers::MotionProfileMode motionProfileMode, int &error = lastError);
+    bool SetMotionProfileVariable1(float MotionProfileVariable1, int &error = lastError);
+    bool SetMotionProfileVariable2(float MotionProfileVariable2, int &error = lastError);
+    bool SetMotionProfileVariable3(float MotionProfileVariable3, int &error = lastError);
+    bool SetMotionProfileVariable4(float MotionProfileVariable4, int &error = lastError);
+    bool SetMotionProfileVariable5(float MotionProfileVariable5, int &error = lastError);
+    bool SetDigitalOutput(int pinNumber, SOLOMotorControllers::DigitalStatus digitalStatus, int &error = lastError);
     /**
      * @}
      */
@@ -273,126 +232,68 @@ public:
      * @{
      */
     //----------Read----------
-    long GetDeviceAddress(int &error);
-    long GetDeviceAddress();
-    float GetPhaseAVoltage(int &error);
-    float GetPhaseAVoltage();
-    float GetPhaseBVoltage(int &error);
-    float GetPhaseBVoltage();
-    float GetPhaseACurrent(int &error);
-    float GetPhaseACurrent();
-    float GetPhaseBCurrent(int &error);
-    float GetPhaseBCurrent();
-    float GetBusVoltage(int &error); // Battery Voltage
-    float GetBusVoltage();
-    float GetDcMotorCurrentIm(int &error);
-    float GetDcMotorCurrentIm();
-    float GetDcMotorVoltageVm(int &error);
-    float GetDcMotorVoltageVm();
-    float GetSpeedControllerKp(int &error);
-    float GetSpeedControllerKp();
-    float GetSpeedControllerKi(int &error);
-    float GetSpeedControllerKi();
-    long GetOutputPwmFrequencyKhz(int &error);
-    long GetOutputPwmFrequencyKhz();
-    float GetCurrentLimit(int &error);
-    float GetCurrentLimit();
-    float GetQuadratureCurrentIqFeedback(int &error);
-    float GetQuadratureCurrentIqFeedback();
-    float GetMagnetizingCurrentIdFeedback(int &error); // Magnetizing
-    float GetMagnetizingCurrentIdFeedback();
-    long GetMotorPolesCounts(int &error);
-    long GetMotorPolesCounts();
-    long GetIncrementalEncoderLines(int &error);
-    long GetIncrementalEncoderLines();
-    float GetCurrentControllerKp(int &error);
-    float GetCurrentControllerKp();
-    float GetCurrentControllerKi(int &error);
-    float GetCurrentControllerKi();
-    float GetBoardTemperature(int &error);
-    float GetBoardTemperature();
-    float GetMotorResistance(int &error);
-    float GetMotorResistance();
-    float GetMotorInductance(int &error);
-    float GetMotorInductance();
-    long GetSpeedFeedback(int &error);
-    long GetSpeedFeedback();
-    long GetMotorType(int &error);
-    long GetMotorType();
-    long GetFeedbackControlMode(int &error);
-    long GetFeedbackControlMode();
-    long GetCommandMode(int &error);
-    long GetCommandMode();
-    long GetControlMode(int &error);
-    long GetControlMode();
-    long GetSpeedLimit(int &error);
-    long GetSpeedLimit();
-    float GetPositionControllerKp(int &error);
-    float GetPositionControllerKp();
-    float GetPositionControllerKi(int &error);
-    float GetPositionControllerKi();
-    long GetPositionCountsFeedback(int &error);
-    long GetPositionCountsFeedback();
-    long GetErrorRegister(int &error);
-    long GetErrorRegister();
-    long GetDeviceFirmwareVersion(int &error);
-    long GetDeviceFirmwareVersion();
-    long GetDeviceHardwareVersion(int &error);
-    long GetDeviceHardwareVersion();
-    float GetTorqueReferenceIq(int &error);
-    float GetTorqueReferenceIq();
-    long GetSpeedReference(int &error);
-    long GetSpeedReference();
-    float GetMagnetizingCurrentIdReference(int &error);
-    float GetMagnetizingCurrentIdReference();
-    long GetPositionReference(int &error);
-    long GetPositionReference();
-    float GetPowerReference(int &error);
-    float GetPowerReference();
-    long GetMotorDirection(int &error);
-    long GetMotorDirection();
-    float GetObserverGainBldcPmsm(int &error);
-    float GetObserverGainBldcPmsm();
-    float GetObserverGainBldcPmsmUltrafast(int &error);
-    float GetObserverGainBldcPmsmUltrafast();
-    float GetObserverGainDc(int &error);
-    float GetObserverGainDc();
-    float GetFilterGainBldcPmsm(int &error);
-    float GetFilterGainBldcPmsm();
-    float GetFilterGainBldcPmsmUltrafast(int &error);
-    float GetFilterGainBldcPmsmUltrafast();
-    float Get3PhaseMotorAngle(int &error); // Read Estimated or Measured Rotor Angle
-    float Get3PhaseMotorAngle();
-    float GetEncoderHallCcwOffset(int &error);
-    float GetEncoderHallCcwOffset();
-    float GetEncoderHallCwOffset(int &error);
-    float GetEncoderHallCwOffset();
-    long GetUartBaudrate(int &error);
-    long GetUartBaudrate();
-    float GetSpeedAccelerationValue(int &error);
-    float GetSpeedAccelerationValue();
-    float GetSpeedDecelerationValue(int &error);
-    float GetSpeedDecelerationValue();
-    long GetCanbusBaudrate(int &error);
-    long GetCanbusBaudrate();
-    long GetAnalogueSpeedResolutionDivisionCoefficient(int &error);
-    long GetAnalogueSpeedResolutionDivisionCoefficient();
-    long GetEncoderIndexCounts(int &error);
-    long GetEncoderIndexCounts();
-    bool CommunicationIsWorking(int &error);
-    bool CommunicationIsWorking();
-    long GetMotionProfileMode(int &error);
-    long GetMotionProfileMode();
-    float GetMotionProfileVariable1(int &error);
-    float GetMotionProfileVariable1();
-    float GetMotionProfileVariable2(int &error);
-    float GetMotionProfileVariable2();
-    float GetMotionProfileVariable3(int &error);
-    float GetMotionProfileVariable3();
-    float GetMotionProfileVariable4(int &error);
-    float GetMotionProfileVariable4();
-    float GetMotionProfileVariable5(int &error);
-    float GetMotionProfileVariable5();
+    long GetDeviceAddress(int &error = lastError);
+    float GetPhaseAVoltage(int &error = lastError);
+    float GetPhaseBVoltage(int &error = lastError);
+    float GetPhaseACurrent(int &error = lastError);
+    float GetPhaseBCurrent(int &error = lastError);
+    float GetBusVoltage(int &error = lastError); // Battery Voltage
+    float GetDcMotorCurrentIm(int &error = lastError);
+    float GetDcMotorVoltageVm(int &error = lastError);
+    float GetSpeedControllerKp(int &error = lastError);
+    float GetSpeedControllerKi(int &error = lastError);
+    long GetOutputPwmFrequencyKhz(int &error = lastError);
+    float GetCurrentLimit(int &error = lastError);
+    float GetQuadratureCurrentIqFeedback(int &error = lastError);
+    float GetMagnetizingCurrentIdFeedback(int &error = lastError); // Magnetizing
+    long GetMotorPolesCounts(int &error = lastError);
+    long GetIncrementalEncoderLines(int &error = lastError);
+    float GetCurrentControllerKp(int &error = lastError);
+    float GetCurrentControllerKi(int &error = lastError);
+    float GetBoardTemperature(int &error = lastError);
+    float GetMotorResistance(int &error = lastError);
+    float GetMotorInductance(int &error = lastError);
+    long GetSpeedFeedback(int &error = lastError);
+    long GetMotorType(int &error = lastError);
+    long GetFeedbackControlMode(int &error = lastError);
+    long GetCommandMode(int &error = lastError);
+    long GetControlMode(int &error = lastError);
+    long GetSpeedLimit(int &error = lastError);
+    float GetPositionControllerKp(int &error = lastError);
+    float GetPositionControllerKi(int &error = lastError);
+    long GetPositionCountsFeedback(int &error = lastError);
+    long GetErrorRegister(int &error = lastError);
+    long GetDeviceFirmwareVersion(int &error = lastError);
+    long GetDeviceHardwareVersion(int &error = lastError);
+    float GetTorqueReferenceIq(int &error = lastError);
+    long GetSpeedReference(int &error = lastError);
+    float GetMagnetizingCurrentIdReference(int &error = lastError);
+    long GetPositionReference(int &error = lastError);
+    float GetPowerReference(int &error = lastError);
+    long GetMotorDirection(int &error = lastError);
+    float GetObserverGainBldcPmsm(int &error = lastError);
+    float GetObserverGainBldcPmsmUltrafast(int &error = lastError);
+    float GetObserverGainDc(int &error = lastError);
+    float GetFilterGainBldcPmsm(int &error = lastError);
+    float GetFilterGainBldcPmsmUltrafast(int &error = lastError);
+    float Get3PhaseMotorAngle(int &error = lastError); // Read Estimated or Measured Rotor Angle
+    float GetEncoderHallCcwOffset(int &error = lastError);
+    float GetEncoderHallCwOffset(int &error = lastError);
+    long GetUartBaudrate(int &error = lastError);
+    float GetSpeedAccelerationValue(int &error = lastError);
+    float GetSpeedDecelerationValue(int &error = lastError);
+    long GetCanbusBaudrate(int &error = lastError);
+    long GetAnalogueSpeedResolutionDivisionCoefficient(int &error = lastError);
+    long GetEncoderIndexCounts(int &error = lastError);
+    bool CommunicationIsWorking(int &error = lastError);
+    long GetMotionProfileMode(int &error = lastError);
+    float GetMotionProfileVariable1(int &error = lastError);
+    float GetMotionProfileVariable2(int &error = lastError);
+    float GetMotionProfileVariable3(int &error = lastError);
+    float GetMotionProfileVariable4(int &error = lastError);
+    float GetMotionProfileVariable5(int &error = lastError);
+    float GetPt1000(int &error = lastError);
+    int GetDigitalOutput(int pinNumber, int &error = lastError);
     /**
      * @}
      */

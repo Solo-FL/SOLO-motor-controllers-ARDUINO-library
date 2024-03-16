@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.1.0
+ * @version 5.2.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -67,6 +67,7 @@ public:
         bool SetMotionProfileVariable3InputValidation(float MotionProfileVariable3, int &error);
         bool SetMotionProfileVariable4InputValidation(float MotionProfileVariable4, int &error);
         bool SetMotionProfileVariable5InputValidation(float MotionProfileVariable5, int &error);
+        bool DigitalInputValidation(int pinNumber, int &error);
 };
 
 #endif // SOLO_MOTOR_CONTROLLERS_UTILS_H

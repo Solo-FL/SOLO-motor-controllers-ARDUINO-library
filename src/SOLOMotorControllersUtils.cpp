@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.1.0
+ * @version 5.2.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -428,6 +428,15 @@ bool SOLOMotorControllersUtils::SetMotionProfileVariable4InputValidation(float M
 bool SOLOMotorControllersUtils::SetMotionProfileVariable5InputValidation(float MotionProfileVariable5, int &error)
 {
     if (MotionProfileVariable5 < 0 || MotionProfileVariable5 > 16000)
+    {
+        error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
+        return false;
+    }
+    return true;
+}
+bool SOLOMotorControllersUtils::DigitalInputValidation(int pinNumber, int &error)
+{
+    if (pinNumber < 0 || pinNumber > 2)
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;

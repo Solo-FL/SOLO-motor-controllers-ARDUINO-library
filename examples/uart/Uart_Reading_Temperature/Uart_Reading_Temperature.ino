@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2022
-*    Code version: 4.0.0
+*    Code version: 4.1.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -20,7 +20,7 @@ please visit:  https://www.SOLOMotorControllers.com/
 #include "SOLOMotorControllersUart.h"
 
 // instanciate a SOLO object
-SOLOMotorControllers *SOLO_Obj1;
+SOLOMotorControllersUart *SOLO_Obj1;
 
 float Temperature = 0;
 int error;

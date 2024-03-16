@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2022
-*    Code version: 4.0.2
+*    Code version: 4.1.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM

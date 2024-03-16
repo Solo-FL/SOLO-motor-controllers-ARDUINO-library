@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2022
-*    Code version: 4.0.0
+*    Code version: 4.1.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -15,7 +15,7 @@ please visit:  https://www.SOLOMotorControllers.com/
 
 #include "SOLOMotorControllersCanopen.h"
 
-SOLOMotorControllers *SOLO_Obj1; // instanciate a SOLO object
+SOLOMotorControllersCanopen *SOLO_Obj1; // instanciate a SOLO object
 
 long PWMFrequency_write = 20;   // Desired Switching Frequency at Output
 long NumberOfPoles_write = 4;   // Set the Motor's Number of Poles

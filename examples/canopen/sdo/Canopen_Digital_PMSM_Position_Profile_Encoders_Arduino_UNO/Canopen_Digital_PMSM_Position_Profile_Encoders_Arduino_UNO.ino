@@ -23,7 +23,7 @@
 // to know more please read: https://www.solomotorcontrollers.com/how-to-connect-calibrate-incremental-encoder-with-solo/
 
 // instanciate a SOLO object:
-SOLOMotorControllers *SOLO_Obj1;
+SOLOMotorControllersCanopen *SOLO_Obj1;
 
 // the device address of SOLO:
 unsigned char SOLO_address1 = 0;

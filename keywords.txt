@@ -66,6 +66,7 @@ SetMotionProfileVariable2 KEYWORD2
 SetMotionProfileVariable3 KEYWORD2
 SetMotionProfileVariable4 KEYWORD2
 SetMotionProfileVariable5 KEYWORD2
+SetDigitalOutput KEYWORD2
 
 # Read
 GetDeviceAddress KEYWORD2
@@ -128,6 +129,8 @@ GetMotionProfileVariable2 KEYWORD2
 GetMotionProfileVariable3 KEYWORD2
 GetMotionProfileVariable4 KEYWORD2
 GetMotionProfileVariable5 KEYWORD2
+GetPt1000 KEYWORD2
+GetDigitalOutput KEYWORD2
 
 # CANOPEN
 GetGuardTime KEYWORD2

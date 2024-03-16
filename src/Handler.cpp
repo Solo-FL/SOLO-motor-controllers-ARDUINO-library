@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.1.0
+ * @version 5.2.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -19,20 +19,54 @@
 #define RXFSIDH_BASE 0x00
 #define RXFSIDL_BASE 0x01
 
-volatile uint8_t canIntFlag;
-volatile bool isCanBufEmpty[CAN_BUFF_SIZE] = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+enum class Status { Empty, Locked, Filled };
+volatile uint8_t canBufStaus[CAN_BUFF_SIZE] = {0};
 volatile uint8_t canBuf[CAN_BUFF_SIZE][12];
 volatile uint8_t writeIndex = 0;
 MCP2515 *_MCP2515;
+volatile bool isSpiBusy;
+volatile unsigned char interruptPin;
 void ISR_Handler()
 {
+    if(isSpiBusy == true){
+        return;
+    }
+
+    storeDataFromBuffers(false);
+}
+
+void storeDataFromBuffers(bool checkInterruptPin)
+{ 
+    if(checkInterruptPin && digitalRead(interruptPin) == 1){
+        //Interrupt pin if high meaning no data in the MCP2515
+        //we can fast exit if is high 
+        return;
+    }
+
+    uint8_t canIntReg = _MCP2515->MCP2515_Read_Register(CANINTF);
+    
+    bool isRx0Full  = canIntReg & 0x01;
+    bool isRx1Full  = canIntReg & 0x02;
+    if(isRx0Full){
+        storeDataFromBuffer(BUFFER_0);
+    }
+    if(isRx1Full){
+        storeDataFromBuffer(BUFFER_1);
+    }
+}
+
+void storeDataFromBuffer(MCP2515_RX_BUFFER _RXBn)
+{
     int i;
+    uint8_t empty =static_cast<uint8_t>(Status::Empty);
+
     // find the first possible empty spot
     for (i = 0; i < CAN_BUFF_SIZE; i++)
     {
-        if (isCanBufEmpty[i] == true)
+        //Serial.print(" s: [" + String(i)+ " | " + String(canBufStaus[i]) + "]");
+        if (canBufStaus[i] == empty)
         {
-            isCanBufEmpty[i] = false;
+            canBufStaus[i] = static_cast<uint8_t>(Status::Locked);
             writeIndex = i;
             break;
         }
@@ -50,10 +84,11 @@ void ISR_Handler()
         }
     }
 
-    _MCP2515->MCP2515_Receive_Frame_IT(MCP2515::MCP2515_RX_BUF::RX_BUFFER_1,(uint8_t *) canBuf[writeIndex]);
-
-    canIntFlag = 1;
+    canBufStaus[writeIndex] = static_cast<uint8_t>(Status::Locked);
+    _MCP2515->MCP2515_Receive_Frame_IT(static_cast<MCP2515::MCP2515_RX_BUF>(_RXBn),(uint8_t *) canBuf[writeIndex]);
+    canBufStaus[writeIndex] = static_cast<uint8_t>(Status::Filled);
 }
+
 
 void enableNodeFilter(uint8_t node_number, uint8_t filter_number)
 {
@@ -137,14 +172,3 @@ void removeAllFilters()
     _MCP2515->MCP2515_Set_Mode(MCP2515::MCP2515_MODE::NORMAL_MODE);
 }
 
-bool getCanIntFlag()
-{
-    if (canIntFlag == 0)
-    {
-        return false;
-    }
-    else if (canIntFlag == 1)
-    {
-        return true;
-    }
-}

@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2022
-*    Code version: 4.0.0
+*    Code version: 4.1.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -19,8 +19,8 @@ please visit:  https://www.SOLOMotorControllers.com/
 #include "SOLOMotorControllersCanopen.h"
 
 // instanciate a SOLO object
-SOLOMotorControllers *SOLO_1;
-SOLOMotorControllers *SOLO_2;
+SOLOMotorControllersCanopen *SOLO_1;
+SOLOMotorControllersCanopen *SOLO_2;
 
 // SOLO board Temperature
 float BusVoltage = 0;
@@ -29,7 +29,7 @@ float BusVoltage = 0;
 SOLOMotorControllers::CanbusBaudrate baudrate = SOLOMotorControllers::CanbusBaudrate::RATE_1000;
 
 // Iteration before interrupt the receive from SOLO
-long countTimeout = 6000;
+long millisecondsTimeout = 50;
 
 void setup()
 {
@@ -37,8 +37,8 @@ void setup()
 
   // Initialize the SOLO object
   int chipSelectPin = 9;
-  SOLO_1 = new SOLOMotorControllersCanopen(0, chipSelectPin, baudrate, countTimeout); // Solo with 0 Device Address
-  SOLO_2 = new SOLOMotorControllersCanopen(6, chipSelectPin, baudrate, countTimeout); // Solo with 6 Device Address
+  SOLO_1 = new SOLOMotorControllersCanopen(0, chipSelectPin, baudrate, millisecondsTimeout); // Solo with 0 Device Address
+  SOLO_2 = new SOLOMotorControllersCanopen(6, chipSelectPin, baudrate, millisecondsTimeout); // Solo with 6 Device Address
 }
 
 void loop()

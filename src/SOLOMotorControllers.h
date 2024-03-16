@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.1.0
+ * @version 5.2.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -114,6 +114,16 @@ public:
   };
 
   /**
+  * @brief  Frequency enumeration definition
+  */
+  enum Frequency //[Mbits/s] 16000
+  {
+    RATE_8 = 0, /*!< Baudrate 8 Mbits/s */
+    RATE_16 = 1,  /*!< Baudrate 16 Mbits/s */
+    RATE_20 = 2,  /*!< Baudrate 20 Mbits/s */
+  };
+
+  /**
    * @brief  Action enumeration definition
    */
   enum Action
@@ -142,223 +152,129 @@ public:
     TIME_OPTIMAL_ST_CURVE = 2 /*!< time optimal st curve */
   };
 
+  /**
+   * @brief  Digital Status for Digital PIN (Are different based on the model)
+  */
+  enum DigitalStatus
+  {
+    HIGH_STATUS = 1,   /*!< step ramp service */
+    LOW_STATUS = 0,  /*!< time based st curve */
+  };
+
 public:
   //----------Write----------
   virtual bool SetDeviceAddress(unsigned char deviceAddress, int &error);
-  virtual bool SetDeviceAddress(unsigned char deviceAddress);
   virtual bool SetCommandMode(SOLOMotorControllers::CommandMode mode, int &error);
-  virtual bool SetCommandMode(SOLOMotorControllers::CommandMode mode);
   virtual bool SetCurrentLimit(float currentLimit, int &error);
-  virtual bool SetCurrentLimit(float currentLimit);
   virtual bool SetTorqueReferenceIq(float torqueReferenceIq, int &error);
-  virtual bool SetTorqueReferenceIq(float torqueReferenceIq);
   virtual bool SetSpeedReference(long speedReference, int &error);
-  virtual bool SetSpeedReference(long speedReference);
   virtual bool SetPowerReference(float powerReference, int &error);
-  virtual bool SetPowerReference(float powerReference);
   virtual bool MotorParametersIdentification(SOLOMotorControllers::Action identification, int &error);
-  virtual bool MotorParametersIdentification(SOLOMotorControllers::Action identification);
   virtual bool EmergencyStop(int &error);
-  virtual bool EmergencyStop();
   virtual bool SetOutputPwmFrequencyKhz(long outputPwmFrequencyKhz, int &error);
-  virtual bool SetOutputPwmFrequencyKhz(long outputPwmFrequencyKhz);
   virtual bool SetSpeedControllerKp(float speedControllerKp, int &error);
-  virtual bool SetSpeedControllerKp(float speedControllerKp);
   virtual bool SetSpeedControllerKi(float speedControllerKi, int &error);
-  virtual bool SetSpeedControllerKi(float speedControllerKi);
   virtual bool SetMotorDirection(SOLOMotorControllers::Direction motorDirection, int &error);
-  virtual bool SetMotorDirection(SOLOMotorControllers::Direction motorDirection);
   virtual bool SetMotorResistance(float motorResistance, int &error);
-  virtual bool SetMotorResistance(float motorResistance);
   virtual bool SetMotorInductance(float motorInductance, int &error);
-  virtual bool SetMotorInductance(float motorInductance);
   virtual bool SetMotorPolesCounts(long motorPolesCounts, int &error);
-  virtual bool SetMotorPolesCounts(long motorPolesCounts);
   virtual bool SetIncrementalEncoderLines(long incrementalEncoderLines, int &error);
-  virtual bool SetIncrementalEncoderLines(long incrementalEncoderLines);
   virtual bool SetSpeedLimit(long speedLimit, int &error);
-  virtual bool SetSpeedLimit(long speedLimit);
   virtual bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode mode, int &error);
-  virtual bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode mode);
   virtual bool ResetFactory(int &error);
-  virtual bool ResetFactory();
   virtual bool SetMotorType(SOLOMotorControllers::MotorType motorType, int &error);
-  virtual bool SetMotorType(SOLOMotorControllers::MotorType motorType);
   virtual bool SetControlMode(SOLOMotorControllers::ControlMode controlMode, int &error);
-  virtual bool SetControlMode(SOLOMotorControllers::ControlMode controlMode);
   virtual bool SetCurrentControllerKp(float currentControllerKp, int &error);
-  virtual bool SetCurrentControllerKp(float currentControllerKp);
   virtual bool SetCurrentControllerKi(float currentControllerKi, int &error);
-  virtual bool SetCurrentControllerKi(float currentControllerKi);
   virtual bool SetMagnetizingCurrentIdReference(float magnetizingCurrentIdReference, int &error);
-  virtual bool SetMagnetizingCurrentIdReference(float magnetizingCurrentIdReference);
   virtual bool SetPositionReference(long positionReference, int &error);
-  virtual bool SetPositionReference(long positionReference);
   virtual bool SetPositionControllerKp(float positionControllerKp, int &error);
-  virtual bool SetPositionControllerKp(float positionControllerKp);
   virtual bool SetPositionControllerKi(float positionControllerKi, int &error);
-  virtual bool SetPositionControllerKi(float positionControllerKi);
   virtual bool OverwriteErrorRegister(int &error);
-  virtual bool OverwriteErrorRegister();
   virtual bool SetObserverGainBldcPmsm(float observerGain, int &error);
-  virtual bool SetObserverGainBldcPmsm(float observerGain);
   virtual bool SetObserverGainBldcPmsmUltrafast(float observerGain, int &error);
-  virtual bool SetObserverGainBldcPmsmUltrafast(float observerGain);
   virtual bool SetObserverGainDc(float observerGain, int &error);
-  virtual bool SetObserverGainDc(float observerGain);
   virtual bool SetFilterGainBldcPmsm(float filterGain, int &error);
-  virtual bool SetFilterGainBldcPmsm(float filterGain);
   virtual bool SetFilterGainBldcPmsmUltrafast(float filterGain, int &error);
-  virtual bool SetFilterGainBldcPmsmUltrafast(float filterGain);
   virtual bool SetUartBaudrate(SOLOMotorControllers::UartBaudrate baudrate, int &error);
-  virtual bool SetUartBaudrate(SOLOMotorControllers::UartBaudrate baudrate);
   virtual bool SensorCalibration(SOLOMotorControllers::PositionSensorCalibrationAction calibrationAction, int &error);
-  virtual bool SensorCalibration(SOLOMotorControllers::PositionSensorCalibrationAction calibrationAction);
   virtual bool SetEncoderHallCcwOffset(float encoderHallOffset, int &error);
-  virtual bool SetEncoderHallCcwOffset(float encoderHallOffset);
   virtual bool SetEncoderHallCwOffset(float encoderHallOffset, int &error);
-  virtual bool SetEncoderHallCwOffset(float encoderHallOffset);
   virtual bool SetSpeedAccelerationValue(float speedAccelerationValue, int &error);
-  virtual bool SetSpeedAccelerationValue(float speedAccelerationValue);
   virtual bool SetSpeedDecelerationValue(float speedDecelerationValue, int &error);
-  virtual bool SetSpeedDecelerationValue(float speedDecelerationValue);
   virtual bool SetCanbusBaudrate(SOLOMotorControllers::CanbusBaudrate canbusBaudrate, int &error);
-  virtual bool SetCanbusBaudrate(SOLOMotorControllers::CanbusBaudrate canbusBaudrate);
   virtual bool SetAnalogueSpeedResolutionDivisionCoefficient(long divisionCoefficient, int &error);
-  virtual bool SetAnalogueSpeedResolutionDivisionCoefficient(long divisionCoefficient);
-  virtual bool SetMotionProfileMode(MotionProfileMode motionProfileMode, int &error);
-  virtual bool SetMotionProfileMode(MotionProfileMode motionProfileMode);
+  virtual bool SetMotionProfileMode(SOLOMotorControllers::MotionProfileMode motionProfileMode, int &error);
   virtual bool SetMotionProfileVariable1(float MotionProfileVariable1, int &error);
-  virtual bool SetMotionProfileVariable1(float MotionProfileVariable1);
   virtual bool SetMotionProfileVariable2(float MotionProfileVariable2, int &error);
-  virtual bool SetMotionProfileVariable2(float MotionProfileVariable2);
   virtual bool SetMotionProfileVariable3(float MotionProfileVariable3, int &error);
-  virtual bool SetMotionProfileVariable3(float MotionProfileVariable3);
   virtual bool SetMotionProfileVariable4(float MotionProfileVariable4, int &error);
-  virtual bool SetMotionProfileVariable4(float MotionProfileVariable4);
   virtual bool SetMotionProfileVariable5(float MotionProfileVariable5, int &error);
-  virtual bool SetMotionProfileVariable5(float MotionProfileVariable5);
+  virtual bool SetDigitalOutput(int pinNumber, SOLOMotorControllers::DigitalStatus digitalStatus, int &error);
 
   //----------Read----------
   virtual long GetDeviceAddress(int &error);
-  virtual long GetDeviceAddress();
   virtual float GetPhaseAVoltage(int &error);
-  virtual float GetPhaseAVoltage();
   virtual float GetPhaseBVoltage(int &error);
-  virtual float GetPhaseBVoltage();
   virtual float GetPhaseACurrent(int &error);
-  virtual float GetPhaseACurrent();
   virtual float GetPhaseBCurrent(int &error);
-  virtual float GetPhaseBCurrent();
   virtual float GetBusVoltage(int &error); // Battery Voltage
-  virtual float GetBusVoltage();
   virtual float GetDcMotorCurrentIm(int &error);
-  virtual float GetDcMotorCurrentIm();
   virtual float GetDcMotorVoltageVm(int &error);
-  virtual float GetDcMotorVoltageVm();
   virtual float GetSpeedControllerKp(int &error);
-  virtual float GetSpeedControllerKp();
   virtual float GetSpeedControllerKi(int &error);
-  virtual float GetSpeedControllerKi();
   virtual long GetOutputPwmFrequencyKhz(int &error);
-  virtual long GetOutputPwmFrequencyKhz();
   virtual float GetCurrentLimit(int &error);
-  virtual float GetCurrentLimit();
   virtual float GetQuadratureCurrentIqFeedback(int &error);
-  virtual float GetQuadratureCurrentIqFeedback();
   virtual float GetMagnetizingCurrentIdFeedback(int &error); // Magnetizing
-  virtual float GetMagnetizingCurrentIdFeedback();
   virtual long GetMotorPolesCounts(int &error);
-  virtual long GetMotorPolesCounts();
   virtual long GetIncrementalEncoderLines(int &error);
-  virtual long GetIncrementalEncoderLines();
   virtual float GetCurrentControllerKp(int &error);
-  virtual float GetCurrentControllerKp();
   virtual float GetCurrentControllerKi(int &error);
-  virtual float GetCurrentControllerKi();
   virtual float GetBoardTemperature(int &error);
-  virtual float GetBoardTemperature();
   virtual float GetMotorResistance(int &error);
-  virtual float GetMotorResistance();
   virtual float GetMotorInductance(int &error);
-  virtual float GetMotorInductance();
   virtual long GetSpeedFeedback(int &error);
-  virtual long GetSpeedFeedback();
   virtual long GetMotorType(int &error);
-  virtual long GetMotorType();
   virtual long GetFeedbackControlMode(int &error);
-  virtual long GetFeedbackControlMode();
   virtual long GetCommandMode(int &error);
-  virtual long GetCommandMode();
   virtual long GetControlMode(int &error);
-  virtual long GetControlMode();
   virtual long GetSpeedLimit(int &error);
-  virtual long GetSpeedLimit();
   virtual float GetPositionControllerKp(int &error);
-  virtual float GetPositionControllerKp();
   virtual float GetPositionControllerKi(int &error);
-  virtual float GetPositionControllerKi();
   virtual long GetPositionCountsFeedback(int &error);
-  virtual long GetPositionCountsFeedback();
   virtual long GetErrorRegister(int &error);
-  virtual long GetErrorRegister();
   virtual long GetDeviceFirmwareVersion(int &error);
-  virtual long GetDeviceFirmwareVersion();
   virtual long GetDeviceHardwareVersion(int &error);
-  virtual long GetDeviceHardwareVersion();
   virtual float GetTorqueReferenceIq(int &error);
-  virtual float GetTorqueReferenceIq();
   virtual long GetSpeedReference(int &error);
-  virtual long GetSpeedReference();
   virtual float GetMagnetizingCurrentIdReference(int &error);
-  virtual float GetMagnetizingCurrentIdReference();
   virtual long GetPositionReference(int &error);
-  virtual long GetPositionReference();
   virtual float GetPowerReference(int &error);
-  virtual float GetPowerReference();
   virtual long GetMotorDirection(int &error);
-  virtual long GetMotorDirection();
   virtual float GetObserverGainBldcPmsm(int &error);
-  virtual float GetObserverGainBldcPmsm();
   virtual float GetObserverGainBldcPmsmUltrafast(int &error);
-  virtual float GetObserverGainBldcPmsmUltrafast();
   virtual float GetObserverGainDc(int &error);
-  virtual float GetObserverGainDc();
   virtual float GetFilterGainBldcPmsm(int &error);
-  virtual float GetFilterGainBldcPmsm();
   virtual float GetFilterGainBldcPmsmUltrafast(int &error);
-  virtual float GetFilterGainBldcPmsmUltrafast();
   virtual float Get3PhaseMotorAngle(int &error); // Read Estimated or Measured Rotor Angle
-  virtual float Get3PhaseMotorAngle();
   virtual float GetEncoderHallCcwOffset(int &error);
-  virtual float GetEncoderHallCcwOffset();
   virtual float GetEncoderHallCwOffset(int &error);
-  virtual float GetEncoderHallCwOffset();
   virtual long GetUartBaudrate(int &error);
-  virtual long GetUartBaudrate();
   virtual float GetSpeedAccelerationValue(int &error);
-  virtual float GetSpeedAccelerationValue();
   virtual float GetSpeedDecelerationValue(int &error);
-  virtual float GetSpeedDecelerationValue();
   virtual long GetCanbusBaudrate(int &error);
-  virtual long GetCanbusBaudrate();
   virtual long GetAnalogueSpeedResolutionDivisionCoefficient(int &error);
-  virtual long GetAnalogueSpeedResolutionDivisionCoefficient();
   virtual long GetEncoderIndexCounts(int &error);
-  virtual long GetEncoderIndexCounts();
   virtual bool CommunicationIsWorking(int &error);
-  virtual bool CommunicationIsWorking();
   virtual long GetMotionProfileMode(int &error);
-  virtual long GetMotionProfileMode();
   virtual float GetMotionProfileVariable1(int &error);
-  virtual float GetMotionProfileVariable1();
   virtual float GetMotionProfileVariable2(int &error);
-  virtual float GetMotionProfileVariable2();
   virtual float GetMotionProfileVariable3(int &error);
-  virtual float GetMotionProfileVariable3();
   virtual float GetMotionProfileVariable4(int &error);
-  virtual float GetMotionProfileVariable4();
   virtual float GetMotionProfileVariable5(int &error);
-  virtual float GetMotionProfileVariable5();
+  virtual float GetPt1000(int &error);
+  virtual int GetDigitalOutput(int pinNumber, int &error);
 };
+
 #endif // SOLO_MOTOR_CONTROLLERS_H

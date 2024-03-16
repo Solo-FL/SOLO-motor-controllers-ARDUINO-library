@@ -5,7 +5,7 @@
  *    Title: Torque Control of PMSM equipped with Incremental Encoders using Arduino and SOLO
  *    Author: SOLOMOTORCONTROLLERS
  *    Date: 2024
- *    Code version: 1.0.0
+ *    Code version: 1.1.0
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO
@@ -30,8 +30,8 @@ void setup()
 
   // 1 time needed CONFIGURATION:
   Serial.println("PdoParameterConfig:");
-  PdoParameterConfig config;
-  config.parameterName = PdoParameterName::TORQUE_REFERENCE_IQ;
+  SOLOMotorControllersCanopen::PdoParameterConfig config;
+  config.parameterName = SOLOMotorControllersCanopen::PdoParameterName::TORQUE_REFERENCE_IQ;
   config.parameterCobId = 0x201;
   config.isPdoParameterEnable = true;
   config.isRrtParameterEnable = true;

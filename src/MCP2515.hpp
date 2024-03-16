@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.1.0
+ * @version 5.2.0
  *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -20,6 +20,10 @@
 #include <stdint.h>
 #include "Arduino.h"
 #include "Handler.h"
+#include "SOLOMotorControllersCanopen.h"
+
+#define CAN_BUFF_SIZE 15
+
 
 /** @addtogroup MCP2515_Instructions MCP2515 Instructions
  * @{
@@ -234,7 +238,7 @@
 /** @addtogroup Interrupt_and_Error_Flag_Register_Address  Interrupt and Error Flag Register Address
  * @{
  */
-// Interrupt and Error Flag Register Address                                                          //Bit7    Bit6    Bit5    Bit4    Bit3    Bit2    Bit1    Bit0
+// Interrupt and Error Flag Register Address                                            //Bit7    Bit6    Bit5    Bit4    Bit3    Bit2    Bit1    Bit0
 #define CANINTE 0x2B // CAN Interrupt Enable Register                                    MERRE   WAKIE   ERRIE   TX2IE   TX1IE   TX0IE   RX1IE   RX0IE
 #define CANINTF 0x2C // CAN Interrupt Flag   Register                                    MERRF   WAKIF   ERRIF   TX2IF   TX1IF   TX0IF   RX1IF   RX0IF
 #define EFLG 0x2D    // Error Flag           Register                                    RX1OVR  RX0OVR  TXBO    TXEP    RXEP    TXWAR   RXWAR   EWARN
@@ -343,6 +347,26 @@
 //***** END Registers
 
 //***** BEGIN CONST Values
+// BaudRate Values for 8MHz Frequency
+#define MCP_8MHz_1000kBPS_CFG1 0x00
+#define MCP_8MHz_1000kBPS_CFG2 0x80
+#define MCP_8MHz_1000kBPS_CFG3 0x80
+
+#define MCP_8MHz_500kBPS_CFG1 0x00
+#define MCP_8MHz_500kBPS_CFG2 0x90
+#define MCP_8MHz_500kBPS_CFG3 0x82
+
+#define MCP_8MHz_250kBPS_CFG1 0x00
+#define MCP_8MHz_250kBPS_CFG2 0xB1
+#define MCP_8MHz_250kBPS_CFG3 0x85
+
+#define MCP_8MHz_125kBPS_CFG1 0x01
+#define MCP_8MHz_125kBPS_CFG2 0xB1
+#define MCP_8MHz_125kBPS_CFG3 0x85
+
+#define MCP_8MHz_100kBPS_CFG1 0x01
+#define MCP_8MHz_100kBPS_CFG2 0xB4
+#define MCP_8MHz_100kBPS_CFG3 0x86
 
 // BaudRate Values for 16MHz Frequency
 #define MCP_16MHz_1000kBPS_CFG1 0x00
@@ -369,29 +393,30 @@
 #define MCP_16MHz_100kBPS_CFG2 0xFA
 #define MCP_16MHz_100kBPS_CFG3 0x87
 
-#define MCP_16MHz_80kBPS_CFG1 0x03
-#define MCP_16MHz_80kBPS_CFG2 0xFF
-#define MCP_16MHz_80kBPS_CFG3 0x87
+// BaudRate Values for 20MHz Frequency
+#define MCP_20MHz_1000kBPS_CFG1 0x00
+#define MCP_20MHz_1000kBPS_CFG2 0xD9
+#define MCP_20MHz_1000kBPS_CFG3 0x82
 
-#define MCP_16MHz_50kBPS_CFG1 0x07
-#define MCP_16MHz_50kBPS_CFG2 0xFA
-#define MCP_16MHz_50kBPS_CFG3 0x87
+#define MCP_20MHz_500kBPS_CFG1 0x00
+#define MCP_20MHz_500kBPS_CFG2 0xFA
+#define MCP_20MHz_500kBPS_CFG3 0x87
 
-#define MCP_16MHz_40kBPS_CFG1 0x07
-#define MCP_16MHz_40kBPS_CFG2 0xFF
-#define MCP_16MHz_40kBPS_CFG3 0x87
+#define MCP_20MHz_250kBPS_CFG1 0x41
+#define MCP_20MHz_250kBPS_CFG2 0xFB
+#define MCP_20MHz_250kBPS_CFG3 0x86
 
-#define MCP_16MHz_20kBPS_CFG1 0x0F
-#define MCP_16MHz_20kBPS_CFG2 0xFF
-#define MCP_16MHz_20kBPS_CFG3 0x87
+#define MCP_20MHz_200kBPS_CFG1 0x01
+#define MCP_20MHz_200kBPS_CFG2 0xFF
+#define MCP_20MHz_200kBPS_CFG3 0x87
 
-#define MCP_16MHz_10kBPS_CFG1 0x1F
-#define MCP_16MHz_10kBPS_CFG2 0xFF
-#define MCP_16MHz_10kBPS_CFG3 0x87
+#define MCP_20MHz_125kBPS_CFG1 0x03
+#define MCP_20MHz_125kBPS_CFG2 0xFA
+#define MCP_20MHz_125kBPS_CFG3 0x87
 
-#define MCP_16MHz_5kBPS_CFG1 0x3F
-#define MCP_16MHz_5kBPS_CFG2 0xFF
-#define MCP_16MHz_5kBPS_CFG3 0x87
+#define MCP_20MHz_100kBPS_CFG1 0x04
+#define MCP_20MHz_100kBPS_CFG2 0xFA
+#define MCP_20MHz_100kBPS_CFG3 0x87
 
 // MCP2515 Modes of Operation
 #define MODE_CONFIGURATION 0x80 // Configuration Mode
@@ -407,11 +432,14 @@ class MCP2515
 
 private:
   uint8_t chipSelectPin;
-  long countTimeout;
-
+  SOLOMotorControllers::CanbusBaudrate baudrate;
+  SOLOMotorControllers::Frequency frequency;
+  long millisecondsTimeout;
+  
 public:
   // Constructor
-  MCP2515(uint8_t _chipSelectPin, long _countTimeout);
+  MCP2515(uint8_t _chipSelectPin, SOLOMotorControllers::CanbusBaudrate _baudrate, unsigned char _interruptPin, SOLOMotorControllers::Frequency _frequency, long _millisecondsTimeout);
+  //MCP2515(uint8_t _chipSelectPin, unsigned char _interruptPin, long _frequency,  long _millisecondsTimeout);
 
   enum MCP2515_MODE
   {
@@ -456,10 +484,10 @@ public:
   bool MCP2515_Transmit_Frame(MCP2515_TX_BUF _TXBn, uint16_t _ID, uint8_t _DLC, uint8_t *_Data, int &error);
   void MCP2515_Receive_Frame(MCP2515_RX_BUF _RXBn, uint16_t *_ID, uint8_t *_DLC, uint8_t *_Data);
   void MCP2515_Receive_Frame_IT(MCP2515_RX_BUF _RXBn, uint8_t *_Data);
-  void MCP2515_Set_BaudRate(uint16_t _BaudRate);
+  void MCP2515_Set_BaudRate();
   void MCP2515_Set_ReceiveMask_SID(MCP2515_RX_BUF _RXBn, uint16_t _Mask);
   void MCP2515_Set_ReceiveMask_EID(MCP2515_RX_BUF _RXBn, uint16_t _Mask);
-  void MCP2515_Init(uint16_t baudrate);
+  void MCP2515_Init();
 
   void MCP2515_Clear_TxBuffer_Flag(MCP2515_TX_BUF _TXBn);
   void MCP2515_Clear_RxBuffer_Flag(MCP2515_RX_BUF _RXBn);
@@ -477,8 +505,7 @@ public:
   uint8_t Mcp2515ReadReceiveErrorCounter();
   uint8_t Mcp2515ReadTransmitErrorCounter();
 
-  bool CANOpenTransmit(uint8_t _address, uint16_t _object, uint8_t _subIndex, uint8_t *_informatrionToSend, int &error);
-  bool CANOpenReceive(uint8_t _address, uint16_t _object, uint8_t _subIndex, uint8_t *_informatrionToSend, uint8_t *_informationReceived, int &error);
+  bool CANOpenSdoTransmit(uint8_t _address, bool isSet, uint16_t _object, uint8_t _subIndex, uint8_t *_informatrionToSend, uint8_t *_informationReceived, int &error);
 
   bool SendPdoSync(int &error);
   bool SendPdoRtr(long _address, int &error);

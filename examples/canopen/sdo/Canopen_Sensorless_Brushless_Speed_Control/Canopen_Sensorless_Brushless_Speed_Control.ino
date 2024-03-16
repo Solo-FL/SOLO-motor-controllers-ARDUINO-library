@@ -5,7 +5,7 @@
  *    Title: Controlling the speed of a Brushless Motor using Arduino in Sensorless Mode
  *    Author: SOLOMOTORCONTROLLERS.COM
  *    Date: 2022
- *    Code version: 4.0.0
+ *    Code version: 4.1.0
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO, The Motor used for Testings: teknic m-2310P-LN-04K
@@ -15,7 +15,7 @@
 #include "SOLOMotorControllersCanopen.h"
 
 // instanciate a SOLO object:
-SOLOMotorControllers *SOLO_Obj1;
+SOLOMotorControllersCanopen *SOLO_Obj1;
 
 // the device address of SOLO:
 unsigned char SOLO_address1 = 0;

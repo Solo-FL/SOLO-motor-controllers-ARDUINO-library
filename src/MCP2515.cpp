@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.1.0
+ * @version 5.2.0
  *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -16,22 +16,24 @@
 
 #include <SPI.h>
 #include "MCP2515.hpp"
-#include "SOLOMotorControllersCanopen.h"
 #include "string.h"
 
-#define CAN_INT_PIN 2
-
-extern volatile uint8_t canIntFlag;
+extern volatile bool isSpiBusy;
+extern volatile unsigned char interruptPin;
 extern volatile uint8_t canBuf[CAN_BUFF_SIZE][12];
-extern volatile bool isCanBufEmpty[CAN_BUFF_SIZE]; // init at all as true
+extern volatile uint8_t canBufStaus[CAN_BUFF_SIZE]; // init at all as true
+enum class Status { Empty, Locked, Filled  };
 
 SPISettings spiSettings(8000000, MSBFIRST, SPI_MODE0);
 
-MCP2515::MCP2515(uint8_t _chipSelectPin, long _countTimeout)
+MCP2515::MCP2515(uint8_t _chipSelectPin, SOLOMotorControllers::CanbusBaudrate _baudrate, unsigned char _interruptPin, SOLOMotorControllers::Frequency _frequency, long _millisecondsTimeout)
 {
     chipSelectPin = _chipSelectPin;
-    countTimeout = _countTimeout;
-    attachInterrupt(digitalPinToInterrupt(CAN_INT_PIN), ISR_Handler, FALLING); // start interrupt
+    baudrate = _baudrate;
+    interruptPin = _interruptPin;
+    frequency = _frequency;
+    millisecondsTimeout = _millisecondsTimeout;
+    attachInterrupt(digitalPinToInterrupt(_interruptPin), ISR_Handler, FALLING); // start interrupt
 }
 
 void MCP2515::StartSPI()
@@ -116,6 +118,8 @@ void MCP2515::MCP2515_Set_Mode(MCP2515_MODE _Mode)
 
 bool MCP2515::MCP2515_Transmit_Frame(MCP2515_TX_BUF _TXBn, uint16_t _ID, uint8_t _DLC, uint8_t *_Data, int &error)
 {
+    isSpiBusy = true;
+    storeDataFromBuffers();
 
     uint16_t i = 0;
     uint8_t ID_High, ID_Low;
@@ -185,13 +189,15 @@ bool MCP2515::MCP2515_Transmit_Frame(MCP2515_TX_BUF _TXBn, uint16_t _ID, uint8_t
     SPI.transfer(RTS_BUF_Number);
     EndSPI();
 
-    // Check TimeOut
-    i = 0;
+
+    unsigned long startTime = millis();
+    unsigned long actualTime;
     while (MCP2515_Read_Register(TXB0CTRL) & (1 << 3)) // Check TXB0REQ bit
     {
-        i++;
-        if (i > countTimeout)
+        actualTime = millis();
+        if (actualTime-startTime > 20 || actualTime < startTime)
         {
+            //Serial.println("MCP2515_Transmit_Frame TIMOUT");
             if (MCP2515_Read_Register(TXB0CTRL) & (1 << 4)) // Transmission Error Detected - TXERR bit
             {
                 error = SOLOMotorControllers::Error::MCP2515_TRANSMIT_ERROR;
@@ -200,102 +206,37 @@ bool MCP2515::MCP2515_Transmit_Frame(MCP2515_TX_BUF _TXBn, uint16_t _ID, uint8_t
             {
                 error = SOLOMotorControllers::Error::MCP2515_TRANSMIT_ARBITRATION_LOST;
             }
+            isSpiBusy = false;
             return false;
         }
     }
+    isSpiBusy = false;
     return true;
 }
 
-bool MCP2515::CANOpenTransmit(uint8_t _address, uint16_t _object, uint8_t _subIndex, uint8_t *_informatrionToSend, int &error)
+bool MCP2515::CANOpenSdoTransmit(uint8_t _address, bool isSet, uint16_t _object, uint8_t _subIndex, uint8_t *_informatrionToSend, uint8_t *_informationReceived, int &error)
 {
-    uint16_t ID_Read;
-    uint16_t ID_High, ID_Low;
-    uint8_t DLC_Read;
-    uint8_t DataRead[8] = {0, 0, 0, 0, 0, 0, 0, 0};
-    uint32_t counter = 0;
-    uint8_t Data[8] = {
-        0x22,                    // Data 0 - SDO Write Request
-        (uint8_t)(_object),      // Data 1 - Object Index(LSB)
-        (uint8_t)(_object >> 8), // Data 2 - Object Index(MSB)
-        _subIndex,               // Data 3 - SubIndex
-        _informatrionToSend[3],  // Data 4 - LSB First Data
-        _informatrionToSend[2],  // Data 5
-        _informatrionToSend[1],  // Data 6
-        _informatrionToSend[0]   // Data 7
-    };
-    canIntFlag = 0;
-    if (!MCP2515_Transmit_Frame(TX_BUFFER_0, (0x600 + _address), 0x08, Data, error)) // 0x08 is Data Length(DLC)
-    {
-        return false;
-    }
-
-    // check if data received before
-    for (int i = 0; i < CAN_BUFF_SIZE; i++)
-    {
-        if (isCanBufEmpty[i] == true)
-        {
-            continue;
-        }
-
-        ID_High = canBuf[i][0];
-        ID_Low = canBuf[i][1];
-        ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
-        if ((ID_Read == (uint16_t)(0x580 + _address))        // Check COB-ID
-            && (canBuf[i][2] == 0x60)                        // Check Byte1
-            && (canBuf[i][3] == (uint8_t)(_object))          // Check Object Index(LSB)
-            && (canBuf[i][4] == (uint8_t)(_object >> 8)))    // Check Object Index(MSB)
-        {
-            isCanBufEmpty[i] = true;
-            error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
-            return true;
-        }
-    }
-    // Check TimeOut
-    while (getCanIntFlag() == false)
-    {
-        counter++;
-        if (counter > countTimeout)
-        {
-            error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
-            return false;
-        }
-    }
-
-    // check if data receiving now
-    for (int i = 0; i < CAN_BUFF_SIZE; i++)
-    {
-        if (isCanBufEmpty[i] == true)
-        {
-            continue;
-        }
-
-        ID_High = canBuf[i][0];
-        ID_Low = canBuf[i][1];
-        ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
-        if ((ID_Read == (uint16_t)(0x580 + _address))        // Check COB-ID
-            && (canBuf[i][3] == 0x60)                        // Check Byte1
-            && (canBuf[i][4] == (uint8_t)(_object))          // Check Object Index(LSB)
-            && (canBuf[i][5] == (uint8_t)(_object >> 8)))    // Check Object Index(MSB)
-        {
-            isCanBufEmpty[i] = true;
-            error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
-            return true;
-        }
-    }
-    error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
-    return false;
-}
-
-bool MCP2515::CANOpenReceive(uint8_t _address, uint16_t _object, uint8_t _subIndex, uint8_t *_informatrionToSend, uint8_t *_informationReceived, int &error)
-{
+    uint8_t sendData1;
+    uint8_t receiveData1;
     uint16_t ID_Read;
     uint16_t ID_High, ID_Low;
     uint8_t DLC_Read;
     uint8_t DataRead[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     uint32_t counter = 0;
 
+    //TO MUCH
+    //MCP2515_Write_Register(CANINTF, 0x00); // clear all interrupt flags
+
+    if(isSet){
+        sendData1 = 0x22;
+        receiveData1 = 0x60;
+    }else{
+        sendData1 = 0x40;
+        receiveData1 = 0x42;
+    }
+
     uint8_t Data[8] = {
-        0x40,                    // Data 0 - SDO Write Request
+        sendData1,               // Data 0 - SDO Write Request
         (uint8_t)(_object),      // Data 1 - Object Index(LSB)
         (uint8_t)(_object >> 8), // Data 2 - Object Index(MSB)
         _subIndex,               // Data 3 - SubIndex
@@ -305,150 +246,187 @@ bool MCP2515::CANOpenReceive(uint8_t _address, uint16_t _object, uint8_t _subInd
         _informatrionToSend[0]   // Data 7
     };
 
-    canIntFlag = 0;
     if (!MCP2515_Transmit_Frame(TX_BUFFER_0, (0x600 + _address), 0x08, Data, error)) // 0x08 is Data Length(DLC)
     {
+        //Serial.println("SEND ERROR");
         return false;
     }
 
+    uint8_t filled =static_cast<uint8_t>(Status::Filled);
+
     // check if data received before
-    for (int i = 0; i < CAN_BUFF_SIZE; i++)
+    unsigned long startTime = millis();
+    unsigned long actualTime;
+    do
     {
-        if (isCanBufEmpty[i] == true)
+        isSpiBusy = true;
+        storeDataFromBuffers();
+        isSpiBusy = false;
+        for (int i = 0; i < CAN_BUFF_SIZE; i++)
         {
-            continue;
-        }
+            //Serial.print(" LOOPED: [" + String(i)+ " | " + String(canBufStaus[i]) + "]");
+            if (canBufStaus[i] != filled)
+            {
+                continue;
+            }
 
-        ID_High = canBuf[i][0];
-        ID_Low = canBuf[i][1];
-        ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
-        if ((ID_Read == (uint16_t)(0x580 + _address))        // Check COB-ID
-            && (canBuf[i][3] == (uint8_t)(_object))          // Check Object Index(LSB)
-            && (canBuf[i][4] == (uint8_t)(_object >> 8)))    // Check Object Index(MSB)
-        {
-            _informationReceived[0] = canBuf[i][10];
-            _informationReceived[1] = canBuf[i][9];
-            _informationReceived[2] = canBuf[i][8];
-            _informationReceived[3] = canBuf[i][7];
-            isCanBufEmpty[i] = true;
-            error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
-            return true;
-        }
-    }
-    // Check TimeOut
-    while (getCanIntFlag() == false)
-    {
-        counter++;
-        if (counter > countTimeout)
-        {
-            error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
-            return false;
-        }
-    }
+            canBufStaus[i] = static_cast<uint8_t>(Status::Locked);
 
-    // check if data receiving now
-    for (int i = 0; i < CAN_BUFF_SIZE; i++)
-    {
-        if (isCanBufEmpty[i] == true)
-        {
-            continue;
-        }
+            ID_High = canBuf[i][0];
+            ID_Low = canBuf[i][1];
+            ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
+            
 
-        ID_High = canBuf[i][0];
-        ID_Low = canBuf[i][1];
-        ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
-        if ((ID_Read == (uint16_t)(0x580 + _address))        // Check COB-ID
-            && (canBuf[i][4] == (uint8_t)(_object))          // Check Object Index(LSB)
-            && (canBuf[i][5] == (uint8_t)(_object >> 8)))    // Check Object Index(MSB)
-        {
-            _informationReceived[0] = canBuf[i][10];
-            _informationReceived[1] = canBuf[i][9];
-            _informationReceived[2] = canBuf[i][8];
-            _informationReceived[3] = canBuf[i][7];
-            isCanBufEmpty[i] = true;
-            error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
-            return true;
+            if ((ID_Read == (uint16_t)(0x580 + _address))        // Check COB-ID
+                && (canBuf[i][3] == receiveData1)                // Check Byte1
+                && (canBuf[i][4] == (uint8_t)(_object))          // Check Object Index(LSB)
+                && (canBuf[i][5] == (uint8_t)(_object >> 8)))    // Check Object Index(MSB)
+            {
+                _informationReceived[0] = canBuf[i][10];
+                _informationReceived[1] = canBuf[i][9];
+                _informationReceived[2] = canBuf[i][8];
+                _informationReceived[3] = canBuf[i][7];
+                canBufStaus[i] = static_cast<uint8_t>(Status::Empty);
+                
+                // Serial.print(" READ ");
+                // //Serial.print(ID_Read == (uint16_t)(0x580 + _address));
+                // char tmp2[16];
+                // for (int r=0; r<=10; r++) {
+                // sprintf(tmp2, "0x%.2X",canBuf[i][r]);
+                // Serial.print(tmp2); Serial.print(" ");
+                // }
+                // Serial.println("");
+                
+                
+                //Serial.print(" READED: [" + String(i)+ " | " + String(canBufStaus[i]) + "]");
+                error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
+                return true;
+            }
+            canBufStaus[i] = static_cast<uint8_t>(Status::Filled);
         }
-    }
-
+        actualTime = millis();
+    }while(actualTime-startTime < millisecondsTimeout && actualTime >= startTime);
+    //Serial.print("RECEIVE_TIMEOUT_ERROR");
     error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
     return false;
 }
 
-void MCP2515::MCP2515_Set_BaudRate(uint16_t _BaudRate)
+void MCP2515::MCP2515_Set_BaudRate()
 {
-
     //_BuadRate is Kbps
     uint8_t CNF1_Value = 0x00;
     uint8_t CNF2_Value = 0x00;
     uint8_t CNF3_Value = 0x00;
 
-    switch (_BaudRate)
+    switch(frequency)
     {
-    case 1000:
-        CNF1_Value = MCP_16MHz_1000kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_1000kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_1000kBPS_CFG3;
-        break;
-    case 500:
-        CNF1_Value = MCP_16MHz_500kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_500kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_500kBPS_CFG3;
-        break;
-    case 250:
-        CNF1_Value = MCP_16MHz_250kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_250kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_250kBPS_CFG3;
-        break;
-    case 200:
-        CNF1_Value = MCP_16MHz_200kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_200kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_200kBPS_CFG3;
-        break;
-    case 125:
-        CNF1_Value = MCP_16MHz_125kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_125kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_125kBPS_CFG3;
-        break;
-    case 100:
-        CNF1_Value = MCP_16MHz_100kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_100kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_100kBPS_CFG3;
-        break;
-    case 80:
-        CNF1_Value = MCP_16MHz_80kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_80kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_80kBPS_CFG3;
-        break;
-    case 50:
-        CNF1_Value = MCP_16MHz_50kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_50kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_50kBPS_CFG3;
-        break;
-    case 40:
-        CNF1_Value = MCP_16MHz_40kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_40kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_40kBPS_CFG3;
-        break;
-    case 20:
-        CNF1_Value = MCP_16MHz_20kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_20kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_20kBPS_CFG3;
-        break;
-    case 10:
-        CNF1_Value = MCP_16MHz_10kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_10kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_10kBPS_CFG3;
-        break;
-    case 5:
-        CNF1_Value = MCP_16MHz_5kBPS_CFG1;
-        CNF2_Value = MCP_16MHz_5kBPS_CFG2;
-        CNF3_Value = MCP_16MHz_5kBPS_CFG3;
-        break;
-
-    default:
-        break;
-    }
+        case SOLOMotorControllers::Frequency::RATE_8:
+            switch (baudrate)
+            {
+                case SOLOMotorControllers::CanbusBaudrate::RATE_1000:
+                    CNF1_Value = MCP_8MHz_1000kBPS_CFG1;
+                    CNF2_Value = MCP_8MHz_1000kBPS_CFG2;
+                    CNF3_Value = MCP_8MHz_1000kBPS_CFG3;
+                    break;           
+                case SOLOMotorControllers::CanbusBaudrate::RATE_500:            
+                    CNF1_Value = MCP_8MHz_500kBPS_CFG1;
+                    CNF2_Value = MCP_8MHz_500kBPS_CFG2;
+                    CNF3_Value = MCP_8MHz_500kBPS_CFG3;
+                    break;           
+                case SOLOMotorControllers::CanbusBaudrate::RATE_250:            
+                    CNF1_Value = MCP_8MHz_250kBPS_CFG1;
+                    CNF2_Value = MCP_8MHz_250kBPS_CFG2;
+                    CNF3_Value = MCP_8MHz_250kBPS_CFG3;
+                    break;                    
+                case SOLOMotorControllers::CanbusBaudrate::RATE_125:            
+                    CNF1_Value = MCP_8MHz_125kBPS_CFG1;
+                    CNF2_Value = MCP_8MHz_125kBPS_CFG2;
+                    CNF3_Value = MCP_8MHz_125kBPS_CFG3;
+                    break;           
+                case SOLOMotorControllers::CanbusBaudrate::RATE_100:            
+                    CNF1_Value = MCP_8MHz_100kBPS_CFG1;
+                    CNF2_Value = MCP_8MHz_100kBPS_CFG2;
+                    CNF3_Value = MCP_8MHz_100kBPS_CFG3;
+                    break;           
+                default:
+                    CNF1_Value = MCP_8MHz_1000kBPS_CFG1;
+                    CNF2_Value = MCP_8MHz_1000kBPS_CFG2;
+                    CNF3_Value = MCP_8MHz_1000kBPS_CFG3;
+                    break;
+            }
+            break;
+        case SOLOMotorControllers::Frequency::RATE_20:
+            switch (baudrate)
+            {
+                case SOLOMotorControllers::CanbusBaudrate::RATE_1000:
+                    CNF1_Value = MCP_20MHz_1000kBPS_CFG1;
+                    CNF2_Value = MCP_20MHz_1000kBPS_CFG2;
+                    CNF3_Value = MCP_20MHz_1000kBPS_CFG3;
+                    break;           
+                case SOLOMotorControllers::CanbusBaudrate::RATE_500:            
+                    CNF1_Value = MCP_20MHz_500kBPS_CFG1;
+                    CNF2_Value = MCP_20MHz_500kBPS_CFG2;
+                    CNF3_Value = MCP_20MHz_500kBPS_CFG3;
+                    break;           
+                case SOLOMotorControllers::CanbusBaudrate::RATE_250:            
+                    CNF1_Value = MCP_20MHz_250kBPS_CFG1;
+                    CNF2_Value = MCP_20MHz_250kBPS_CFG2;
+                    CNF3_Value = MCP_20MHz_250kBPS_CFG3;
+                    break;                     
+                case SOLOMotorControllers::CanbusBaudrate::RATE_125:            
+                    CNF1_Value = MCP_20MHz_125kBPS_CFG1;
+                    CNF2_Value = MCP_20MHz_125kBPS_CFG2;
+                    CNF3_Value = MCP_20MHz_125kBPS_CFG3;
+                    break;           
+                case SOLOMotorControllers::CanbusBaudrate::RATE_100:            
+                    CNF1_Value = MCP_20MHz_100kBPS_CFG1;
+                    CNF2_Value = MCP_20MHz_100kBPS_CFG2;
+                    CNF3_Value = MCP_20MHz_100kBPS_CFG3;
+                    break;              
+                default:
+                    CNF1_Value = MCP_20MHz_1000kBPS_CFG1;
+                    CNF2_Value = MCP_20MHz_1000kBPS_CFG2;
+                    CNF3_Value = MCP_20MHz_1000kBPS_CFG3;
+                    break;
+            }
+            break;
+        case SOLOMotorControllers::Frequency::RATE_16:
+        default:
+            switch (baudrate)
+            {
+                case SOLOMotorControllers::CanbusBaudrate::RATE_1000:
+                    CNF1_Value = MCP_16MHz_1000kBPS_CFG1;
+                    CNF2_Value = MCP_16MHz_1000kBPS_CFG2;
+                    CNF3_Value = MCP_16MHz_1000kBPS_CFG3;
+                    break;
+                case SOLOMotorControllers::CanbusBaudrate::RATE_500:
+                    CNF1_Value = MCP_16MHz_500kBPS_CFG1;
+                    CNF2_Value = MCP_16MHz_500kBPS_CFG2;
+                    CNF3_Value = MCP_16MHz_500kBPS_CFG3;
+                    break;
+                case SOLOMotorControllers::CanbusBaudrate::RATE_250:
+                    CNF1_Value = MCP_16MHz_250kBPS_CFG1;
+                    CNF2_Value = MCP_16MHz_250kBPS_CFG2;
+                    CNF3_Value = MCP_16MHz_250kBPS_CFG3;
+                    break;
+                case SOLOMotorControllers::CanbusBaudrate::RATE_125:
+                    CNF1_Value = MCP_16MHz_125kBPS_CFG1;
+                    CNF2_Value = MCP_16MHz_125kBPS_CFG2;
+                    CNF3_Value = MCP_16MHz_125kBPS_CFG3;
+                    break;
+                case SOLOMotorControllers::CanbusBaudrate::RATE_100:
+                    CNF1_Value = MCP_16MHz_100kBPS_CFG1;
+                    CNF2_Value = MCP_16MHz_100kBPS_CFG2;
+                    CNF3_Value = MCP_16MHz_100kBPS_CFG3;
+                    break;
+                default:
+                    CNF1_Value = MCP_16MHz_1000kBPS_CFG1;
+                    CNF2_Value = MCP_16MHz_1000kBPS_CFG2;
+                    CNF3_Value = MCP_16MHz_1000kBPS_CFG3;
+                    break;
+            }
+            break;
+    }    
 
     MCP2515_Write_Register(CNF1, CNF1_Value);
     MCP2515_Write_Register(CNF2, CNF2_Value);
@@ -502,22 +480,20 @@ uint8_t MCP2515::MCP2515_Read_RX_Status()
     return (Value);
 }
 
-void MCP2515::MCP2515_Init(uint16_t baudrate)
+void MCP2515::MCP2515_Init()
 {
-
     pinMode(chipSelectPin, OUTPUT);
 
     // SPI Initialize
     SPI.begin();
 
-
     MCP2515_Reset();
     MCP2515_Set_Mode(MCP2515_MODE::CONFIGURATION_MODE);
-    MCP2515_Set_BaudRate(baudrate); // Kbps
+    MCP2515_Set_BaudRate();
 
     // enable RXbuf0 filters with 0 to don't receive enything
-    MCP2515_Write_Register(RXM0SIDH, 0xFF); // Mask0 byte 0
-    MCP2515_Write_Register(RXM0SIDL, 0xFF); // Mask0 Byte 1
+    MCP2515_Write_Register(RXM0SIDH, 0x00); // Mask0 byte 0
+    MCP2515_Write_Register(RXM0SIDL, 0x00); // Mask0 Byte 1
     MCP2515_Write_Register(RXF0SIDH, 0x00);
     MCP2515_Write_Register(RXF0SIDL, 0x00);
     MCP2515_Write_Register(RXF1SIDH, 0x00);
@@ -538,7 +514,7 @@ void MCP2515::MCP2515_Init(uint16_t baudrate)
     MCP2515_Enable_Rollover();
     MCP2515_Write_Register(CANINTF, 0x00); // clear all interrupt flags
     MCP2515_Write_Register(CANINTE, 0x03);
-    MCP2515_Enable_MaskFilter(RX_BUFFER_0);
+    MCP2515_Disable_MaskFilter(RX_BUFFER_0);
     MCP2515_Disable_MaskFilter(RX_BUFFER_1);
 }
 
@@ -586,7 +562,6 @@ void MCP2515::MCP2515_Receive_Frame(MCP2515_RX_BUF _RXBn, uint16_t *_ID, uint8_t
 
 void MCP2515::MCP2515_Receive_Frame_IT(MCP2515_RX_BUF _RXBn, uint8_t *_Data)
 {
-
     uint8_t i, len;
     uint8_t RX_BUF_Number = 0x00;
     uint16_t ID, ID_High, ID_Low;
@@ -793,67 +768,41 @@ bool MCP2515::PDOReceive(long _address, uint8_t *_informationReceived, int &erro
     uint8_t rcvMsg[4] = {0, 0, 0, 0};
     uint32_t counter = 0;
     uint16_t addr = (uint16_t)_address;
-    // Check message
-    canIntFlag = 0;
-    // check if data received before
-    for (int i = 0; i < CAN_BUFF_SIZE; i++)
+    uint8_t filled =static_cast<uint8_t>(Status::Filled);
+    
+    unsigned long startTime = millis();
+    unsigned long actualTime;
+    do
     {
-        if (isCanBufEmpty[i] == true)
+        isSpiBusy = true;
+        storeDataFromBuffers();
+        isSpiBusy = false;
+        for (int i = 0; i < CAN_BUFF_SIZE; i++)
         {
-            continue;
-        }
+            if (canBufStaus[i] != filled)
+            {
+                continue;
+            }
 
-        dlc = canBuf[i][2];
-        ;
-        ID_High = canBuf[i][0];
-        ID_Low = canBuf[i][1];
-        ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
-        if (ID_Read == _address && dlc == 4)
-        {
-            _informationReceived[0] = canBuf[i][6];
-            _informationReceived[1] = canBuf[i][5];
-            _informationReceived[2] = canBuf[i][4];
-            _informationReceived[3] = canBuf[i][3];
-            isCanBufEmpty[i] = true;
-            error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
-            return true;
+            canBufStaus[i] = static_cast<uint8_t>(Status::Locked);
+            dlc = canBuf[i][2];
+            ID_High = canBuf[i][0];
+            ID_Low = canBuf[i][1];
+            ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
+            if (ID_Read == _address && dlc == 4)
+            {
+                _informationReceived[0] = canBuf[i][6];
+                _informationReceived[1] = canBuf[i][5];
+                _informationReceived[2] = canBuf[i][4];
+                _informationReceived[3] = canBuf[i][3];
+                canBufStaus[i] = static_cast<uint8_t>(Status::Empty);
+                error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
+                return true;
+            }
+            canBufStaus[i] = static_cast<uint8_t>(Status::Filled);
         }
-    }
-
-    // Check TimeOut
-    while (getCanIntFlag() == false)
-    {
-        counter++;
-        if (counter > countTimeout)
-        {
-            error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
-            return false;
-        }
-    }
-
-    // check if data receiving now
-    for (int i = 0; i < CAN_BUFF_SIZE; i++)
-    {
-        if (isCanBufEmpty[i] == true)
-        {
-            continue;
-        }
-
-        dlc = canBuf[i][2];
-        ID_High = canBuf[i][0];
-        ID_Low = canBuf[i][1];
-        ID_Read = ((ID_High << 3) | ((ID_Low & 0xE0) >> 5)); // Repack ID
-        if (ID_Read == _address && dlc == 4)
-        {
-            _informationReceived[0] = canBuf[i][6];
-            _informationReceived[1] = canBuf[i][5];
-            _informationReceived[2] = canBuf[i][4];
-            _informationReceived[3] = canBuf[i][3];
-            isCanBufEmpty[i] = true;
-            error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
-            return true;
-        }
-    }
+        actualTime = millis();
+    }while(actualTime-startTime < millisecondsTimeout && actualTime >= startTime);
 
     error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
     return false;
@@ -869,13 +818,13 @@ bool MCP2515::PDOTransmit(long _address, uint8_t *_informatrionToSend, int &erro
         _informatrionToSend[1], // Data 6
         _informatrionToSend[0]  // Data 7
     };
-
+    
     stat = MCP2515_Transmit_Frame(TX_BUFFER_0, _address, 4, msg, error);
     if (stat != true)
     {
         // std::cout << " - not canOK "<<stat<<"\n";
         error = SOLOMotorControllers::Error::GENERAL_ERROR;
-        return false;
+                return false;
     }
     // std::cout << "SendPSendPdoSyncdoSync - OK "<<stat<<"\n";
     return true;
@@ -883,7 +832,7 @@ bool MCP2515::PDOTransmit(long _address, uint8_t *_informatrionToSend, int &erro
 bool MCP2515::SendPdoSync(int &error)
 {
     bool stat;
-
+    
     stat = MCP2515_Transmit_Frame(TX_BUFFER_0, 128, 0, NULL, error);
     if (stat != true)
     {
@@ -892,19 +841,20 @@ bool MCP2515::SendPdoSync(int &error)
         return false;
     }
     // std::cout << "SendPdoSync - OK "<<stat<<"\n";
+    error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
     return true;
 }
 
 bool MCP2515::SendPdoRtr(long _address, int &error)
 {
     bool stat;
-
+    
     stat = MCP2515_Transmit_Frame(TX_BUFFER_0, _address, 0, NULL, error);
     if (stat != true)
     {
         // std::cout << "SendPdoSync - not canOK "<<stat<<"\n";
         error = SOLOMotorControllers::Error::GENERAL_ERROR;
-        return false;
+                return false;
     }
     // std::cout << "SendPdoSync - OK "<<stat<<"\n";
     return true;
