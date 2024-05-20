@@ -1,14 +1,22 @@
 |License|
 
-*******
-SOLO Motor Controller ARDUINO Library
-*******
+======================================
+SOLO Motor Controller ARDUINO library
+======================================
 
-SOLO Motor Controller's ARDUINO Library that can be used with Arduino Family of devices though UART or CANbus to Set or Read all the parameters that are stored or existing in command set of SOLO, for more information on that please visit the  `SOLO Website, <https://www.solomotorcontrollers.com/>`_ the `Code Documentation <https://www.solomotorcontrollers.com/documentation/SOLO_Arduino_Library/index.html>`_  or the `Hello-World Library Tutorial <https://www.solomotorcontrollers.com/blog/arduino-library-hello-world/>`_.
+
+# SOLO Motor Controller ARDUINO Library 
+
+
+SOLO Motor Controller's ARDUINO Library that can be used with Arduino Family of devices though UART or CANopen to Set or Read all the parameters that are stored or existing in command set of SOLO, for more information on that please visit the  `SOLO Website, <https://www.solomotorcontrollers.com/>`_ the `Code Documentation <https://www.solomotorcontrollers.com/documentation/SOLO_Arduino_Library/index.html>`_  or the `Hello-World Library Tutorial <https://www.solomotorcontrollers.com/blog/arduino-library-hello-world/>`_.
+
 - SOLOMotorControllersUart class let you use the UART protocol
-- SOLOMotorControllersCanopenMcp2515 class let you use the CANOpen protocol with CAN shields
-- SOLOMotorControllersCanopenNative class let you use the CANOpen protocol with native CAN if supported by specific Arduino Solutions.
-NOTE: SOLOMotorControllersCanopenNative is under beta and new release will improve the user experience of it
+
+- SOLOMotorControllersCanopenMcp2515 class let you use the CANopen protocol with CAN shields
+
+- SOLOMotorControllersCanopenNative* class let you use the CANopen protocol with native CAN if supported by specific Arduino Solutions.
+
+* SOLOMotorControllersCanopenNative is currently in beta. The new release will improve usability.
 
 Authors
 =======
