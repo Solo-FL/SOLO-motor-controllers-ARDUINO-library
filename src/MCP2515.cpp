@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.2.0
+ * @version 5.3.0
  *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -14,8 +14,8 @@
  *******************************************************************************
  */
 
-#include <SPI.h>
 #include "MCP2515.hpp"
+#include <SPI.h>
 #include "string.h"
 
 extern volatile bool isSpiBusy;
@@ -480,7 +480,7 @@ uint8_t MCP2515::MCP2515_Read_RX_Status()
     return (Value);
 }
 
-void MCP2515::MCP2515_Init()
+void MCP2515::Init()
 {
     pinMode(chipSelectPin, OUTPUT);
 

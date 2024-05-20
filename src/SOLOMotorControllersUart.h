@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.2.0
+ * @version 5.3.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -23,10 +23,8 @@
 #include <HardwareSerial.h>
 #include "Arduino.h"
 
-/** @defgroup UART_Commands UART Commands
- * @brief All uart command hex code
- * @{
- */
+// UART_Commands UART Commands
+// All uart command hex code
 #define ReadData 0x00  // 0x00000000
 #define INITIATOR 0xFF // 0xFFFF
 #define BroadcastAddress 0xFF
@@ -144,9 +142,7 @@
 #define ReadMotionProfileVariable5 0xC0
 #define ReadPt1000 0xC3
 #define ReadDigitalOutput 0xC4
-/**
- * @}
- */
+
 
 /**
  * @brief a class for handle uart communication

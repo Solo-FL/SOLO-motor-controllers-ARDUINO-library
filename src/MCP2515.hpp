@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.2.0
+ * @version 5.3.0
  *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -17,10 +17,10 @@
 #ifndef MCP2515_H
 #define MCP2515_H
 
-#include <stdint.h>
+#include "Interface.hpp"
 #include "Arduino.h"
+#include "SOLOMotorControllersCanopenMcp2515.h"
 #include "Handler.h"
-#include "SOLOMotorControllersCanopen.h"
 
 #define CAN_BUFF_SIZE 15
 
@@ -427,7 +427,7 @@
 
 //***** END CONST Values
 
-class MCP2515
+class MCP2515 : public Interface
 {
 
 private:
@@ -487,7 +487,7 @@ public:
   void MCP2515_Set_BaudRate();
   void MCP2515_Set_ReceiveMask_SID(MCP2515_RX_BUF _RXBn, uint16_t _Mask);
   void MCP2515_Set_ReceiveMask_EID(MCP2515_RX_BUF _RXBn, uint16_t _Mask);
-  void MCP2515_Init();
+  void Init();
 
   void MCP2515_Clear_TxBuffer_Flag(MCP2515_TX_BUF _TXBn);
   void MCP2515_Clear_RxBuffer_Flag(MCP2515_RX_BUF _RXBn);

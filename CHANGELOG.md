@@ -1,6 +1,22 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [5.3.0] - 2024-05-18
+### Added
+- Add Native support over Can Native (TX RX) of Arduino (SOLOMotorControllersCanopenNative class)
+- Add examples
+
+### Changed
+- Renamed SOLOMotorControllersCanopen files to SOLOMotorControllersCanopenMcp2515
+- Improved CANopen resource management and performance
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
 ## [5.2.0] - 2024-03-16
 ### Added
 - New function for PT100 and Digital-Pin Set/Get
@@ -17,7 +33,6 @@ All notable changes to this project will be documented in this file.
 - Reduced library src size by 25% 
 
 ### Fixed
-
 
 ## [5.1.0] - 2024-02-12
 ### Added

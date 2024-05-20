@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.2.0
+ * @version 5.3.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -157,8 +157,8 @@ public:
   */
   enum DigitalStatus
   {
-    HIGH_STATUS = 1,   /*!< step ramp service */
-    LOW_STATUS = 0,  /*!< time based st curve */
+    HIGH_STATUS = 1,   /*!< high status */
+    LOW_STATUS = 0,  /*!< low status */
   };
 
 public:

@@ -2,11 +2,11 @@
  *******************************************************************************
  * @file    Handler.h
  * @authors SOLO Motor Controllers
- * @brief   This file contains all the functions interrupt based for CANopen
+ * @brief   This file contains all the functions interrupt based for CANopen MCP2515
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.2.0
+ * @version 5.3.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -18,7 +18,6 @@
 #define HANDLER_H
 
 #include "MCP2515.hpp"
-#include "SOLOMotorControllersCanopen.h"
 
 #define CAN_BUFF_SIZE 15
 

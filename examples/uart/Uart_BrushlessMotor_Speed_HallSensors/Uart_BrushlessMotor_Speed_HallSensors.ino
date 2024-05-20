@@ -4,8 +4,8 @@
 /*
  *    Title: Speed Control of a Brushless Motor with Arduino and SOLO using HALL sensors
  *    Author: SOLOMOTORCONTROLLERS
- *    Date: 2022
- *    Code version: 4.1.0
+ *    Date: 2024
+ *    Code version: 5.3.0
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO
