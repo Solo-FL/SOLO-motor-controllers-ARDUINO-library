@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.0
+ * @version 5.3.1
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -16,6 +16,7 @@
  */
 
 #ifndef SOLO_MOTOR_CONTROLLERS_CANOPEN_NATIVE_H
+#ifdef ARDUINO_CAN_NATIVE_SUPPORTED
 #define SOLO_MOTOR_CONTROLLERS_CANOPEN_NATIVE_H
 
 #include "SOLOMotorControllersCanopen.h"
@@ -209,5 +210,5 @@ public:
 /**
  * @}
  */
-
+#endif //ARDUINO_CAN_NATIVE_SUPPORTED
 #endif // SOLO_MOTOR_CONTROLLERS_CANOPEN_NATIVE_H

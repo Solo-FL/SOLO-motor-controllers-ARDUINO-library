@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2024
-*    Code version: 5.3.0
+*    Code version: 5.3.1
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -13,6 +13,7 @@ please visit:  https://www.SOLOMotorControllers.com/
 
 */
 
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 
 SOLOMotorControllersCanopenNative *SOLO_Obj1; // instanciate a SOLO object

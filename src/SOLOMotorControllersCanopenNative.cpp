@@ -7,14 +7,14 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.0
+ * @version 5.3.1
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
  * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
  *******************************************************************************
  */
-
+#ifdef ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 #include <stdint.h>
 
@@ -2722,3 +2722,4 @@ int SOLOMotorControllersCanopenNative::GetDigitalOutput(int pinNumber, int &erro
   uint8_t mask = 1 << pinNumber;
   return (informationReceived & mask) != 0;
 }
+#endif //ARDUINO_CAN_NATIVE_SUPPORTED

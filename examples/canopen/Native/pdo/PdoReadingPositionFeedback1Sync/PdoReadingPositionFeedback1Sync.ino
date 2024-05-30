@@ -5,13 +5,14 @@
  *    Title: Torque Control of PMSM equipped with Incremental Encoders using Arduino and SOLO
  *    Author: SOLOMOTORCONTROLLERS
  *    Date: 2024
- *    Code version: 5.3.0
+ *    Code version: 5.3.1
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO
  *    The Motor used for Testings: teknic m-2310P-LN-04K
  */
 
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include <SOLOMotorControllersCanopenNative.h>
 SOLOMotorControllersCanopenNative *solo;
 

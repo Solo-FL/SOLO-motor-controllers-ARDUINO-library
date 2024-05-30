@@ -5,7 +5,7 @@
  *    Title: Position Control of a BLDC-PMSM Motor with Arduino and SOLO
  *    Author: SOLOMOTORCONTROLLERS
  *    Date: 2024
- *    Code version: 5.3.0
+ *    Code version: 5.3.1
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO
@@ -13,6 +13,7 @@
  *    Read more about this code here:https://www.solomotorcontrollers.com/position-control-brushless-arduino-and-solo/
  */
 
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 
 // For this Test, make sure you have calibrated your Encoder before

@@ -5,7 +5,7 @@
      Title: Position Control of a BLDC-PMSM Motor with Arduino and SOLO - Position Profile
      Author: SOLOMOTORCONTROLLERS
      Date: 2024
-     Code version: 5.3.0
+     Code version: 5.3.1
      Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
      Totorial article at: https://www.solomotorcontrollers.com/blog/canopen-brushless-motor-position-profile-controlling-arduino/
 
@@ -15,6 +15,7 @@
      Read more about this code here:https://www.solomotorcontrollers.com/position-control-brushless-arduino-and-solo/
 */
 
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 #define PI 3.1415926535897932384626433832795
 #define sgn(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0))

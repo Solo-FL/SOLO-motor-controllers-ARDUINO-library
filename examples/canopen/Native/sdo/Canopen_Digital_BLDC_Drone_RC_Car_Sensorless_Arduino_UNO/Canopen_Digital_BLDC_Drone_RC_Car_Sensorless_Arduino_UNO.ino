@@ -5,13 +5,14 @@
  *    Title: How to Drive Fast Drone or RC car Brushless Motors using ARDUINO and SOLO in Sensoless Mode
  *    Author: SOLOMOTORCONTROLLERS
  *    Date: 2024
- *    Code version: 5.3.0
+ *    Code version: 5.3.1
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO, The Motor used for Testings: 4150KV, 4x4 SCT 550
  *    Read more about this code here:https://www.solomotorcontrollers.com/drive-fast-drone-rc-car-brushless-motors-arduino-solo-sensorless
  */
 
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 
 // instanciate a SOLO object:

@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.3.1] - 2024-05-30
+### Added
+- for CANopen native code usage added ARDUINO_CAN_NATIVE_SUPPORTED 
+
+### Changed
+- example name for CANopen native general read and write
+- example code for CANopen native library import
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- CAN back-compability over older arduino version
+
 ## [5.3.0] - 2024-05-18
 ### Added
 - Add Native support over Can Native (TX RX) of Arduino (SOLOMotorControllersCanopenNative class)

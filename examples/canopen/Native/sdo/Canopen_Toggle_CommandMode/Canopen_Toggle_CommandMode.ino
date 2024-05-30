@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2024
-*    Code version: 5.3.0
+*    Code version: 5.3.1
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -16,6 +16,7 @@ please visit:  https://www.SOLOMotorControllers.com/
 // In this example we want:
 //     STEP 1: to print the command mode of SOLO and the error status of the reading operation
 //     STEP 2: if we read the command mode without error we want to change the command mode of SOLO.
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 
 SOLOMotorControllersCanopenNative *solo;

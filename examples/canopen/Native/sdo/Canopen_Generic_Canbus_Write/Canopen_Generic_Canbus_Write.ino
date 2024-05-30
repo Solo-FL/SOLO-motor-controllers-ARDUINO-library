@@ -5,7 +5,7 @@
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
 *    Date: 2024
-*    Code version: 5.3.0
+*    Code version: 5.3.1
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -13,11 +13,12 @@ please visit:  https://www.SOLOMotorControllers.com/
 
 */
 
-// EXAMPLE of how to WRITE a Generic message on CANBus using SOLO CAN library for MCP2515
+// EXAMPLE of how to WRITE a Generic message on CANBus using SOLO CAN library
 // In this Example, the line is read continously and ID, DCL and all the  data bytes recieved are printed
 // The user can use this example to work with other CAN MODULES in the Line except SOLO
 
 // Importing SOLO Arduino library
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 
 // instanciate a SOLO object as Canopen IMPORTANT

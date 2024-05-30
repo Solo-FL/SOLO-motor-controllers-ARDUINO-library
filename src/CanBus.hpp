@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.0
+ * @version 5.3.1
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -15,6 +15,7 @@
  */
 
 #ifndef CANBUS_H
+#ifdef ARDUINO_CAN_NATIVE_SUPPORTED
 #define CANBUS_H
 
 #include "Interface.hpp"
@@ -33,4 +34,5 @@ public:
     bool PDOReceive(long _address, uint8_t *_informationReceived, int &error);
     void storeCanMessages();
 };
+#endif //ARDUINO_CAN_NATIVE_SUPPORTED
 #endif //CANBUS_H

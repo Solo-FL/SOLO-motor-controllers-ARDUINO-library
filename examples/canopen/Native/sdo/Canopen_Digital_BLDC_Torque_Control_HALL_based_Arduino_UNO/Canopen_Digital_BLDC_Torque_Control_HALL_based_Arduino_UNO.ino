@@ -5,13 +5,14 @@
  *    Title: Torque Control of BLDC equipped with HALL snesors using Arduino and SOLO
  *    Author: SOLOMOTORCONTROLLERS
  *    Date: 2024
- *    Code version: 5.3.0
+ *    Code version: 5.3.1
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino MEGA
  *    The Motor used for Testings: DB56C036030-A
  */
 
+#define ARDUINO_CAN_NATIVE_SUPPORTED
 #include "SOLOMotorControllersCanopenNative.h"
 
 // For this Test, make sure you have calibrated your Motor and Hall sensors before
