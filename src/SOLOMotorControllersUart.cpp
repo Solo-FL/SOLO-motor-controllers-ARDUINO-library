@@ -7,18 +7,18 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.0
+ * @version 5.4.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
- * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+ * MIT License (see LICENSE file for more details)
  *******************************************************************************
  */
 
 #include "SOLOMotorControllersUart.h"
 #include <stdint.h>
 
-int SOLOMotorControllersUart::lastError=0;
+int SOLOMotorControllersUart::lastError = 0;
 // -------------------- constructor & destructor --------------------
 SOLOMotorControllersUart::SOLOMotorControllersUart(unsigned char _deviceAddress, HardwareSerial &_serial, SOLOMotorControllers::UartBaudrate _baudrate, long _millisecondsTimeout, int _packetFailureTrialAttempts)
     : addr(_deviceAddress), serialToUse(&_serial), millisecondsTimeout(_millisecondsTimeout), packetFailureTrialAttempts(_packetFailureTrialAttempts)
@@ -35,13 +35,14 @@ SOLOMotorControllersUart::SOLOMotorControllersUart(unsigned char _deviceAddress,
     baudrate = 115200;
     break;
   }
-  
-  //Some Arduino (UNO WIFI R4, MINIMA) have Tx0 and Tx1 at Serial1 not Serial
-  #if defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) // For LEONARDO: || defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__)
-    if(_serial == Serial){
-      serialToUse=&Serial1;
-    }
-  #endif
+
+// Some Arduino (UNO WIFI R4, MINIMA) have Tx0 and Tx1 at Serial1 not Serial
+#if defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) // For LEONARDO: || defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__)
+  if (_serial == Serial)
+  {
+    serialToUse = &Serial1;
+  }
+#endif
 
   serialToUse->begin(baudrate);
   serialToUse->setTimeout(millisecondsTimeout);
@@ -173,7 +174,7 @@ bool SOLOMotorControllersUart::SetDeviceAddress(unsigned char deviceAddress, int
     return false;
   }
 
-  unsigned char cmd[] = {addr, WriteDeviceAddres, 0x00, 0x00, 0x00, deviceAddress};
+  unsigned char cmd[] = {addr, WRITE_DEVICE_ADDRESS, 0x00, 0x00, 0x00, deviceAddress};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -189,7 +190,7 @@ bool SOLOMotorControllersUart::SetCommandMode(SOLOMotorControllers::CommandMode 
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
-  unsigned char cmd[] = {addr, WriteCommandMode, 0x00, 0x00, 0x00, mode};
+  unsigned char cmd[] = {addr, WRITE_COMMAND_MODE, 0x00, 0x00, 0x00, (unsigned char)mode};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -211,7 +212,7 @@ bool SOLOMotorControllersUart::SetCurrentLimit(float currentLimit, int &error)
   unsigned char data[4];
   soloUtils->ConvertToData(currentLimit, data);
 
-  unsigned char cmd[] = {addr, WriteCurrentLimit, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_CURRENT_LIMIT, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -233,7 +234,7 @@ bool SOLOMotorControllersUart::SetTorqueReferenceIq(float torqueReferenceIq, int
   unsigned char data[4];
   soloUtils->ConvertToData(torqueReferenceIq, data);
 
-  unsigned char cmd[] = {addr, WriteTorqueReferenceIq, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_TORQUE_REFERENCE_IQ, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -255,7 +256,7 @@ bool SOLOMotorControllersUart::SetSpeedReference(long speedReference, int &error
   unsigned char data[4];
   soloUtils->ConvertToData(speedReference, data);
 
-  unsigned char cmd[] = {addr, WriteSpeedReference, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_SPEED_REFERENCE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -278,7 +279,7 @@ bool SOLOMotorControllersUart::SetPowerReference(float powerReference, int &erro
   unsigned char data[4];
   soloUtils->ConvertToData(powerReference, data);
 
-  unsigned char cmd[] = {addr, WritePowerReference, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_POWER_REFERENCE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -294,22 +295,24 @@ bool SOLOMotorControllersUart::MotorParametersIdentification(SOLOMotorController
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
-  unsigned char cmd[] = {addr, WriteMotorParametersIdentification, 0x00, 0x00, 0x00, identification};
+  unsigned char cmd[] = {addr, WRITE_MOTOR_PARAMETERS_IDENTIFICATION, 0x00, 0x00, 0x00, (unsigned char)identification};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
 /**
-  * @brief  This command if the DATA is set at zero will stop the whole power and switching system
-            connected to the motor and it will cut the current floating into the Motor from SOLO
-              .The method refers to the Uart Write command: 0x08
-  * @param[out] error   optional pointer to an integer that specify result of function
-  * @retval bool 0 fail / 1 for success
-  */
-bool SOLOMotorControllersUart::EmergencyStop(int &error)
+ * @brief  This command Disables or Enables the Controller resulting in deactivation or activation of the
+ *           switching at the output, by disabling the drive, the effect of the Controller on the Motor will be
+ *            almost eliminated ( except for body diodes of the Mosfets) allowing freewheeling
+ *           .The method refers to the Uart Write command: 0x08
+ * @param[in]  action  enum that specify Disable or Enable of something in SOLO
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval bool 0 fail / 1 for success
+ */
+bool SOLOMotorControllersUart::SetDriveDisableEnable(SOLOMotorControllers::DisableEnable action, int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, WRITE_DRIVE_DISABLE_ENABLE, 0x00, 0x00, 0x00, (unsigned char)action};
 
-  unsigned char cmd[] = {addr, WriteEmergencyStop, 0x00, 0x00, 0x00, 0x00};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -331,7 +334,7 @@ bool SOLOMotorControllersUart::SetOutputPwmFrequencyKhz(long outputPwmFrequencyK
   unsigned char data[4];
   soloUtils->ConvertToData(outputPwmFrequencyKhz, data);
 
-  unsigned char cmd[] = {addr, WriteOutputPwmFrequencyKhz, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_OUTPUT_PWM_FREQUENCY_KHZ, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -354,7 +357,7 @@ bool SOLOMotorControllersUart::SetSpeedControllerKp(float speedControllerKp, int
   unsigned char data[4];
   soloUtils->ConvertToData(speedControllerKp, data);
 
-  unsigned char cmd[] = {addr, WriteSpeedControllerKp, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_SPEED_CONTROLLER_KP, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -377,7 +380,7 @@ bool SOLOMotorControllersUart::SetSpeedControllerKi(float speedControllerKi, int
   unsigned char data[4];
   soloUtils->ConvertToData(speedControllerKi, data);
 
-  unsigned char cmd[] = {addr, WriteSpeedControllerKi, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_SPEED_CONTROLLER_KI, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -393,7 +396,7 @@ bool SOLOMotorControllersUart::SetMotorDirection(SOLOMotorControllers::Direction
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
-  unsigned char cmd[] = {addr, WriteMotorDirection, 0x00, 0x00, 0x00, motorDirection};
+  unsigned char cmd[] = {addr, WRITE_MOTOR_DIRECTION, 0x00, 0x00, 0x00, (unsigned char)motorDirection};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -416,7 +419,7 @@ bool SOLOMotorControllersUart::SetMotorResistance(float motorResistance, int &er
   unsigned char data[4];
   soloUtils->ConvertToData(motorResistance, data);
 
-  unsigned char cmd[] = {addr, WriteMotorResistance, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTOR_RESISTANCE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -439,7 +442,7 @@ bool SOLOMotorControllersUart::SetMotorInductance(float motorInductance, int &er
   unsigned char data[4];
   soloUtils->ConvertToData(motorInductance, data);
 
-  unsigned char cmd[] = {addr, WriteMotorInductance, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTOR_INDUCTANCE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -461,7 +464,7 @@ bool SOLOMotorControllersUart::SetMotorPolesCounts(long motorPolesCounts, int &e
   unsigned char data[4];
   soloUtils->ConvertToData(motorPolesCounts, data);
 
-  unsigned char cmd[] = {addr, WriteMotorPolesCounts, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTOR_POLES_COUNTS, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -484,7 +487,7 @@ bool SOLOMotorControllersUart::SetIncrementalEncoderLines(long incrementalEncode
   unsigned char data[4];
   soloUtils->ConvertToData(incrementalEncoderLines, data);
 
-  unsigned char cmd[] = {addr, WriteIncrementalEncoderLines, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_INCREMENTAL_ENCODER_LINES, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -507,21 +510,7 @@ bool SOLOMotorControllersUart::SetSpeedLimit(long speedLimit, int &error)
   unsigned char data[4];
   soloUtils->ConvertToData(speedLimit, data);
 
-  unsigned char cmd[] = {addr, WriteSpeedLimit, data[0], data[1], data[2], data[3]};
-  return SOLOMotorControllersUart::ExeCMD(cmd, error);
-}
-
-/**
- * @brief  This command resets the device address of any connected SOLO to zero
- *           .The method refers to the Uart Write command: 0x12
- * @param[out] error   optional pointer to an integer that specify result of function
- * @retval bool 0 fail / 1 for success
- */
-bool SOLOMotorControllersUart::ResetDeviceAddress(int &error)
-{
-  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-
-  unsigned char cmd[] = {0xFF, WriteDeviceAddres, 0x00, 0x00, 0x00, 0xFF};
+  unsigned char cmd[] = {addr, WRITE_SPEED_LIMIT, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -532,14 +521,14 @@ bool SOLOMotorControllersUart::ResetDeviceAddress(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
-bool SOLOMotorControllersUart::SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode mode, int &error)
+bool SOLOMotorControllersUart::SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode feedbackControlMode, int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
   unsigned char data[4];
-  soloUtils->ConvertToData((long)mode, data);
+  soloUtils->ConvertToData((long)feedbackControlMode, data);
 
-  unsigned char cmd[] = {addr, WriteFeedbackControlMode, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_FEEDBACK_CONTROL_MODE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -553,7 +542,7 @@ bool SOLOMotorControllersUart::ResetFactory(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
-  unsigned char cmd[] = {addr, WriteResetFactory, 0x00, 0x00, 0x00, 0x01};
+  unsigned char cmd[] = {addr, WRITE_RESET_FACTORY, 0x00, 0x00, 0x00, 0x01};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -571,7 +560,7 @@ bool SOLOMotorControllersUart::SetMotorType(SOLOMotorControllers::MotorType moto
   unsigned char data[4];
   soloUtils->ConvertToData((long)motorType, data);
 
-  unsigned char cmd[] = {addr, WriteMotorType, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTOR_TYPE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -591,7 +580,7 @@ bool SOLOMotorControllersUart::SetControlMode(SOLOMotorControllers::ControlMode 
   unsigned char data[4];
   soloUtils->ConvertToData((long)controlMode, data);
 
-  unsigned char cmd[] = {addr, WriteControlMode, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_CONTROL_MODE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -613,7 +602,7 @@ bool SOLOMotorControllersUart::SetCurrentControllerKp(float currentControllerKp,
   unsigned char data[4];
   soloUtils->ConvertToData(currentControllerKp, data);
 
-  unsigned char cmd[] = {addr, WriteCurrentControllerKp, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_CURRENT_CONTROLLER_KP, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -635,7 +624,7 @@ bool SOLOMotorControllersUart::SetCurrentControllerKi(float currentControllerKi,
   unsigned char data[4];
   soloUtils->ConvertToData(currentControllerKi, data);
 
-  unsigned char cmd[] = {addr, WriteCurrentControllerKi, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_CURRENT_CONTROLLER_KI, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -660,7 +649,7 @@ bool SOLOMotorControllersUart::SetMagnetizingCurrentIdReference(float magnetizin
   unsigned char data[4];
   soloUtils->ConvertToData(magnetizingCurrentIdReference, data);
 
-  unsigned char cmd[] = {addr, WriteMagnetizingCurrentIdReference, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MAGNETIZING_CURRENT_ID_REFERENCE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -684,7 +673,7 @@ bool SOLOMotorControllersUart::SetPositionReference(long positionReference, int 
   unsigned char data[4];
   soloUtils->ConvertToData(positionReference, data);
 
-  unsigned char cmd[] = {addr, WritePositionReference, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_POSITION_REFERENCE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -706,7 +695,7 @@ bool SOLOMotorControllersUart::SetPositionControllerKp(float positionControllerK
   unsigned char data[4];
   soloUtils->ConvertToData(positionControllerKp, data);
 
-  unsigned char cmd[] = {addr, WritePositionControllerKp, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_POSITION_CONTROLLER_KP, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -728,7 +717,7 @@ bool SOLOMotorControllersUart::SetPositionControllerKi(float positionControllerK
   unsigned char data[4];
   soloUtils->ConvertToData(positionControllerKi, data);
 
-  unsigned char cmd[] = {addr, WritePositionControllerKi, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_POSITION_CONTROLLER_KI, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -743,56 +732,54 @@ bool SOLOMotorControllersUart::OverwriteErrorRegister(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
-  unsigned char cmd[] = {addr, WriteOverwriteErrorRegister, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, WRITE_OVERWRITE_ERROR_REGISTER, 0x00, 0x00, 0x00, 0x00};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
 /**
- * @brief  This command sets the observer gain for the Non-linear observer
- *         that estimates the speed and angle of a BLDC or PMSM once the
- *         motor type is selected as normal BLDC-PMSM
+ * @brief  Once in Zero Speed Full Torque algorithm (ZSFT) for controlling the speed of a BLDC or PMSM
+ *            in sensorless fashion, this parameter defines the strength of signal injection into the motor, the
+ *            user has to make sure this value is not selected too high or too low
  *           .The method refers to the Uart Write command: 0x21
- * @param[in] observerGain  a float value between 0.01 to 1000
- * @param[out] error   optional pointer to an integer that specify result of function
+ * @param[in]  amplitude  a float value between 0.0 to 0.55
+ * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
-// SOG => Sensorless Observer Gain
-bool SOLOMotorControllersUart::SetObserverGainBldcPmsm(float observerGain, int &error)
+bool SOLOMotorControllersUart::SetZsftInjectionAmplitude(float zsftInjectionAmplitude, int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  if (!soloUtils->SetObserverGainBldcPmsmInputValidation(observerGain, error))
+  if (!soloUtils->SetZsftInjectionAmplitudeValidation(zsftInjectionAmplitude, error))
   {
     return false;
   }
 
   unsigned char data[4];
-  soloUtils->ConvertToData(observerGain, data);
-
-  unsigned char cmd[] = {addr, WriteObserverGainBldcPmsm, data[0], data[1], data[2], data[3]};
+  soloUtils->ConvertToData(zsftInjectionAmplitude, data);
+  unsigned char cmd[] = {addr, WRITE_ZSFT_INJECTION_AMPLITUDE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
 /**
- * @brief  This command sets the observer gain for the Non-linear observer that
- *         estimates the speed and angle of a BLDC or PMSM once the motor type
- *         is selected as ultra-fast BLDC-PMSM
+ * @brief  Once in Zero Speed Full Torque algorithm (ZSFT) for controlling the speed of a BLDC or PMSM
+ *             in sensorless fashion, this parameter defines the strength of signal injection into the motor to
+ *            identify the polarity of the Motor at the startup
  *           .The method refers to the Uart Write command: 0x22
- * @param[in] observerGain  a float value between 0.01 to 1000
- * @param[out] error   optional pointer to an integer that specify result of function
+ * @param[in]  amplitude  a float value between 0.0 to 0.55
+ * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
-bool SOLOMotorControllersUart::SetObserverGainBldcPmsmUltrafast(float observerGain, int &error)
+bool SOLOMotorControllersUart::SetZsftPolarityAmplitude(float zsftPolarityAmplitude, int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  if (!soloUtils->SetObserverGainBldcPmsmUltrafastInputValidation(observerGain, error))
+  if (!soloUtils->SetZsftPolarityAmplitudeValidation(zsftPolarityAmplitude, error))
   {
     return false;
   }
 
   unsigned char data[4];
-  soloUtils->ConvertToData(observerGain, data);
+  soloUtils->ConvertToData(zsftPolarityAmplitude, data);
+  unsigned char cmd[] = {addr, WRITE_ZSFT_POLARITY_AMPLITUDE, data[0], data[1], data[2], data[3]};
 
-  unsigned char cmd[] = {addr, WriteObserverGainBldcPmsmUltrafast, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -816,54 +803,54 @@ bool SOLOMotorControllersUart::SetObserverGainDc(float observerGain, int &error)
   unsigned char data[4];
   soloUtils->ConvertToData(observerGain, data);
 
-  unsigned char cmd[] = {addr, WriteObserverGainDc, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_OBSERVER_GAIN_DC, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
 /**
- * @brief  This command sets how fast the observer should operate once
- *         SOLO is in sensorless mode with normal BLDC-PMSM selected as the Motor type
+  * @brief This command defines the frequency of signal injection into the Motor in
+        runtime, by selecting zero the full injection frequency will be applied which allows to reach to
+        higher speeds, however for some motors, it’s better to increase this value
  *           .The method refers to the Uart Write command: 0x24
- * @param[in] filterGain  a float value between 0.01 to 16000
- * @param[out] error   optional pointer to an integer that specify result of function
+  * @param[in]  frequency  a long value between 0 to 10
+  * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
-// SOFG => Sensorless Observer Filter Gain
-bool SOLOMotorControllersUart::SetFilterGainBldcPmsm(float filterGain, int &error)
+bool SOLOMotorControllersUart::SetZsftInjectionFrequency(long zsftInjectionFrequency, int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  if (!soloUtils->SetFilterGainBldcPmsmInputValidation(filterGain, error))
+  if (!soloUtils->SetZsftInjectionFrequencyInputValidation(zsftInjectionFrequency, error))
   {
     return false;
   }
 
   unsigned char data[4];
-  soloUtils->ConvertToData(filterGain, data);
+  soloUtils->ConvertToData(zsftInjectionFrequency, data);
+  unsigned char cmd[] = {addr, WRITE_ZSFT_INJECTION_FREQUENCY, data[0], data[1], data[2], data[3]};
 
-  unsigned char cmd[] = {addr, WriteFilterGainBldcPmsm, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
 /**
- * @brief  This command sets how fast the observer should operate once SOLO
- *         is in sensorless mode with ultra-fast BLDC-PMSM selected as the Motor type
+ * @brief  Once in Sensorless speed or torque controlling of a BLDC or PMSM motors, this parameter
+ *				defines the speed in which the Low speed algorithm has to switch to high speed algorithm
  *           .The method refers to the Uart Write command: 0x25
- * @param[in] filterGain  a float value between 0.01 to 16000
- * @param[out] error   optional pointer to an integer that specify result of function
+ * @param[in]  speed  a long value between 1 to 5000
+ * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
-bool SOLOMotorControllersUart::SetFilterGainBldcPmsmUltrafast(float filterGain, int &error)
+bool SOLOMotorControllersUart::SetSensorlessTransitionSpeed(long sensorlessTransitionSpeed, int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  if (!soloUtils->SetFilterGainBldcPmsmUltrafastInputValidation(filterGain, error))
+  if (!soloUtils->SetSensorlessTransitionSpeedInputValidation(sensorlessTransitionSpeed, error))
   {
     return false;
   }
 
   unsigned char data[4];
-  soloUtils->ConvertToData(filterGain, data);
+  soloUtils->ConvertToData(sensorlessTransitionSpeed, data);
+  unsigned char cmd[] = {addr, WRITE_SENSORLESS_TRANSITION_SPEED, data[0], data[1], data[2], data[3]};
 
-  unsigned char cmd[] = {addr, WriteFilterGainBldcPmsmUltrafast, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -881,7 +868,7 @@ bool SOLOMotorControllersUart::SetUartBaudrate(SOLOMotorControllers::UartBaudrat
   unsigned char data[4];
   soloUtils->ConvertToData((long)baudrate, data);
 
-  unsigned char cmd[] = {addr, WriteUartBaudrate, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_UART_BAUDRATE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -899,7 +886,7 @@ bool SOLOMotorControllersUart::SensorCalibration(SOLOMotorControllers::PositionS
   unsigned char data[4];
   soloUtils->ConvertToData((long)calibrationAction, data);
 
-  unsigned char cmd[] = {addr, WriteSensorCalibration, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_SENSOR_CALIBRATION, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -922,7 +909,7 @@ bool SOLOMotorControllersUart::SetEncoderHallCcwOffset(float encoderHallOffset, 
   unsigned char data[4];
   soloUtils->ConvertToData(encoderHallOffset, data);
 
-  unsigned char cmd[] = {addr, WriteEncoderHallCcwOffset, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_ENCODER_HALL_CCW_OFFSET, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -945,7 +932,7 @@ bool SOLOMotorControllersUart::SetEncoderHallCwOffset(float encoderHallOffset, i
   unsigned char data[4];
   soloUtils->ConvertToData(encoderHallOffset, data);
 
-  unsigned char cmd[] = {addr, WriteEncoderHallCwOffset, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_ENCODER_HALL_CW_OFFSET, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -968,7 +955,7 @@ bool SOLOMotorControllersUart::SetSpeedAccelerationValue(float speedAcceleration
   unsigned char data[4];
   soloUtils->ConvertToData(speedAccelerationValue, data);
 
-  unsigned char cmd[] = {addr, WriteSpeedAccelerationValue, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_SPEED_ACCELERATION_VALUE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -991,7 +978,7 @@ bool SOLOMotorControllersUart::SetSpeedDecelerationValue(float speedDeceleration
   unsigned char data[4];
   soloUtils->ConvertToData(speedDecelerationValue, data);
 
-  unsigned char cmd[] = {addr, WriteSpeedDecelerationValue, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_SPEED_DECELERATION_VALUE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1009,7 +996,7 @@ bool SOLOMotorControllersUart::SetCanbusBaudrate(SOLOMotorControllers::CanbusBau
   unsigned char data[4];
   soloUtils->ConvertToData((long)canbusBaudrate, data);
 
-  unsigned char cmd[] = {addr, WriteUartBaudrate, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_UART_BAUDRATE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1032,7 +1019,7 @@ bool SOLOMotorControllersUart::SetAnalogueSpeedResolutionDivisionCoefficient(lon
   unsigned char data[4];
   soloUtils->ConvertToData(divisionCoefficient, data);
 
-  unsigned char cmd[] = {addr, WriteASRDC, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_ASRDC, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1051,7 +1038,7 @@ bool SOLOMotorControllersUart::SetMotionProfileMode(SOLOMotorControllers::Motion
   unsigned char data[4];
   soloUtils->ConvertToData((long)motionProfileMode, data);
 
-  unsigned char cmd[] = {addr, WriteMotionProfileMode, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTION_PROFILE_MODE, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1073,7 +1060,7 @@ bool SOLOMotorControllersUart::SetMotionProfileVariable1(float MotionProfileVari
   unsigned char data[4];
   soloUtils->ConvertToData(MotionProfileVariable1, data);
 
-  unsigned char cmd[] = {addr, WriteMotionProfileVariable1, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTION_PROFILE_VARIABLE1, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1095,7 +1082,7 @@ bool SOLOMotorControllersUart::SetMotionProfileVariable2(float MotionProfileVari
   unsigned char data[4];
   soloUtils->ConvertToData(MotionProfileVariable2, data);
 
-  unsigned char cmd[] = {addr, WriteMotionProfileVariable2, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTION_PROFILE_VARIABLE2, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1117,7 +1104,7 @@ bool SOLOMotorControllersUart::SetMotionProfileVariable3(float MotionProfileVari
   unsigned char data[4];
   soloUtils->ConvertToData(MotionProfileVariable3, data);
 
-  unsigned char cmd[] = {addr, WriteMotionProfileVariable3, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTION_PROFILE_VARIABLE3, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1139,7 +1126,7 @@ bool SOLOMotorControllersUart::SetMotionProfileVariable4(float MotionProfileVari
   unsigned char data[4];
   soloUtils->ConvertToData(MotionProfileVariable4, data);
 
-  unsigned char cmd[] = {addr, WriteMotionProfileVariable4, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTION_PROFILE_VARIABLE4, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
@@ -1161,39 +1148,81 @@ bool SOLOMotorControllersUart::SetMotionProfileVariable5(float MotionProfileVari
   unsigned char data[4];
   soloUtils->ConvertToData(MotionProfileVariable5, data);
 
-  unsigned char cmd[] = {addr, WriteMotionProfileVariable5, data[0], data[1], data[2], data[3]};
+  unsigned char cmd[] = {addr, WRITE_MOTION_PROFILE_VARIABLE5, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 
 /**
  * @brief  This command Set the Digiatal Ouput pin Status. The method refers to the Uart Write command: 0x38
  * @param[out] pinNumber   specify the pin you want to controll. (Ensure your SOLO model support this functions)
- * @param[out] digitalStatus   specify the DigitalStatus you want to set. 
+ * @param[out] DigitalIoState   specify the DigitalIoState you want to set.
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
-bool SOLOMotorControllersUart::SetDigitalOutput(int pinNumber, SOLOMotorControllers::DigitalStatus digitalStatus, int &error)
+bool SOLOMotorControllersUart::SetDigitalOutputState(Channel channel, DigitalIoState state, int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  if (!soloUtils->DigitalInputValidation(pinNumber, error))
+  unsigned char data[4];
+  long lastOutRegister;
+
+  lastOutRegister = GetDigitalOutputsRegister(error);
+  if (error = 0)
+    return error;
+
+  if (state == 1)
+    lastOutRegister = lastOutRegister | (1 << channel);
+  else
+    lastOutRegister = lastOutRegister & (~(1 << channel));
+
+  soloUtils->ConvertToData(lastOutRegister, data);
+
+  unsigned char cmd[] = {addr, WRITE_DIGITAL_OUTPUTS_REGISTER, data[0], data[1], data[2], data[3]};
+  return SOLOMotorControllersUart::ExeCMD(cmd, error);
+}
+
+/**
+ * @brief  This command defines the maximum allowed regeneration current sent back from the Motor to
+ *				the Power Supply during decelerations
+ *           .The method refers to the Uart Write command: 0x39
+ * @param[in]  current a float value
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval bool 0 fail / 1 for success
+ */
+bool SOLOMotorControllersUart::SetRegenerationCurrentLimit(float current, int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  if (!soloUtils->SetRegenerationCurrentLimitValidation(current, error))
   {
     return false;
   }
 
-  unsigned char informationToSend = GetDigitalOutputs(error);
-  if(error != SOLOMotorControllers::Error::NO_ERROR_DETECTED){
+  unsigned char data[4];
+  soloUtils->ConvertToData(current, data);
+
+  unsigned char cmd[] = {addr, WRITE_REGENERATION_CURRENT_LIMIT, data[0], data[1], data[2], data[3]};
+  return SOLOMotorControllersUart::ExeCMD(cmd, error);
+}
+
+/**
+ * @brief  This value defines the the sampling window of qualification digital filter applied to the output of
+ *			the position sensor before being processed by DSP
+ *           .The method refers to the Uart Write command: 0x3A
+ * @param[in]  level a long value
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval bool 0 fail / 1 for success
+ */
+bool SOLOMotorControllersUart::SetPositionSensorDigitalFilterLevel(long level, int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  if (!soloUtils->SetPositionSensorDigitalFilterLevelValidation(level, error))
+  {
     return false;
   }
 
-  uint32_t mask = 1 << pinNumber;
-  if(digitalStatus == SOLOMotorControllers::DigitalStatus::LOW_STATUS)
-  {
-    informationToSend &= ~mask; 
-  }else{
-    informationToSend |= mask; 
-  }
-  
-  unsigned char cmd[] = {addr, WriteDigitalOutput, 0x00, 0x00, 0x00, informationToSend};
+  unsigned char data[4];
+  soloUtils->ConvertToData(level, data);
+
+  unsigned char cmd[] = {addr, WRITE_POSITION_SENSOR_DIGITAL_FILTER_LEVEL, data[0], data[1], data[2], data[3]};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 //----------Read----------
@@ -1207,7 +1236,7 @@ bool SOLOMotorControllersUart::SetDigitalOutput(int pinNumber, SOLOMotorControll
 long SOLOMotorControllersUart::GetDeviceAddress(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {0xFF, ReadDeviceAddress, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {0xFF, READ_DEVICE_ADDRESS, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1228,7 +1257,7 @@ long SOLOMotorControllersUart::GetDeviceAddress(int &error)
 float SOLOMotorControllersUart::GetPhaseAVoltage(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPhaseAVoltage, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_PHASE_A_VOLTAGE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1249,7 +1278,7 @@ float SOLOMotorControllersUart::GetPhaseAVoltage(int &error)
 float SOLOMotorControllersUart::GetPhaseBVoltage(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPhaseBVoltage, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_PHASE_B_VOLTAGE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1270,7 +1299,7 @@ float SOLOMotorControllersUart::GetPhaseBVoltage(int &error)
 float SOLOMotorControllersUart::GetPhaseACurrent(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPhaseACurrent, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_PHASE_A_CURRENT, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1291,7 +1320,7 @@ float SOLOMotorControllersUart::GetPhaseACurrent(int &error)
 float SOLOMotorControllersUart::GetPhaseBCurrent(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPhaseBCurrent, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_PHASE_B_CURRENT, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1312,7 +1341,7 @@ float SOLOMotorControllersUart::GetPhaseBCurrent(int &error)
 float SOLOMotorControllersUart::GetBusVoltage(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadBusVoltage, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_BUS_VOLTAGE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1333,7 +1362,7 @@ float SOLOMotorControllersUart::GetBusVoltage(int &error)
 float SOLOMotorControllersUart::GetDcMotorCurrentIm(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadDcMotorCurrentIm, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_DC_MOTOR_CURRENT_IM, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1354,7 +1383,7 @@ float SOLOMotorControllersUart::GetDcMotorCurrentIm(int &error)
 float SOLOMotorControllersUart::GetDcMotorVoltageVm(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadDcMotorVoltageVm, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_DC_MOTOR_VOLTAGE_VM, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1375,7 +1404,7 @@ float SOLOMotorControllersUart::GetDcMotorVoltageVm(int &error)
 float SOLOMotorControllersUart::GetSpeedControllerKp(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadSpeedControllerKp, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_SPEED_CONTROLLER_KP, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1396,7 +1425,7 @@ float SOLOMotorControllersUart::GetSpeedControllerKp(int &error)
 float SOLOMotorControllersUart::GetSpeedControllerKi(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadSpeedControllerKi, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_SPEED_CONTROLLER_KI, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1416,13 +1445,13 @@ float SOLOMotorControllersUart::GetSpeedControllerKi(int &error)
 long SOLOMotorControllersUart::GetOutputPwmFrequencyKhz(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadOutputPwmFrequencyHz, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_OUTPUT_PWM_FREQUENCY_HZ, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return (soloUtils->ConvertToLong(data) / 1000L); // PWM reading is in Hz
+    return soloUtils->ConvertToLong(data); // PWM reading is in Hz
   }
   return -1;
 }
@@ -1437,7 +1466,7 @@ long SOLOMotorControllersUart::GetOutputPwmFrequencyKhz(int &error)
 float SOLOMotorControllersUart::GetCurrentLimit(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadCurrentLimit, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_CURRENT_LIMIT, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1458,7 +1487,7 @@ float SOLOMotorControllersUart::GetCurrentLimit(int &error)
 float SOLOMotorControllersUart::GetQuadratureCurrentIqFeedback(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadQuadratureCurrentIqFeedback, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_QUADRATURE_CURRENT_IQ_FEEDBACK, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1479,7 +1508,7 @@ float SOLOMotorControllersUart::GetQuadratureCurrentIqFeedback(int &error)
 float SOLOMotorControllersUart::GetMagnetizingCurrentIdFeedback(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMagnetizingCurrentIdFeedback, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MAGNETIZING_CURRENT_ID_FEEDBACK, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1499,7 +1528,7 @@ float SOLOMotorControllersUart::GetMagnetizingCurrentIdFeedback(int &error)
 long SOLOMotorControllersUart::GetMotorPolesCounts(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotorPolesCounts, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTOR_POLES_COUNTS, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1519,7 +1548,7 @@ long SOLOMotorControllersUart::GetMotorPolesCounts(int &error)
 long SOLOMotorControllersUart::GetIncrementalEncoderLines(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadIncrementalEncoderLines, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_INCREMENTAL_ENCODER_LINES, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1540,7 +1569,7 @@ long SOLOMotorControllersUart::GetIncrementalEncoderLines(int &error)
 float SOLOMotorControllersUart::GetCurrentControllerKp(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadCurrentControllerKp, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_CURRENT_CONTROLLER_KP, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1561,13 +1590,13 @@ float SOLOMotorControllersUart::GetCurrentControllerKp(int &error)
 float SOLOMotorControllersUart::GetCurrentControllerKi(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadCurrentControllerKi, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_CURRENT_CONTROLLER_KI, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToFloat(data) * 0.00005;
+    return soloUtils->ConvertToFloat(data);
   }
   return -1;
 }
@@ -1581,7 +1610,7 @@ float SOLOMotorControllersUart::GetCurrentControllerKi(int &error)
 float SOLOMotorControllersUart::GetBoardTemperature(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadBoardTemperature, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_BOARD_TEMPERATURE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1602,7 +1631,7 @@ float SOLOMotorControllersUart::GetBoardTemperature(int &error)
 float SOLOMotorControllersUart::GetMotorResistance(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotorResistance, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTOR_RESISTANCE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1623,7 +1652,7 @@ float SOLOMotorControllersUart::GetMotorResistance(int &error)
 float SOLOMotorControllersUart::GetMotorInductance(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotorInductance, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTOR_INDUCTANCE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1644,7 +1673,7 @@ float SOLOMotorControllersUart::GetMotorInductance(int &error)
 long SOLOMotorControllersUart::GetSpeedFeedback(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadSpeedFeedback, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_SPEED_FEEDBACK, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1661,18 +1690,19 @@ long SOLOMotorControllersUart::GetSpeedFeedback(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval long between 0 to 3
  */
-long SOLOMotorControllersUart::GetMotorType(int &error)
+SOLOMotorControllers::MotorType SOLOMotorControllersUart::GetMotorType(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotorType, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTOR_TYPE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToLong(data);
+    return (SOLOMotorControllers::MotorType)soloUtils->ConvertToLong(data);
   }
-  return -1;
+  return SOLOMotorControllers::MotorType::MOTOR_TYPE_ERROR;
+  ;
 }
 
 /**
@@ -1682,18 +1712,18 @@ long SOLOMotorControllersUart::GetMotorType(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval long between 0 to 2
  */
-long SOLOMotorControllersUart::GetFeedbackControlMode(int &error)
+SOLOMotorControllers::FeedbackControlMode SOLOMotorControllersUart::GetFeedbackControlMode(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadFeedbackControlMode, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_FEEDBACK_CONTROL_MODE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToLong(data);
+    return (SOLOMotorControllers::FeedbackControlMode)soloUtils->ConvertToLong(data);
   }
-  return -1;
+  return SOLOMotorControllers::FeedbackControlMode::FEEDBACK_CONTROL_MODE_ERROR;
 }
 
 /**
@@ -1702,18 +1732,18 @@ long SOLOMotorControllersUart::GetFeedbackControlMode(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval long between 0 or 1
  */
-long SOLOMotorControllersUart::GetCommandMode(int &error)
+SOLOMotorControllers::CommandMode SOLOMotorControllersUart::GetCommandMode(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadCommandMode, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_COMMAND_MODE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToLong(data);
+    return (SOLOMotorControllers::CommandMode)soloUtils->ConvertToLong(data);
   }
-  return -1;
+  return SOLOMotorControllers::CommandMode::COMMAND_MODE_ERROR;
 }
 
 /**
@@ -1723,18 +1753,19 @@ long SOLOMotorControllersUart::GetCommandMode(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval long between 0 to 2
  */
-long SOLOMotorControllersUart::GetControlMode(int &error)
+SOLOMotorControllers::ControlMode SOLOMotorControllersUart::GetControlMode(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadControlMode, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_CONTROL_MODE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToLong(data);
+    return (SOLOMotorControllers::ControlMode)soloUtils->ConvertToLong(data);
   }
-  return -1;
+  return SOLOMotorControllers::ControlMode::CONTROL_MODE_ERROR;
+  ;
 }
 
 /**
@@ -1746,7 +1777,7 @@ long SOLOMotorControllersUart::GetControlMode(int &error)
 long SOLOMotorControllersUart::GetSpeedLimit(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadSpeedLimit, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_SPEED_LIMIT, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1767,7 +1798,7 @@ long SOLOMotorControllersUart::GetSpeedLimit(int &error)
 float SOLOMotorControllersUart::GetPositionControllerKp(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPositionControllerKp, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_POSITION_CONTROLLER_KP, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1788,7 +1819,7 @@ float SOLOMotorControllersUart::GetPositionControllerKp(int &error)
 float SOLOMotorControllersUart::GetPositionControllerKi(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPositionControllerKi, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_POSITION_CONTROLLER_KI, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1809,7 +1840,7 @@ float SOLOMotorControllersUart::GetPositionControllerKi(int &error)
 long SOLOMotorControllersUart::GetPositionCountsFeedback(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPositionCountsFeedback, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_POSITION_COUNTS_FEEDBACK, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1830,7 +1861,7 @@ long SOLOMotorControllersUart::GetPositionCountsFeedback(int &error)
 long SOLOMotorControllersUart::GetErrorRegister(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadErrorRegister, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_ERROR_REGISTER, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1850,7 +1881,7 @@ long SOLOMotorControllersUart::GetErrorRegister(int &error)
 long SOLOMotorControllersUart::GetDeviceFirmwareVersion(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadDeviceFirmwareVersion, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_DEVICE_FIRMWARE_VERSION, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1870,7 +1901,7 @@ long SOLOMotorControllersUart::GetDeviceFirmwareVersion(int &error)
 long SOLOMotorControllersUart::GetDeviceHardwareVersion(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadDeviceHardwareVersion, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_DEVICE_HARDWARE_VERSION, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1891,7 +1922,7 @@ long SOLOMotorControllersUart::GetDeviceHardwareVersion(int &error)
 float SOLOMotorControllersUart::GetTorqueReferenceIq(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadTorqueReferenceIq, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_TORQUE_REFERENCE_IQ, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1912,7 +1943,7 @@ float SOLOMotorControllersUart::GetTorqueReferenceIq(int &error)
 long SOLOMotorControllersUart::GetSpeedReference(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadSpeedReference, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_SPEED_REFERENCE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1934,7 +1965,7 @@ long SOLOMotorControllersUart::GetSpeedReference(int &error)
 float SOLOMotorControllersUart::GetMagnetizingCurrentIdReference(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMagnetizingCurrentIdReference, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MAGNETIZING_CURRENT_ID_REFERENCE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1955,7 +1986,7 @@ float SOLOMotorControllersUart::GetMagnetizingCurrentIdReference(int &error)
 long SOLOMotorControllersUart::GetPositionReference(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPositionReference, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_POSITION_REFERENCE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1976,7 +2007,7 @@ long SOLOMotorControllersUart::GetPositionReference(int &error)
 float SOLOMotorControllersUart::GetPowerReference(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPowerReference, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_POWER_REFERENCE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -1993,30 +2024,30 @@ float SOLOMotorControllersUart::GetPowerReference(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval long 0 Counter ClockWise / 1 ClockWise
  */
-long SOLOMotorControllersUart::GetMotorDirection(int &error)
+SOLOMotorControllers::Direction SOLOMotorControllersUart::GetMotorDirection(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotorDirection, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTOR_DIRECTION, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToLong(data);
+    return (SOLOMotorControllers::Direction)soloUtils->ConvertToLong(data);
   }
-  return -1;
+  return SOLOMotorControllers::Direction::DIRECTION_ERROR;
 }
 
 /**
- * @brief  This command reads the value of Sensorless Observer Gain for Normal BLDC-PMSM Motors
+ * @brief  This command reads the value of Sensorless Zero Speed Full Torque Injection Amplitude
  *           .The method refers to the Uart Read command: 0xAA
- * @param[out] error   optional pointer to an integer that specify result of function
- * @retval float between 0.01 to 1000
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval float between 0.0 to 0.55
  */
-float SOLOMotorControllersUart::GetObserverGainBldcPmsm(int &error)
+float SOLOMotorControllersUart::GetZsftInjectionAmplitude(int &error)
 {
-  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadObserverGainBldcPmsm, 0x00, 0x00, 0x00, 0x00};
+  error = Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_ZSFT_INJECTION_AMPLITUDE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2028,15 +2059,15 @@ float SOLOMotorControllersUart::GetObserverGainBldcPmsm(int &error)
 }
 
 /**
- * @brief  This command reads the value of Sensorless Observer Gain for Normal BLDC-PMSM Motors
+ * @brief  This command reads the value of Sensorless Zero Speed Full Torque Polarity Amplitude
  *           .The method refers to the Uart Read command: 0xAB
- * @param[out] error   optional pointer to an integer that specify result of function
- * @retval float between 0.01 to 1000
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval float between 0.0 to 0.55
  */
-float SOLOMotorControllersUart::GetObserverGainBldcPmsmUltrafast(int &error)
+float SOLOMotorControllersUart::GetZsftPolarityAmplitude(int &error)
 {
-  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadObserverGainBldcPmsmUltrafast, 0x00, 0x00, 0x00, 0x00};
+  error = Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_ZSFT_POLARITY_AMPLITUDE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2056,7 +2087,7 @@ float SOLOMotorControllersUart::GetObserverGainBldcPmsmUltrafast(int &error)
 float SOLOMotorControllersUart::GetObserverGainDc(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadObserverGainDc, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_OBSERVER_GAIN_DC, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2068,43 +2099,41 @@ float SOLOMotorControllersUart::GetObserverGainDc(int &error)
 }
 
 /**
- * @brief  This command reads the value of Sensorless Observer
- *         Filter Gain for Normal BLDC-PMSM Motors
+ * @brief  This command reads the value of Sensorless Zero Speed Full Torque Injection Frequency
  *           .The method refers to the Uart Read command: 0xAD
- * @param[out] error   optional pointer to an integer that specify result of function
- * @retval float between 0.01 to 16000
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval float between 0 to 10
  */
-float SOLOMotorControllersUart::GetFilterGainBldcPmsm(int &error)
+long SOLOMotorControllersUart::GetZsftInjectionFrequency(int &error)
 {
-  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadFilterGainBldcPmsm, 0x00, 0x00, 0x00, 0x00};
+  error = Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_ZSFT_INJECTION_FREQUENCY, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToFloat(data);
+    return soloUtils->ConvertToLong(data);
   }
   return -1;
 }
 
 /**
- * @brief  This command reads the value of Sensorless Observer
- *         Filter Gain for Ultra Fast BLDC-PMSM Motors
+ * @brief  This command reads the value of Sensorless Transition Speed
  *           .The method refers to the Uart Read command: 0xAE
- * @param[out] error   optional pointer to an integer that specify result of function
- * @retval float between 0.01 to 16000
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval long between 1 to 5000
  */
-float SOLOMotorControllersUart::GetFilterGainBldcPmsmUltrafast(int &error)
+long SOLOMotorControllersUart::GetSensorlessTransitionSpeed(int &error)
 {
-  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadFilterGainBldcPmsmUltrafast, 0x00, 0x00, 0x00, 0x00};
+  error = Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_SENSORLESS_TRANSITION_SPEED, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToFloat(data);
+    return soloUtils->ConvertToLong(data);
   }
   return -1;
 }
@@ -2118,7 +2147,7 @@ float SOLOMotorControllersUart::GetFilterGainBldcPmsmUltrafast(int &error)
 float SOLOMotorControllersUart::Get3PhaseMotorAngle(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, Read3PhaseMotorAngle, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_3_PHASE_MOTOR_ANGLE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2138,7 +2167,7 @@ float SOLOMotorControllersUart::Get3PhaseMotorAngle(int &error)
 float SOLOMotorControllersUart::GetEncoderHallCcwOffset(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadEncoderHallCcwOffset, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_ENCODER_HALL_CCW_OFFSET, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2158,7 +2187,7 @@ float SOLOMotorControllersUart::GetEncoderHallCcwOffset(int &error)
 float SOLOMotorControllersUart::GetEncoderHallCwOffset(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadEncoderHallCwOffset, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_ENCODER_HALL_CW_OFFSET, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2175,18 +2204,18 @@ float SOLOMotorControllersUart::GetEncoderHallCwOffset(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval long [Bits/s]
  */
-long SOLOMotorControllersUart::GetUartBaudrate(int &error)
+SOLOMotorControllers::UartBaudrate SOLOMotorControllersUart::GetUartBaudrate(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadUartBaudrate, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_UART_BAUDRATE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToLong(data);
+    return (SOLOMotorControllers::UartBaudrate)soloUtils->ConvertToLong(data);
   }
-  return -1;
+  return SOLOMotorControllers::UartBaudrate::UART_BAUDRATE_ERROR;
 }
 
 /**
@@ -2200,7 +2229,7 @@ long SOLOMotorControllersUart::GetUartBaudrate(int &error)
 float SOLOMotorControllersUart::GetSpeedAccelerationValue(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadSpeedAccelerationValue, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_SPEED_ACCELERATION_VALUE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2222,7 +2251,7 @@ float SOLOMotorControllersUart::GetSpeedAccelerationValue(int &error)
 float SOLOMotorControllersUart::GetSpeedDecelerationValue(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadSpeedDecelerationValue, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_SPEED_DECELERATION_VALUE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2242,7 +2271,7 @@ float SOLOMotorControllersUart::GetSpeedDecelerationValue(int &error)
 long SOLOMotorControllersUart::GetCanbusBaudrate(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadCanbusBaudrate, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_CANBUS_BAUDRATE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2262,7 +2291,7 @@ long SOLOMotorControllersUart::GetCanbusBaudrate(int &error)
 long SOLOMotorControllersUart::GetAnalogueSpeedResolutionDivisionCoefficient(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadASRDC, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_ASRDC, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2283,7 +2312,7 @@ long SOLOMotorControllersUart::GetAnalogueSpeedResolutionDivisionCoefficient(int
 long SOLOMotorControllersUart::GetEncoderIndexCounts(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadEncoderIndexCounts, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_ENCODER_INDEX_COUNTS, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2316,18 +2345,18 @@ bool SOLOMotorControllersUart::CommunicationIsWorking(int &error)
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval long
  */
-long SOLOMotorControllersUart::GetMotionProfileMode(int &error)
+SOLOMotorControllers::MotionProfileMode SOLOMotorControllersUart::GetMotionProfileMode(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotionProfileMode, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTION_PROFILE_MODE, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToLong(data);
+    return (SOLOMotorControllers::MotionProfileMode)soloUtils->ConvertToLong(data);
   }
-  return -1;
+  return SOLOMotorControllers::MotionProfileMode::MOTION_PROFILE_MODE_ERROR;
 }
 
 /**
@@ -2339,7 +2368,7 @@ long SOLOMotorControllersUart::GetMotionProfileMode(int &error)
 float SOLOMotorControllersUart::GetMotionProfileVariable1(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotionProfileVariable1, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTION_PROFILE_VARIABLE1, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2359,7 +2388,7 @@ float SOLOMotorControllersUart::GetMotionProfileVariable1(int &error)
 float SOLOMotorControllersUart::GetMotionProfileVariable2(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotionProfileVariable2, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTION_PROFILE_VARIABLE2, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2379,7 +2408,7 @@ float SOLOMotorControllersUart::GetMotionProfileVariable2(int &error)
 float SOLOMotorControllersUart::GetMotionProfileVariable3(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotionProfileVariable3, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTION_PROFILE_VARIABLE3, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2399,7 +2428,7 @@ float SOLOMotorControllersUart::GetMotionProfileVariable3(int &error)
 float SOLOMotorControllersUart::GetMotionProfileVariable4(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotionProfileVariable4, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTION_PROFILE_VARIABLE4, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2419,7 +2448,7 @@ float SOLOMotorControllersUart::GetMotionProfileVariable4(int &error)
 float SOLOMotorControllersUart::GetMotionProfileVariable5(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadMotionProfileVariable5, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_MOTION_PROFILE_VARIABLE5, 0x00, 0x00, 0x00, 0x00};
 
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
@@ -2431,35 +2460,32 @@ float SOLOMotorControllersUart::GetMotionProfileVariable5(int &error)
 }
 
 /**
- * @brief  This command reads the PT1000 Voltage. The method refers to the Uart Read command: 0xC3
- * @param[out] error   optional pointer to an integer that specify result of function
- * @retval float
+ * @brief  This command reads the value of the Digital Outputs Register as a 32 bits register
+ *           .The method refers to the Uart Read command: 0xC4
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval enum @ref DigitalIoState
  */
-float SOLOMotorControllersUart::GetPt1000(int &error)
+SOLOMotorControllers::DigitalIoState SOLOMotorControllersUart::GetDigitalOutputsState(Channel channel, int &error)
 {
-  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadPt1000, 0x00, 0x00, 0x00, 0x00};
-
-  if (SOLOMotorControllersUart::ExeCMD(cmd, error))
-  {
-    unsigned char data[4];
-    soloUtils->SplitData(data, cmd);
-    return soloUtils->ConvertToFloat(data);
-  }
-  return -1;
+  long lastOutRegister;
+  lastOutRegister = GetDigitalOutputsRegister(error);
+  if (error = SOLOMotorControllers::Error::NO_ERROR_DETECTED)
+    return SOLOMotorControllers::DigitalIoState::DIGITAL_IO_STATE_ERROR;
+  return (SOLOMotorControllers::DigitalIoState)((lastOutRegister >> channel) & 0x00000001);
 }
 
-uint8_t SOLOMotorControllersUart::GetDigitalOutputs(int &error)
+long SOLOMotorControllersUart::GetDigitalOutputsRegister(int &error)
 {
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
-  unsigned char cmd[] = {addr, ReadDigitalOutput, 0x00, 0x00, 0x00, 0x00};
+  unsigned char cmd[] = {addr, READ_DIGITAL_OUTPUT_REGISTER, 0x00, 0x00, 0x00, 0x00};
+
   if (SOLOMotorControllersUart::ExeCMD(cmd, error))
   {
     unsigned char data[4];
     soloUtils->SplitData(data, cmd);
-    return data[3];
+    return soloUtils->ConvertToLong(data);
   }
-  return -1.0;
+  return -1;
 }
 
 /**
@@ -2476,11 +2502,135 @@ int SOLOMotorControllersUart::GetDigitalOutput(int pinNumber, int &error)
     return -1;
   }
 
-  uint8_t informationReceived = GetDigitalOutputs(error);
-  if(error != SOLOMotorControllers::Error::NO_ERROR_DETECTED){
+  uint8_t informationReceived = (uint8_t)GetDigitalOutputsState((Channel)pinNumber, error);
+  if (error != SOLOMotorControllers::Error::NO_ERROR_DETECTED)
+  {
     return -1;
   }
 
   uint8_t mask = 1 << pinNumber;
   return (informationReceived & mask) != 0;
+}
+
+/**
+ * @brief  This command reads the current state of the controller
+ *           .The method refers to the Uart Read command: 0xC7
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval enum @ref DisableEnable
+ */
+SOLOMotorControllers::DisableEnable SOLOMotorControllersUart::GetDriveDisableEnable(int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_DRIVE_DISABLE_ENABLE, 0x00, 0x00, 0x00, 0x00};
+
+  if (SOLOMotorControllersUart::ExeCMD(cmd, error))
+  {
+    unsigned char data[4];
+    soloUtils->SplitData(data, cmd);
+    return (SOLOMotorControllers::DisableEnable)soloUtils->ConvertToLong(data);
+  }
+  return SOLOMotorControllers::DisableEnable::DISABLE_ENABLE_ERROR;
+}
+
+/**
+ * @brief  This command reads the value of the Regeneration Current Limit
+ *           .The method refers to the Uart Read command: 0xC8
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval float
+ */
+float SOLOMotorControllersUart::GetRegenerationCurrentLimit(int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_REGENERATION_CURRENT_LIMIT, 0x00, 0x00, 0x00, 0x00};
+
+  if (SOLOMotorControllersUart::ExeCMD(cmd, error))
+  {
+    unsigned char data[4];
+    soloUtils->SplitData(data, cmd);
+    return soloUtils->ConvertToFloat(data);
+  }
+  return -1;
+}
+
+/**
+ * @brief  This command reads the value of the Position Sensor Digital Filter Level
+ *           .The method refers to the Uart Read command: 0xC9
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval long
+ */
+long SOLOMotorControllersUart::GetPositionSensorDigitalFilterLevel(int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_POSITION_SENSOR_DIGITAL_FILTER_LEVEL, 0x00, 0x00, 0x00, 0x00};
+
+  if (SOLOMotorControllersUart::ExeCMD(cmd, error))
+  {
+    unsigned char data[4];
+    soloUtils->SplitData(data, cmd);
+    return soloUtils->ConvertToLong(data);
+  }
+  return -1;
+}
+
+/**
+ * @brief  This command reads the value of the Digital Input Register as a 32 bits register
+ *           .The method refers to the Uart Read command: 0xC5
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval long
+ */
+long SOLOMotorControllersUart::GetDigitalInputRegister(int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_DIGITAL_INPUT_REGISTER, 0x00, 0x00, 0x00, 0x00};
+
+  if (SOLOMotorControllersUart::ExeCMD(cmd, error))
+  {
+    unsigned char data[4];
+    soloUtils->SplitData(data, cmd);
+    return soloUtils->ConvertToLong(data);
+  }
+  return -1;
+}
+
+/**
+ * @brief  This command reads the value of the voltage sensed at the output of PT1000 temperature
+ *			sensor amplifier, this command can be used only on devices that come with PT1000 input
+ *           .The method refers to the Uart Read command: 0xC3
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval long
+ */
+long SOLOMotorControllersUart::GetPT1000SensorVoltage(int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_PT1000_SENSOR_VOLTAGE, 0x00, 0x00, 0x00, 0x00};
+
+  if (SOLOMotorControllersUart::ExeCMD(cmd, error))
+  {
+    unsigned char data[4];
+    soloUtils->SplitData(data, cmd);
+    return soloUtils->ConvertToLong(data);
+  }
+  return -1;
+}
+
+/**
+ * @brief  This command reads the quantized value of an Analogue Input as a number between 0 to 4095
+ *				depending on the maximum voltage input possible at the analogue inputs for the controller
+ *           .The method refers to the Uart Read command: 0xC6
+ * @param[in]  channel  an enum that specify the Channel of Analogue Input
+ * @param[out]  error   pointer to an integer that specify result of function
+ * @retval enum @ref DigitalIoState
+ */
+SOLOMotorControllers::DigitalIoState SOLOMotorControllersUart::GetAnalogueInput(Channel channel, int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  unsigned char cmd[] = {addr, READ_ANALOGUE_INPUT, 0x00, 0x00, 0x00, (unsigned char)channel};
+
+  if (SOLOMotorControllersUart::ExeCMD(cmd, error))
+  {
+    unsigned char data[4];
+    soloUtils->SplitData(data, cmd);
+    return (SOLOMotorControllers::DigitalIoState)soloUtils->ConvertToLong(data);
+  }
+  return SOLOMotorControllers::DigitalIoState::DIGITAL_IO_STATE_ERROR;
 }

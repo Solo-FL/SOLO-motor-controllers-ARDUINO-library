@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.4.0] - 2024-08-03
+### Added
+- Aligned to support latest 0000B020 SOLO Motor Controllers Firmware 
+- Add new enums
+- Add new examples
+
+### Changed
+- Some get function return enum instead of an int 
+- CANopen PDO support for only Arduino R4, Portenta C33
+- Native Can support only Arduino R4, Portenta C33 
+- Conversion to be aligned to latest 0000B020 SOLO Motor Controllers Firmware 
+- Examples
+
+### Deprecated
+
+### Removed
+- CANopen native code removed the usage of ARDUINO_CAN_NATIVE_SUPPORTED (auto detect) 
+### Fixed
+
 ## [5.3.1] - 2024-05-30
 ### Added
 - for CANopen native code usage added ARDUINO_CAN_NATIVE_SUPPORTED 

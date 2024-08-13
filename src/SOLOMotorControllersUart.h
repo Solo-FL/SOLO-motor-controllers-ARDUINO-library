@@ -7,11 +7,11 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.0
+ * @version 5.4.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
- * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+ * MIT License (see LICENSE file for more details)
  *******************************************************************************
  */
 
@@ -25,124 +25,131 @@
 
 // UART_Commands UART Commands
 // All uart command hex code
-#define ReadData 0x00  // 0x00000000
 #define INITIATOR 0xFF // 0xFFFF
-#define BroadcastAddress 0xFF
+#define BROADCAST_ADDRESS 0xFF
 #define ENDING 0xFE
 #define ERROR 0xEE // 0xEEEEEEEE
 #define CRC 0x00
-#define WriteDeviceAddres 0x01
-#define WriteCommandMode 0x02
-#define WriteCurrentLimit 0x03
-#define WriteTorqueReferenceIq 0x04
-#define WriteSpeedReference 0x05
-#define WritePowerReference 0x06
-#define WriteMotorParametersIdentification 0x07
-#define WriteEmergencyStop 0x08
-#define WriteOutputPwmFrequencyKhz 0x09
-#define WriteSpeedControllerKp 0x0A
-#define WriteSpeedControllerKi 0x0B
-#define WriteMotorDirection 0x0C
-#define WriteMotorResistance 0x0D
-#define WriteMotorInductance 0x0E
-#define WriteMotorPolesCounts 0x0F
-#define WriteIncrementalEncoderLines 0x10
-#define WriteSpeedLimit 0x11
-#define WriteFeedbackControlMode 0x13
-#define WriteResetFactory 0x14
-#define WriteMotorType 0x15
-#define WriteControlMode 0x16
-#define WriteCurrentControllerKp 0x17
-#define WriteCurrentControllerKi 0x18
-#define WriteMonitoringMode 0x19
-#define WriteMagnetizingCurrentIdReference 0x1A
-#define WritePositionReference 0x1B
-#define WritePositionControllerKp 0x1C
-#define WritePositionControllerKi 0x1D
-#define WriteOverwriteErrorRegister 0x20
-#define WriteObserverGainBldcPmsm 0x21          // Set Sensorless Observer Gain for Normal Brushless Motor
-#define WriteObserverGainBldcPmsmUltrafast 0x22 // Set Sensorless Observer Gain for Ultra-Fast Brushless Motor
-#define WriteObserverGainDc 0x23                // Set Sensorless Observer Gain for DC Motor
-#define WriteFilterGainBldcPmsm 0x24            // Set Sensorless Observer Filter Gain for Normal Brushless Motor
-#define WriteFilterGainBldcPmsmUltrafast 0x25   // Set Sensorless Observer Filter Gain for ultra-fast Brushless Motor
-#define WriteUartBaudrate 0x26                  // Set UART line baud-rate - 937500 / 115200 [ bits/s]
-#define WriteSensorCalibration 0x27
-#define WriteEncoderHallCcwOffset 0x28
-#define WriteEncoderHallCwOffset 0x29
-#define WriteSpeedAccelerationValue 0x2A
-#define WriteSpeedDecelerationValue 0x2B
-#define WriteCanbusBaudrate 0x2C
-#define WriteASRDC 0x2D
-#define WriteMotionProfileMode 0x30
-#define WriteMotionProfileVariable1 0x31
-#define WriteMotionProfileVariable2 0x32
-#define WriteMotionProfileVariable3 0x33
-#define WriteMotionProfileVariable4 0x34
-#define WriteMotionProfileVariable5 0x35
-#define WriteDigitalOutput 0x38
+#define WRITE_DEVICE_ADDRESS 0x01
+#define WRITE_COMMAND_MODE 0x02
+#define WRITE_CURRENT_LIMIT 0x03
+#define WRITE_TORQUE_REFERENCE_IQ 0x04
+#define WRITE_SPEED_REFERENCE 0x05
+#define WRITE_POWER_REFERENCE 0x06
+#define WRITE_MOTOR_PARAMETERS_IDENTIFICATION 0x07
+#define WRITE_DRIVE_DISABLE_ENABLE 0x08
+#define WRITE_OUTPUT_PWM_FREQUENCY_KHZ 0x09
+#define WRITE_SPEED_CONTROLLER_KP 0x0A
+#define WRITE_SPEED_CONTROLLER_KI 0x0B
+#define WRITE_MOTOR_DIRECTION 0x0C
+#define WRITE_MOTOR_RESISTANCE 0x0D
+#define WRITE_MOTOR_INDUCTANCE 0x0E
+#define WRITE_MOTOR_POLES_COUNTS 0x0F
+#define WRITE_INCREMENTAL_ENCODER_LINES 0x10
+#define WRITE_SPEED_LIMIT 0x11
+#define WRITE_RESET_DEVICE_ADDRESS 0x12
+#define WRITE_FEEDBACK_CONTROL_MODE 0x13
+#define WRITE_RESET_FACTORY 0x14
+#define WRITE_MOTOR_TYPE 0x15
+#define WRITE_CONTROL_MODE 0x16
+#define WRITE_CURRENT_CONTROLLER_KP 0x17
+#define WRITE_CURRENT_CONTROLLER_KI 0x18
+#define WRITE_MONITORING_MODE 0x19
+#define WRITE_MAGNETIZING_CURRENT_ID_REFERENCE 0x1A
+#define WRITE_POSITION_REFERENCE 0x1B
+#define WRITE_POSITION_CONTROLLER_KP 0x1C
+#define WRITE_POSITION_CONTROLLER_KI 0x1D
+#define WRITE_RESET_POSITION_TO_ZERO 0x1F // Home
+#define WRITE_OVERWRITE_ERROR_REGISTER 0x20
+#define WRITE_ZSFT_INJECTION_AMPLITUDE 0x21
+#define WRITE_ZSFT_POLARITY_AMPLITUDE 0x22
+#define WRITE_OBSERVER_GAIN_DC 0x23
+#define WRITE_ZSFT_INJECTION_FREQUENCY 0x24
+#define WRITE_SENSORLESS_TRANSITION_SPEED 0x25
+#define WRITE_UART_BAUDRATE 0x26 // Set UART line baud-rate - 937500 / 115200 [ bits/s]
+#define WRITE_SENSOR_CALIBRATION 0x27
+#define WRITE_ENCODER_HALL_CCW_OFFSET 0x28
+#define WRITE_ENCODER_HALL_CW_OFFSET 0x29
+#define WRITE_SPEED_ACCELERATION_VALUE 0x2A
+#define WRITE_SPEED_DECELERATION_VALUE 0x2B
+#define WRITE_CANBUS_BAUDRATE 0x2C
+#define WRITE_ASRDC 0x2D
+#define WRITE_MOTION_PROFILE_MODE 0x30
+#define WRITE_MOTION_PROFILE_VARIABLE1 0x31
+#define WRITE_MOTION_PROFILE_VARIABLE2 0x32
+#define WRITE_MOTION_PROFILE_VARIABLE3 0x33
+#define WRITE_MOTION_PROFILE_VARIABLE4 0x34
+#define WRITE_MOTION_PROFILE_VARIABLE5 0x35
+#define WRITE_DIGITAL_OUTPUTS_REGISTER 0x38
+#define WRITE_REGENERATION_CURRENT_LIMIT 0x39
+#define WRITE_POSITION_SENSOR_DIGITAL_FILTER_LEVEL 0x3A
 
-#define ReadDeviceAddress 0x81
-#define ReadPhaseAVoltage 0x82
-#define ReadPhaseBVoltage 0x83
-#define ReadPhaseACurrent 0x84
-#define ReadPhaseBCurrent 0x85
-#define ReadBusVoltage 0x86
-#define ReadDcMotorCurrentIm 0x87
-#define ReadDcMotorVoltageVm 0x88
-#define ReadSpeedControllerKp 0x89
-#define ReadSpeedControllerKi 0x8A
-#define ReadOutputPwmFrequencyHz 0x8B
-#define ReadCurrentLimit 0x8C
-#define ReadQuadratureCurrentIqFeedback 0x8D
-#define ReadMagnetizingCurrentIdFeedback 0x8E // Magnetizing
-#define ReadMotorPolesCounts 0x8F
-#define ReadIncrementalEncoderLines 0x90
-#define ReadCurrentControllerKp 0x91
-#define ReadCurrentControllerKi 0x92
-#define ReadBoardTemperature 0x93
-#define ReadMotorResistance 0x94
-#define ReadMotorInductance 0x95
-#define ReadSpeedFeedback 0x96
-#define ReadMotorType 0x97
-#define ReadFeedbackControlMode 0x99
-#define ReadCommandMode 0x9A
-#define ReadControlMode 0x9B
-#define ReadSpeedLimit 0x9C
-#define ReadPositionControllerKp 0x9D
-#define ReadPositionControllerKi 0x9E
-#define ReadPositionCountsFeedback 0xA0
-#define ReadErrorRegister 0xA1
-#define ReadDeviceFirmwareVersion 0xA2
-#define ReadDeviceHardwareVersion 0xA3
-#define ReadTorqueReferenceIq 0xA4             // Read Torque /“Iq” Reference
-#define ReadSpeedReference 0xA5                // Read Speed Reference
-#define ReadMagnetizingCurrentIdReference 0xA6 // Read Magnetizing Current / “Id” Reference
-#define ReadPositionReference 0xA7
-#define ReadPowerReference 0xA8
-#define ReadMotorDirection 0xA9
-#define ReadObserverGainBldcPmsm 0xAA          // Read the Non-linear observer Gain for Normal Brushless motor in Sensorless mode
-#define ReadObserverGainBldcPmsmUltrafast 0xAB // Read the Non-linear observer Gain for Ultra-fast Brushless motor in Sensorless mode
-#define ReadObserverGainDc 0xAC                // Read the Non-linear observer Gain for DC motor in Sensorless mode
-#define ReadFilterGainBldcPmsm 0xAD            // Read the Non-linear observer Filter Gain for Normal Brushless motor in Sensorless mode
-#define ReadFilterGainBldcPmsmUltrafast 0xAE   // Read the Non-linear Filter Gain for Ultra-fast Brushless motor in Sensorless mode
-#define Read3PhaseMotorAngle 0xB0              // Read Estimated or Measured Rotor Angle
-#define ReadEncoderHallCcwOffset 0xB1
-#define ReadEncoderHallCwOffset 0xB2
-#define ReadUartBaudrate 0xB3 // 0 / 1 ( 937500 / 115200 [bits/s] )
-#define ReadSpeedAccelerationValue 0xB4
-#define ReadSpeedDecelerationValue 0xB5
-#define ReadCanbusBaudrate 0xB6
-#define ReadASRDC 0xB7
-#define ReadEncoderIndexCounts 0xB8
-#define ReadMotionProfileMode 0xBB
-#define ReadMotionProfileVariable1 0xBC
-#define ReadMotionProfileVariable2 0xBD
-#define ReadMotionProfileVariable3 0xBE
-#define ReadMotionProfileVariable4 0xBF
-#define ReadMotionProfileVariable5 0xC0
-#define ReadPt1000 0xC3
-#define ReadDigitalOutput 0xC4
-
+#define READ_DEVICE_ADDRESS 0x81
+#define READ_PHASE_A_VOLTAGE 0x82
+#define READ_PHASE_B_VOLTAGE 0x83
+#define READ_PHASE_A_CURRENT 0x84
+#define READ_PHASE_B_CURRENT 0x85
+#define READ_BUS_VOLTAGE 0x86
+#define READ_DC_MOTOR_CURRENT_IM 0x87
+#define READ_DC_MOTOR_VOLTAGE_VM 0x88
+#define READ_SPEED_CONTROLLER_KP 0x89
+#define READ_SPEED_CONTROLLER_KI 0x8A
+#define READ_OUTPUT_PWM_FREQUENCY_HZ 0x8B
+#define READ_CURRENT_LIMIT 0x8C
+#define READ_QUADRATURE_CURRENT_IQ_FEEDBACK 0x8D
+#define READ_MAGNETIZING_CURRENT_ID_FEEDBACK 0x8E // Magnetizing
+#define READ_MOTOR_POLES_COUNTS 0x8F
+#define READ_INCREMENTAL_ENCODER_LINES 0x90
+#define READ_CURRENT_CONTROLLER_KP 0x91
+#define READ_CURRENT_CONTROLLER_KI 0x92
+#define READ_BOARD_TEMPERATURE 0x93
+#define READ_MOTOR_RESISTANCE 0x94
+#define READ_MOTOR_INDUCTANCE 0x95
+#define READ_SPEED_FEEDBACK 0x96
+#define READ_MOTOR_TYPE 0x97
+#define READ_FEEDBACK_CONTROL_MODE 0x99
+#define READ_COMMAND_MODE 0x9A
+#define READ_CONTROL_MODE 0x9B
+#define READ_SPEED_LIMIT 0x9C
+#define READ_POSITION_CONTROLLER_KP 0x9D
+#define READ_POSITION_CONTROLLER_KI 0x9E
+#define READ_POSITION_COUNTS_FEEDBACK 0xA0
+#define READ_ERROR_REGISTER 0xA1
+#define READ_DEVICE_FIRMWARE_VERSION 0xA2
+#define READ_DEVICE_HARDWARE_VERSION 0xA3
+#define READ_TORQUE_REFERENCE_IQ 0xA4              // Read Torque /Iq Reference
+#define READ_SPEED_REFERENCE 0xA5                  // Read Speed Reference
+#define READ_MAGNETIZING_CURRENT_ID_REFERENCE 0xA6 // Read Magnetizing Current / Id Reference
+#define READ_POSITION_REFERENCE 0xA7
+#define READ_POWER_REFERENCE 0xA8
+#define READ_MOTOR_DIRECTION 0xA9
+#define READ_ZSFT_INJECTION_AMPLITUDE 0xAA
+#define READ_ZSFT_POLARITY_AMPLITUDE 0xAB
+#define READ_OBSERVER_GAIN_DC 0xAC
+#define READ_ZSFT_INJECTION_FREQUENCY 0xAD
+#define READ_SENSORLESS_TRANSITION_SPEED 0xAE
+#define READ_3_PHASE_MOTOR_ANGLE 0xB0
+#define READ_ENCODER_HALL_CCW_OFFSET 0xB1
+#define READ_ENCODER_HALL_CW_OFFSET 0xB2
+#define READ_UART_BAUDRATE 0xB3 // 0 / 1 ( 937500 / 115200 [bits/s] )
+#define READ_SPEED_ACCELERATION_VALUE 0xB4
+#define READ_SPEED_DECELERATION_VALUE 0xB5
+#define READ_CANBUS_BAUDRATE 0xB6
+#define READ_ASRDC 0xB7
+#define READ_ENCODER_INDEX_COUNTS 0xB8
+#define READ_MOTION_PROFILE_MODE 0xBB
+#define READ_MOTION_PROFILE_VARIABLE1 0xBC
+#define READ_MOTION_PROFILE_VARIABLE2 0xBD
+#define READ_MOTION_PROFILE_VARIABLE3 0xBE
+#define READ_MOTION_PROFILE_VARIABLE4 0xBF
+#define READ_MOTION_PROFILE_VARIABLE5 0xC0
+#define READ_PT1000_SENSOR_VOLTAGE 0xC3
+#define READ_DIGITAL_OUTPUT_REGISTER 0xC4
+#define READ_DIGITAL_INPUT_REGISTER 0xC5
+#define READ_ANALOGUE_INPUT 0xC6
+#define READ_DRIVE_DISABLE_ENABLE 0xC7
+#define READ_REGENERATION_CURRENT_LIMIT 0xC8
+#define READ_POSITION_SENSOR_DIGITAL_FILTER_LEVEL 0x3A
 
 /**
  * @brief a class for handle uart communication
@@ -163,8 +170,6 @@ public:
 
 private:
     bool ExeCMD(unsigned char cmd[], int &error = lastError);
-    uint8_t GetDigitalOutputs(int &error);
-
 
 public:
     /** @addtogroup SOLOMotorControllersUart_Write_Functions SOLOMotorControllersUart Write Functions
@@ -178,7 +183,7 @@ public:
     bool SetSpeedReference(long speedReference, int &error = lastError);
     bool SetPowerReference(float powerReference, int &error = lastError);
     bool MotorParametersIdentification(SOLOMotorControllers::Action identification, int &error = lastError);
-    bool EmergencyStop(int &error = lastError);
+    bool SetDriveDisableEnable(SOLOMotorControllers::DisableEnable action, int &error = lastError);
     bool SetOutputPwmFrequencyKhz(long outputPwmFrequencyKhz, int &error = lastError);
     bool SetSpeedControllerKp(float speedControllerKp, int &error = lastError);
     bool SetSpeedControllerKi(float speedControllerKi, int &error = lastError);
@@ -188,8 +193,7 @@ public:
     bool SetMotorPolesCounts(long motorPolesCounts, int &error = lastError);
     bool SetIncrementalEncoderLines(long incrementalEncoderLines, int &error = lastError);
     bool SetSpeedLimit(long speedLimit, int &error = lastError);
-    bool ResetDeviceAddress(int &error = lastError);
-    bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode mode, int &error = lastError);
+    bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode feedbackControlMode, int &error = lastError);
     bool ResetFactory(int &error = lastError);
     bool SetMotorType(SOLOMotorControllers::MotorType motorType, int &error = lastError);
     bool SetControlMode(SOLOMotorControllers::ControlMode controlMode, int &error = lastError);
@@ -200,11 +204,11 @@ public:
     bool SetPositionControllerKp(float positionControllerKp, int &error = lastError);
     bool SetPositionControllerKi(float positionControllerKi, int &error = lastError);
     bool OverwriteErrorRegister(int &error = lastError);
-    bool SetObserverGainBldcPmsm(float observerGain, int &error = lastError);
-    bool SetObserverGainBldcPmsmUltrafast(float observerGain, int &error = lastError);
+    bool SetZsftInjectionAmplitude(float zsftInjectionAmplitude, int &error = lastError);
+    bool SetZsftPolarityAmplitude(float zsftPolarityAmplitude, int &error = lastError);
     bool SetObserverGainDc(float observerGain, int &error = lastError);
-    bool SetFilterGainBldcPmsm(float filterGain, int &error = lastError);
-    bool SetFilterGainBldcPmsmUltrafast(float filterGain, int &error = lastError);
+    bool SetZsftInjectionFrequency(long zsftInjectionFrequency, int &error = lastError);
+    bool SetSensorlessTransitionSpeed(long sensorlessTransitionSpeed, int &error = lastError);
     bool SetUartBaudrate(SOLOMotorControllers::UartBaudrate baudrate, int &error = lastError);
     bool SensorCalibration(SOLOMotorControllers::PositionSensorCalibrationAction calibrationAction, int &error = lastError);
     bool SetEncoderHallCcwOffset(float encoderHallOffset, int &error = lastError);
@@ -219,7 +223,9 @@ public:
     bool SetMotionProfileVariable3(float MotionProfileVariable3, int &error = lastError);
     bool SetMotionProfileVariable4(float MotionProfileVariable4, int &error = lastError);
     bool SetMotionProfileVariable5(float MotionProfileVariable5, int &error = lastError);
-    bool SetDigitalOutput(int pinNumber, SOLOMotorControllers::DigitalStatus digitalStatus, int &error = lastError);
+    bool SetRegenerationCurrentLimit(float current, int &error);
+    bool SetPositionSensorDigitalFilterLevel(long level, int &error);
+    bool SetDigitalOutputState(SOLOMotorControllers::Channel channel, SOLOMotorControllers::DigitalIoState state, int &error = lastError);
     /**
      * @}
      */
@@ -250,10 +256,10 @@ public:
     float GetMotorResistance(int &error = lastError);
     float GetMotorInductance(int &error = lastError);
     long GetSpeedFeedback(int &error = lastError);
-    long GetMotorType(int &error = lastError);
-    long GetFeedbackControlMode(int &error = lastError);
-    long GetCommandMode(int &error = lastError);
-    long GetControlMode(int &error = lastError);
+    SOLOMotorControllers::MotorType GetMotorType(int &error = lastError);
+    SOLOMotorControllers::FeedbackControlMode GetFeedbackControlMode(int &error = lastError);
+    SOLOMotorControllers::CommandMode GetCommandMode(int &error = lastError);
+    SOLOMotorControllers::ControlMode GetControlMode(int &error = lastError);
     long GetSpeedLimit(int &error = lastError);
     float GetPositionControllerKp(int &error = lastError);
     float GetPositionControllerKi(int &error = lastError);
@@ -266,29 +272,36 @@ public:
     float GetMagnetizingCurrentIdReference(int &error = lastError);
     long GetPositionReference(int &error = lastError);
     float GetPowerReference(int &error = lastError);
-    long GetMotorDirection(int &error = lastError);
-    float GetObserverGainBldcPmsm(int &error = lastError);
-    float GetObserverGainBldcPmsmUltrafast(int &error = lastError);
+    SOLOMotorControllers::Direction GetMotorDirection(int &error = lastError);
+    float GetZsftInjectionAmplitude(int &error = lastError);
+    float GetZsftPolarityAmplitude(int &error = lastError);
     float GetObserverGainDc(int &error = lastError);
-    float GetFilterGainBldcPmsm(int &error = lastError);
-    float GetFilterGainBldcPmsmUltrafast(int &error = lastError);
+    long GetZsftInjectionFrequency(int &error = lastError);
+    long GetSensorlessTransitionSpeed(int &error = lastError);
     float Get3PhaseMotorAngle(int &error = lastError); // Read Estimated or Measured Rotor Angle
     float GetEncoderHallCcwOffset(int &error = lastError);
     float GetEncoderHallCwOffset(int &error = lastError);
-    long GetUartBaudrate(int &error = lastError);
+    SOLOMotorControllers::UartBaudrate GetUartBaudrate(int &error = lastError);
     float GetSpeedAccelerationValue(int &error = lastError);
     float GetSpeedDecelerationValue(int &error = lastError);
     long GetCanbusBaudrate(int &error = lastError);
     long GetAnalogueSpeedResolutionDivisionCoefficient(int &error = lastError);
     long GetEncoderIndexCounts(int &error = lastError);
     bool CommunicationIsWorking(int &error = lastError);
-    long GetMotionProfileMode(int &error = lastError);
+    SOLOMotorControllers::MotionProfileMode GetMotionProfileMode(int &error = lastError);
     float GetMotionProfileVariable1(int &error = lastError);
     float GetMotionProfileVariable2(int &error = lastError);
     float GetMotionProfileVariable3(int &error = lastError);
     float GetMotionProfileVariable4(int &error = lastError);
     float GetMotionProfileVariable5(int &error = lastError);
-    float GetPt1000(int &error = lastError);
+    SOLOMotorControllers::DigitalIoState GetDigitalOutputsState(SOLOMotorControllers::Channel chaneel, int &error = lastError);
+    long GetDigitalOutputsRegister(int &error = lastError);
+    long GetPT1000SensorVoltage(int &error = lastError);
+    SOLOMotorControllers::DisableEnable GetDriveDisableEnable(int &error = lastError);
+    float GetRegenerationCurrentLimit(int &error = lastError);
+    long GetPositionSensorDigitalFilterLevel(int &error = lastError);
+    long GetDigitalInputRegister(int &error = lastError);
+    SOLOMotorControllers::DigitalIoState GetAnalogueInput(SOLOMotorControllers::Channel channel, int &error = lastError);
     int GetDigitalOutput(int pinNumber, int &error = lastError);
     /**
      * @}

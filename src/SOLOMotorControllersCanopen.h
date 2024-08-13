@@ -6,11 +6,11 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.0
+ * @version 5.4.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
- * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+ * MIT License (see LICENSE file for more details)
  *******************************************************************************
  */
 
@@ -20,81 +20,87 @@
 #include "SOLOMotorControllers.h"
 
 // SOLO Object Index NMT_Control_Objects NMT Control Objects
-#define Object_ReadErrorRegister 0x1001
-#define Object_GuardTime 0x100C
-#define Object_LifeTimeFactor 0x100D
-#define Object_ProducerHeartbeatTime 0x1017
+#define OBJECT_READ_ERROR_REGISTER 0x1001
+#define OBJECT_GUARD_TIME 0x100C
+#define OBJECT_LIFE_TIME_FACTOR 0x100D
+#define OBJECT_PRODUCER_HEARTBEAT_TIME 0x1017
 
-//SOLO_UNO_CANOPEN_Objects SOLO UNO CANOPEN Objects
-#define Object_SetDeviceAddress 0x3001
-#define Object_CommandMode 0x3002
-#define Object_CurrentLimit 0x3003
-#define Object_TorqueReferenceIq 0x3004
-#define Object_SpeedReference 0x3005
-#define Object_PowerReference 0x3006
-#define Object_MotorParametersIdentification 0x3007
-#define Object_EmergencyStop 0x3008
-#define Object_OutputPwmFrequencyKhz 0x3009
-#define Object_SpeedControllerKp 0x300A
-#define Object_SpeedControllerKi 0x300B
-#define Object_MotorDirection 0x300C
-#define Object_MotorResistance 0x300D
-#define Object_MotorInductance 0x300E
-#define Object_MotorPolesCounts 0x300F
-#define Object_IncrementalEncoderLines 0x3010
-#define Object_SpeedLimit 0x3011
+// SOLO_UNO_CANOPEN_Objects SOLO UNO CANOPEN Objects
+#define OBJECT_SET_DEVICE_ADDRESS 0x3001
+#define OBJECT_COMMAND_MODE 0x3002
+#define OBJECT_CURRENT_LIMIT 0x3003
+#define OBJECT_TORQUE_REFERENCE_IQ 0x3004
+#define OBJECT_SPEED_REFERENCE 0x3005
+#define OBJECT_POWER_REFERENCE 0x3006
+#define OBJECT_MOTOR_PARAMETERS_IDENTIFICATION 0x3007
+#define OBJECT_DRIVE_DISABLE_ENABLE 0x3008
+#define OBJECT_OUTPUT_PWM_FREQUENCY_KHZ 0x3009
+#define OBJECT_SPEED_CONTROLLER_KP 0x300A
+#define OBJECT_SPEED_CONTROLLER_KI 0x300B
+#define OBJECT_MOTOR_DIRECTION 0x300C
+#define OBJECT_MOTOR_RESISTANCE 0x300D
+#define OBJECT_MOTOR_INDUCTANCE 0x300E
+#define OBJECT_MOTOR_POLES_COUNTS 0x300F
+#define OBJECT_INCREMENTAL_ENCODER_LINES 0x3010
+#define OBJECT_SPEED_LIMIT 0x3011
 // Reserved Object                                      0x3012
-#define Object_FeedbackControlMode 0x3013
-#define Object_ResetFactory 0x3014
-#define Object_MotorType 0x3015
-#define Object_ControlMode 0x3016
-#define Object_CurrentControllerKp 0x3017
-#define Object_CurrentControllerKi 0x3018
+#define OBJECT_FEEDBACK_CONTROL_MODE 0x3013
+#define OBJECT_RESET_FACTORY 0x3014
+#define OBJECT_MOTOR_TYPE 0x3015
+#define OBJECT_CONTROL_MODE 0x3016
+#define OBJECT_CURRENT_CONTROLLER_KP 0x3017
+#define OBJECT_CURRENT_CONTROLLER_KI 0x3018
 // Reserved Object                                      0x3019
-#define Object_MagnetizingCurrentIdReference 0x301A
-#define Object_PositionReference 0x301B
-#define Object_PositionControllerKp 0x301C
-#define Object_PositionControllerKi 0x301D
+#define OBJECT_MAGNETIZING_CURRENT_ID_REFERENCE 0x301A
+#define OBJECT_POSITION_REFERENCE 0x301B
+#define OBJECT_POSITION_CONTROLLER_KP 0x301C
+#define OBJECT_POSITION_CONTROLLER_KI 0x301D
 // Reserved Object                                      0x301E
-#define Object_OverwriteErrorRegister 0x3020
-#define Object_ObserverGainBldcPmsm 0x3021
-#define Object_ObserverGainBldcPmsmUltrafast 0x3022
-#define Object_ObserverGainDc 0x3023
-#define Object_FilterGainBldcPmsm 0x3024
-#define Object_FilterGainBldcPmsmUltrafast 0x3025
-#define Object_UartBaudrate 0x3026
-#define Object_SensorCalibration 0x3027
-#define Object_EncoderHallCcwOffset 0x3028
-#define Object_EncoderHallCwOffset 0x3029
-#define Object_SpeedAccelerationValue 0x302A
-#define Object_SpeedDecelerationValue 0x302B
-#define Object_CanbusBaudrate 0x302C
-#define Object_PhaseAVoltage 0x302D
-#define Object_PhaseBVoltage 0x302E
-#define Object_PhaseACurrent 0x302F
-#define Object_PhaseBCurrent 0x3030
-#define Object_BusVoltage 0x3031
-#define Object_DcMotorCurrentIm 0x3032
-#define Object_DcMotorVoltageVm 0x3033
-#define Object_QuadratureCurrentIqFeedback 0x3034
-#define Object_MagnetizingCurrentIdFeedback 0x3035
-#define Object_SpeedFeedback 0x3036
-#define Object_PositionCountsFeedback 0x3037
-#define Object_3PhaseMotorAngle 0x3038
-#define Object_BoardTemperature 0x3039
-#define Object_DeviceFirmwareVersion 0x303A
-#define Object_DeviceHardwareVersion 0x303B
-#define Object_EncoderIndexCounts 0x303D
-#define Object_Pt1000 0x3047
-#define Object_DigitalOutput 0x3048
+#define OBJECT_OVERWRITE_ERROR_REGISTER 0x3020
+#define OBJECT_ZSFT_INJECTION_AMPLITUDE 0x3021
+#define OBJECT_ZSFT_POLARITY_AMPLITUDE 0x3022
+#define OBJECT_OBSERVER_GAIN_DC 0x3023
+#define OBJECT_ZSFT_INJECTION_FREQUENCY 0x3024
+#define OBJECT_SENSORLESS_TRANSACTION_SPEED 0x3025
+#define OBJECT_UART_BAUDRATE 0x3026
+#define OBJECT_SENSOR_CALIBRATION 0x3027
+#define OBJECT_ENCODER_HALL_CCW_OFFSET 0x3028
+#define OBJECT_ENCODER_HALL_CW_OFFSET 0x3029
+#define OBJECT_SPEED_ACCELERATION_VALUE 0x302A
+#define OBJECT_SPEED_DECELERATION_VALUE 0x302B
+#define OBJECT_CANBUS_BAUDRATE 0x302C
+#define OBJECT_PHASE_A_VOLTAGE 0x302D
+#define OBJECT_PHASE_B_VOLTAGE 0x302E
+#define OBJECT_PHASE_A_CURRENT 0x302F
+#define OBJECT_PHASE_B_CURRENT 0x3030
+#define OBJECT_BUS_VOLTAGE 0x3031
+#define OBJECT_DC_MOTOR_CURRENT_IM 0x3032
+#define OBJECT_DC_MOTOR_VOLTAGE_VM 0x3033
+#define OBJECT_QUADRATURE_CURRENT_IQ_FEEDBACK 0x3034
+#define OBJECT_MAGNETIZING_CURRENT_ID_FEEDBACK 0x3035
+#define OBJECT_SPEED_FEEDBACK 0x3036
+#define OBJECT_POSITION_COUNTS_FEEDBACK 0x3037
+#define OBJECT_3_PHASE_MOTOR_ANGLE 0x3038
+#define OBJECT_BOARD_TEMPERATURE 0x3039
+#define OBJECT_DEVICE_FIRMWARE_VERSION 0x303A
+#define OBJECT_DEVICE_HARDWARE_VERSION 0x303B
+#define OBJECT_ENCODER_INDEX_COUNTS 0x303D
+#define OBJECT_PT1000 0x3047
+#define OBJECT_DIGITAL_OUTPUT 0x3048
 
-#define Object_ASRDC 0x303E
-#define Object_MotionProfileMode 0x303F
-#define Object_MotionProfileVariable1 0x3040
-#define Object_MotionProfileVariable2 0x3041
-#define Object_MotionProfileVariable3 0x3042
-#define Object_MotionProfileVariable4 0x3043
-#define Object_MotionProfileVariable5 0x3044
+#define OBJECT_ASRDC 0x303E
+#define OBJECT_MOTION_PROFILE_MODE 0x303F
+#define OBJECT_MOTION_PROFILE_VARIABLE1 0x3040
+#define OBJECT_MOTION_PROFILE_VARIABLE2 0x3041
+#define OBJECT_MOTION_PROFILE_VARIABLE3 0x3042
+#define OBJECT_MOTION_PROFILE_VARIABLE4 0x3043
+#define OBJECT_MOTION_PROFILE_VARIABLE5 0x3044
+#define OBJECT_PT1000_SENSOR_VOLTAGE 0x3047
+#define OBJECT_DIGITAL_OUTPUT_REGISTER 0x3048
+#define OBJECT_DIGITAL_INPUT_REGISTER 0x3049
+#define OBJECT_ANALOGUE_INPUT 0x304A
+#define OBJECT_REGENERATION_CURRENT_LIMIT 0x304B
+#define OBJECT_POSITION_SENSOR_DIGITAL_FILTER_LEVEL 0x304C
 
 #define PDO_PARAMETER_NAME_COUNT 12
 
@@ -107,8 +113,8 @@ class SOLOMotorControllersCanopen : public SOLOMotorControllers
 {
 public:
   /**
-  * @brief  Pdo Parameter Name enumeration
-  */
+   * @brief  Pdo Parameter Name enumeration
+   */
   enum PdoParameterName
   {
     POSITION_REFERENCE = 0,               /*!< target position [RPDO] */
@@ -137,7 +143,6 @@ public:
     int syncParameterCount;
   } PdoParameterConfig;
 
-
 public:
   /** @addtogroup SOLOMotorControllersCanopen_Write_Functions SOLOMotorControllersCanopen Write Functions
    * @{
@@ -150,27 +155,30 @@ public:
    * @}
    */
 
-   /** @addtogroup CANOpen_PDO_Functions CANOpen Functions for Work with PDO Objects
+  /** @addtogroup CANOpen_PDO_Functions CANOpen Functions for Work with PDO Objects
    * @{
    */
-  virtual bool SetPdoParameterConfig(PdoParameterConfig config, int &error);
-  virtual bool SendPdoSync(int &error);
+  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+    virtual bool SetPdoParameterConfig(PdoParameterConfig config, int &error);
+    virtual bool SendPdoSync(int &error);
 
-  virtual bool SetPdoPositionReference(long positionReference, int &error);
-  virtual bool SetPdoSpeedReference(long speedReference, int &error);
-  virtual bool SetPdoTorqueReferenceIq(float torqueReferenceIq, int &error);
-  virtual bool SetPdoMagnetizingCurrentIdReference(float magnetizingCurrentIdReference, int &error);
-  virtual bool SetPdoControlMode(SOLOMotorControllers::ControlMode controlMode, int &error);
-  virtual bool SetPdoMotorDirection(SOLOMotorControllers::Direction motorDirection, int &error);
+    virtual bool SetPdoPositionReference(long positionReference, int &error);
+    virtual bool SetPdoSpeedReference(long speedReference, int &error);
+    virtual bool SetPdoTorqueReferenceIq(float torqueReferenceIq, int &error);
+    virtual bool SetPdoMagnetizingCurrentIdReference(float magnetizingCurrentIdReference, int &error);
+    virtual bool SetPdoControlMode(SOLOMotorControllers::ControlMode controlMode, int &error);
+    virtual bool SetPdoMotorDirection(SOLOMotorControllers::Direction motorDirection, int &error);
 
-  virtual long GetPdoPositionCountsFeedback(int &error);
-  virtual long GetPdoSpeedFeedback(int &error);
-  virtual float GetPdoQuadratureCurrentIqFeedback(int &error);
-  virtual float GetPdoMagnetizingCurrentIdFeedback(int &error);
-  virtual long GetPdoErrorRegister(int &error);
-  virtual float GetPdoBoardTemperature(int &error);
-  virtual PdoParameterConfig GetPdoParameterConfig(PdoParameterName parameterName, int &error);
-  virtual bool UpdatePdoParameterCobIdByPdoParameterName();
+    virtual long GetPdoPositionCountsFeedback(int &error);
+    virtual long GetPdoSpeedFeedback(int &error);
+    virtual float GetPdoQuadratureCurrentIqFeedback(int &error);
+    virtual float GetPdoMagnetizingCurrentIdFeedback(int &error);
+    virtual long GetPdoErrorRegister(int &error);
+    virtual float GetPdoBoardTemperature(int &error);
+    virtual PdoParameterConfig GetPdoParameterConfig(PdoParameterName parameterName, int &error);
+    virtual bool UpdatePdoParameterCobIdByPdoParameterName();
+  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+
   /**
    * @}
    */
@@ -184,7 +192,6 @@ public:
   /**
    * @}
    */
-
 };
 
 #endif // SOLO_MOTOR_CONTROLLERS_CANOPEN_H

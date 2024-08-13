@@ -6,11 +6,11 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.0
+ * @version 5.4.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
- * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+ * MIT License (see LICENSE file for more details)
  *******************************************************************************
  */
 
@@ -52,9 +52,11 @@ public:
         bool SetPositionReferenceInputValidation(long positionReference, int &error);
         bool SetPositionControllerKpInputValidation(float positionControllerKp, int &error);
         bool SetPositionControllerKiInputValidation(float positionControllerKi, int &error);
-        bool SetObserverGainBldcPmsmInputValidation(float observerGain, int &error);
-        bool SetObserverGainBldcPmsmUltrafastInputValidation(float observerGain, int &error);
+        bool SetZsftInjectionAmplitudeValidation(float amplitude, int &error);
+        bool SetZsftPolarityAmplitudeValidation(float amplitude, int &error);
         bool SetObserverGainDcInputValidation(float observerGain, int &error);
+        bool SetZsftInjectionFrequencyInputValidation(long frequency, int &error);
+        bool SetSensorlessTransitionSpeedInputValidation(long speed, int &error);
         bool SetFilterGainBldcPmsmInputValidation(float filterGain, int &error);
         bool SetFilterGainBldcPmsmUltrafastInputValidation(float filterGain, int &error);
         bool SetEncoderHallCcwOffsetInputValidation(float encoderHallOffset, int &error);
@@ -67,6 +69,8 @@ public:
         bool SetMotionProfileVariable3InputValidation(float MotionProfileVariable3, int &error);
         bool SetMotionProfileVariable4InputValidation(float MotionProfileVariable4, int &error);
         bool SetMotionProfileVariable5InputValidation(float MotionProfileVariable5, int &error);
+        bool SetRegenerationCurrentLimitValidation(float current, int &error);
+        bool SetPositionSensorDigitalFilterLevelValidation(long level, int &error);
         bool DigitalInputValidation(int pinNumber, int &error);
 };
 

@@ -6,17 +6,17 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.3.1
+ * @version 5.4.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
- * GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+ * MIT License (see LICENSE file for more details)
  *******************************************************************************
  */
-#ifdef ARDUINO_CAN_NATIVE_SUPPORTED
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
 #include "CanBus.hpp"
 
-#define MSG_BUFF_SIZE   50
+#define MSG_BUFF_SIZE 50
 
 CanMsg msgBuf[MSG_BUFF_SIZE];
 uint8_t msgBufStaus[MSG_BUFF_SIZE] = {0};
@@ -24,7 +24,6 @@ uint8_t writeIdx = 0;
 uint32_t millisecondsTimeout;
 
 HardwareCAN *myCAN;
-
 
 CanBus::CanBus(SOLOMotorControllers::CanbusBaudrate _baudrate, arduino::HardwareCAN &_CAN, long _millisecondsTimeout)
 {
@@ -54,21 +53,23 @@ CanBus::CanBus(SOLOMotorControllers::CanbusBaudrate _baudrate, arduino::Hardware
 
 void CanBus::Init()
 {
-
 }
 bool CanBus::CANOpenSdoTransmit(uint8_t _address, bool isSet, uint16_t _object, uint8_t _subIndex, uint8_t *_informatrionToSend, uint8_t *_informationReceived, int &error)
 {
-    int stat=-1;
+    int stat = -1;
     uint8_t sendData1;
     uint8_t receiveData1;
     uint16_t ID_Read;
     uint8_t DataRead[8] = {0, 0, 0, 0, 0, 0, 0, 0};
     uint32_t counter = 0;
 
-    if(isSet){
+    if (isSet)
+    {
         sendData1 = 0x22;
         receiveData1 = 0x60;
-    }else{
+    }
+    else
+    {
         sendData1 = 0x40;
         receiveData1 = 0x42;
     }
@@ -106,28 +107,28 @@ bool CanBus::CANOpenSdoTransmit(uint8_t _address, bool isSet, uint16_t _object, 
             if (msgBufStaus[i] != 1)
             {
                 continue;
-            }         
+            }
 
-            if ((msgBuf[i].id == (uint16_t)(0x580 + _address))        // Check COB-ID
-                && (msgBuf[i].data[0] == receiveData1)                // Check Byte1
-                && (msgBuf[i].data[1] == (uint8_t)(_object))          // Check Object Index(LSB)
-                && (msgBuf[i].data[2] == (uint8_t)(_object >> 8)))    // Check Object Index(MSB)
+            if ((msgBuf[i].id == (uint16_t)(0x580 + _address))     // Check COB-ID
+                && (msgBuf[i].data[0] == receiveData1)             // Check Byte1
+                && (msgBuf[i].data[1] == (uint8_t)(_object))       // Check Object Index(LSB)
+                && (msgBuf[i].data[2] == (uint8_t)(_object >> 8))) // Check Object Index(MSB)
             {
                 _informationReceived[0] = msgBuf[i].data[7];
                 _informationReceived[1] = msgBuf[i].data[6];
                 _informationReceived[2] = msgBuf[i].data[5];
                 _informationReceived[3] = msgBuf[i].data[4];
-                msgBufStaus[i] = 0;              
-                
+                msgBufStaus[i] = 0;
+
                 error = SOLOMotorControllers::Error::NO_ERROR_DETECTED;
                 return true;
             }
         }
         actualTime = millis();
-        
-    }while(actualTime-startTime < millisecondsTimeout && actualTime >= startTime);
+
+    } while (actualTime - startTime < millisecondsTimeout && actualTime >= startTime);
     error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
-    
+
     return false;
 }
 
@@ -137,7 +138,7 @@ bool CanBus::SendPdoSync(int &error)
     error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
     CanMsg const msg(CanStandardId(CAN_ID), 0, NULL);
-    if(myCAN->write(msg) < 0)
+    if (myCAN->write(msg) < 0)
     {
         error = SOLOMotorControllers::Error::GENERAL_ERROR;
         return false;
@@ -156,7 +157,7 @@ bool CanBus::PDOTransmit(long _address, uint8_t *_informatrionToSend, int &error
         _informatrionToSend[1], // Data 6
         _informatrionToSend[0]  // Data 7
     };
-    
+
     CanMsg const msg(CanStandardId(_address), sizeof(Data), Data);
     stat = myCAN->write(msg);
     if (stat < 0)
@@ -173,7 +174,7 @@ bool CanBus::PDOReceive(long _address, uint8_t *_informationReceived, int &error
     uint8_t rcvMsg[4] = {0, 0, 0, 0};
     uint32_t counter = 0;
     uint16_t addr = (uint16_t)_address;
-    
+
     unsigned long startTime = millis();
     unsigned long actualTime;
     do
@@ -198,7 +199,7 @@ bool CanBus::PDOReceive(long _address, uint8_t *_informationReceived, int &error
             }
         }
         actualTime = millis();
-    }while(actualTime-startTime < millisecondsTimeout && actualTime >= startTime);
+    } while (actualTime - startTime < millisecondsTimeout && actualTime >= startTime);
 
     error = SOLOMotorControllers::Error::RECEIVE_TIMEOUT_ERROR;
     return false;
@@ -206,25 +207,25 @@ bool CanBus::PDOReceive(long _address, uint8_t *_informationReceived, int &error
 
 void CanBus::storeCanMessages()
 {
-    while(myCAN->available())
+    while (myCAN->available())
     {
         int i = 0;
         for (i; i < MSG_BUFF_SIZE; i++)
         {
-            if(msgBufStaus[i] == 0)
+            if (msgBufStaus[i] == 0)
             {
                 msgBufStaus[i] = 1;
                 msgBuf[i] = myCAN->read();
                 break;
             }
         }
-        if(i == MSG_BUFF_SIZE)
+        if (i == MSG_BUFF_SIZE)
         {
             msgBufStaus[writeIdx] = 1;
             msgBuf[writeIdx++] = myCAN->read();
-            if(writeIdx == MSG_BUFF_SIZE)
+            if (writeIdx == MSG_BUFF_SIZE)
                 writeIdx = 0;
         }
     }
 }
-#endif //ARDUINO_CAN_NATIVE_SUPPORTED
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA

@@ -5,8 +5,8 @@ SOLOMotorControllersUart KEYWORD1
 SOLOMotorControllersCanopen KEYWORD1
 SOLOMotorControllersCanopenNative KEYWORD1
 SOLOMotorControllersCanopenMcp2515 KEYWORD1
+SOLOMotorControllersUtils KEYWORD1
 MCP2515 KEYWORD1
-ARDUINO_CAN_NATIVE_SUPPORTED KEYWORD1
 
 # Data
 Error KEYWORD1
@@ -29,7 +29,7 @@ SetTorqueReferenceIq KEYWORD2
 SetSpeedReference KEYWORD2
 SetPowerReference KEYWORD2
 MotorParametersIdentification KEYWORD2
-EmergencyStop KEYWORD2
+SetDriveDisableEnable KEYWORD2
 SetOutputPwmFrequencyKhz KEYWORD2
 SetSpeedControllerKp KEYWORD2
 SetSpeedControllerKi KEYWORD2
@@ -70,6 +70,9 @@ SetMotionProfileVariable3 KEYWORD2
 SetMotionProfileVariable4 KEYWORD2
 SetMotionProfileVariable5 KEYWORD2
 SetDigitalOutput KEYWORD2
+SetRegenerationCurrentLimit KEYWORD2
+SetPositionSensorDigitalFilterLevel KEYWORD2
+SetDigitalOutputState KEYWORD2
 
 # Read
 GetDeviceAddress KEYWORD2
@@ -82,6 +85,7 @@ GetDcMotorCurrentIm KEYWORD2
 GetDcMotorVoltageVm KEYWORD2
 GetSpeedControllerKp KEYWORD2
 GetSpeedControllerKi KEYWORD2
+GetDriveDisableEnable KEYWORD2
 GetOutputPwmFrequencyKhz KEYWORD2
 GetCurrentLimit KEYWORD2
 GetQuadratureCurrentIqFeedback KEYWORD2
@@ -132,8 +136,11 @@ GetMotionProfileVariable2 KEYWORD2
 GetMotionProfileVariable3 KEYWORD2
 GetMotionProfileVariable4 KEYWORD2
 GetMotionProfileVariable5 KEYWORD2
-GetPt1000 KEYWORD2
-GetDigitalOutput KEYWORD2
+GetPT1000SensorVoltage KEYWORD2
+GetDigitalInputRegister KEYWORD2
+GetPositionSensorDigitalFilterLevel KEYWORD2
+GetAnalogueInput KEYWORD2
+GetDigitalOutputsState KEYWORD2
 
 # CANOPEN
 GetGuardTime KEYWORD2
@@ -144,8 +151,15 @@ Mcp2515ReadReceiveErrorCounter KEYWORD2
 Mcp2515ReadTransmitErrorCounter KEYWORD2
 
 #PDO
+SetPdoParameterConfig KEYWORD2
 SendPdoSync KEYWORD2
 SendPdoRtr KEYWORD2
+SetPdoPositionReference KEYWORD2
+SetPdoSpeedReference KEYWORD2
+SetPdoTorqueReferenceIq KEYWORD2
+SetPdoMagnetizingCurrentIdReference KEYWORD2
+SetPdoControlMode KEYWORD2
+SetPdoMotorDirection KEYWORD2
 GetPdoPositionCountsFeedback KEYWORD2
 GetPdoSpeedFeedback KEYWORD2
 GetPdoQuadratureCurrentIqFeedback KEYWORD2
