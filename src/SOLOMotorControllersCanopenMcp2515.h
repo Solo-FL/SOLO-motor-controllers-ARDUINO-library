@@ -51,7 +51,7 @@ public:
   static int lastError;
 
 private:
-  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
     bool SetPdoParameterCobbIdInputValidation(PdoParameterName parameterName, int parameterCobbId, int &error = lastError);
     bool SetSyncParameterCountInputValidation(uint8_t parameterCount, int &error = lastError);
     long GetPdoParameterValueLong(PdoParameterName parameterName, int &error = lastError);
@@ -61,7 +61,7 @@ private:
     long GetPdoParameterCobId(PdoParameterName parameterName, int &error = lastError);
     bool SetPdoParameterValue(PdoParameterName parameterName, long value, int &error = lastError);
     bool SetPdoParameterValue(PdoParameterName parameterName, float value, int &error = lastError);
-  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
 
 public:
   //----------Write  SOLOMotorControllersCanopen----------
@@ -69,7 +69,7 @@ public:
   bool SetLifeTimeFactor(long lifeTimeFactor, int &error = lastError);
   bool SetProducerHeartbeatTime(long producerHeartbeatTime, int &error = lastError);
 
-  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
     bool UpdatePdoParameterCobIdByPdoParameterName();
     bool SetPdoParameterConfig(PdoParameterConfig config, int &error = lastError);
     bool SendPdoSync(int &error = lastError);
@@ -89,7 +89,7 @@ public:
     long GetPdoErrorRegister(int &error = lastError);
     float GetPdoBoardTemperature(int &error = lastError);
     SOLOMotorControllersCanopen::PdoParameterConfig GetPdoParameterConfig(SOLOMotorControllersCanopen::PdoParameterName parameterName, int &error = lastError);
-  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA  ARDUINO_AVR_MEGA2560
 
   //----------Write  SOLOMotorControllers----------
   bool SetDeviceAddress(unsigned char deviceAddress, int &error = lastError);
@@ -225,8 +225,4 @@ public:
   SOLOMotorControllers::DigitalIoState GetAnalogueInput(SOLOMotorControllers::Channel channel, int &error = lastError);
   int GetDigitalOutput(int pinNumber, int &error = lastError);
 };
-/**
- * @}
- */
-
 #endif // SOLO_MOTOR_CONTROLLERS_CANOPEN_MCP2515_H

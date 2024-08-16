@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.0
+ * @version 5.4.1
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -137,7 +137,7 @@ bool SOLOMotorControllersUtils::SetDeviceAddressInputValidation(unsigned char de
 }
 bool SOLOMotorControllersUtils::SetCurrentLimitInputValidation(float currentLimit, int &error)
 {
-    if (currentLimit < 0 || currentLimit > 32)
+    if (currentLimit < 0 || currentLimit > 200)
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;
@@ -146,7 +146,7 @@ bool SOLOMotorControllersUtils::SetCurrentLimitInputValidation(float currentLimi
 }
 bool SOLOMotorControllersUtils::SetTorqueReferenceIqInputValidation(float torqueReferenceIq, int &error)
 {
-    if (torqueReferenceIq < 0 || torqueReferenceIq > 32)
+    if (torqueReferenceIq < 0 || torqueReferenceIq > 200)
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;
@@ -155,7 +155,7 @@ bool SOLOMotorControllersUtils::SetTorqueReferenceIqInputValidation(float torque
 }
 bool SOLOMotorControllersUtils::SetSpeedReferenceInputValidation(long speedReference, int &error)
 {
-    if (speedReference < 0 || speedReference > 30000)
+    if (speedReference < 0 || speedReference > 200000)
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;
@@ -236,7 +236,7 @@ bool SOLOMotorControllersUtils::SetIncrementalEncoderLinesInputValidation(long i
 }
 bool SOLOMotorControllersUtils::SetSpeedLimitInputValidation(long speedLimit, int &error)
 {
-    if (speedLimit < 1 || speedLimit > 30000)
+    if (speedLimit < 1 || speedLimit > 200000)
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;
@@ -263,7 +263,7 @@ bool SOLOMotorControllersUtils::SetCurrentControllerKiInputValidation(float curr
 }
 bool SOLOMotorControllersUtils::SetMagnetizingCurrentIdReferenceInputValidation(float magnetizingCurrentIdReference, int &error)
 {
-    if (magnetizingCurrentIdReference < 0 || magnetizingCurrentIdReference > 32)
+    if (magnetizingCurrentIdReference < 0 || magnetizingCurrentIdReference > 200)
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;
@@ -463,7 +463,7 @@ bool SOLOMotorControllersUtils::DigitalInputValidation(int pinNumber, int &error
 }
 bool SOLOMotorControllersUtils::SetRegenerationCurrentLimitValidation(float current, int &error)
 {
-    if (current < 0 || current > 32) // todo this value must change
+    if (current < 0 || current > 200) // todo this value must change
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;
@@ -472,7 +472,7 @@ bool SOLOMotorControllersUtils::SetRegenerationCurrentLimitValidation(float curr
 }
 bool SOLOMotorControllersUtils::SetPositionSensorDigitalFilterLevelValidation(long level, int &error)
 {
-    if (level < 0 || level > 32) // todo this value must change
+    if (level < 0 || level > 255) // todo this value must change
     {
         error = SOLOMotorControllers::Error::OUT_OF_RANGE_SETTING;
         return false;

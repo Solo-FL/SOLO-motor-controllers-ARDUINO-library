@@ -40,9 +40,9 @@ SOLOMotorControllersCanopenMcp2515::SOLOMotorControllersCanopenMcp2515(
   _MCP2515 = new MCP2515(_chipSelectPin, _baudrate, _interruptPin, _frequency, _millisecondsTimeout);
   _MCP2515->Init();
 
-  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
     InitPdoConfig();
-  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
 
   soloUtils = new SOLOMotorControllersUtils();
   delay(1000);
@@ -86,7 +86,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetProducerHeartbeatTime(long producerH
   soloUtils->ConvertToData(producerHeartbeatTime, informationToSend);
   return _MCP2515->CANOpenSdoTransmit(Address, true, OBJECT_PRODUCER_HEARTBEAT_TIME, 0x00, informationToSend, informatrionToRead, error);
 }
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
   /**
    * @brief  This command determine the validity of count of SYNC message
    * @param[in]  parameterName	enum that specifies the name of the PDO parameter that wants to set CobId value
@@ -179,7 +179,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetProducerHeartbeatTime(long producerH
    * @brief  This command gets PDO configs for the intended PDO object
    * @param[in]  parameterName	enum that specifies the name of the PDO parameter that wants to get its config
    * @param[out]  error   optional pointer to an integer that specifies the result of the function
-   * @retval PdoParameterConfig enum @ref PdoParameterConfig
+   * @retval PdoParameterConfig enum @ref SOLOMotorControllersCanopen::PdoParameterConfig
    */
   SOLOMotorControllersCanopen::PdoParameterConfig SOLOMotorControllersCanopenMcp2515::GetPdoParameterConfig(SOLOMotorControllersCanopen::PdoParameterName parameterName, int &error)
   {
@@ -417,7 +417,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetProducerHeartbeatTime(long producerH
     }
     return -1;
   }
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
 
 /**
  * @brief  This command sets the desired device address for a SOLO unit
@@ -541,7 +541,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetPowerReference(float powerReference,
  * @brief  By putting 1 in the DATA section of a packet sent with this command, SOLO will start
  *          identifying the electrical parameters of the Motor connected
  *				.The method refers to the Object Dictionary: 0x3007
- * @param[in] powerReference  enum that specify Start or Stop of something in SOLO
+ * @param[in] identification  enum that specify Start or Stop of something in SOLO
  * @param[out]  error   optional pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -759,7 +759,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetSpeedLimit(long speedLimit, int &err
 /**
   * @brief  This command sets the type of the feedback control SOLO has to operate
         .The method refers to the Object Dictionary: 0x3013
-  * @param[in] mode  enum that specify the type of the feedback control SOLO
+  * @param[in] feedbackControlMode  enum that specify the type of the feedback control SOLO
   * @param[out]  error   optional pointer to an integer that specify result of function
   * @retval bool 0 fail / 1 for success
   */
@@ -843,7 +843,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetCurrentControllerKp(float currentCon
 /**
   * @brief  This command sets the value for Current Controller Ki or integral gain
         .The method refers to the Object Dictionary: 0x3018
-  * @param[in] motorInductance  a float value between 0 to 16000
+  * @param[in] currentControllerKi  a float value between 0 to 16000
   * @param[out]  error   optional pointer to an integer that specify result of function
   * @retval bool 0 fail / 1 for success
   */
@@ -965,7 +965,7 @@ bool SOLOMotorControllersCanopenMcp2515::OverwriteErrorRegister(int &error)
               in sensorless fashion, this parameter defines the strength of signal injection into the motor, the
               user has to make sure this value is not selected too high or too low
         .The method refers to the Object Dictionary: 0x3021
-  * @param[in] amplitude  a float value between 0.0 to 0.55
+  * @param[in] zsftInjectionAmplitude  a float value between 0.0 to 0.55
   * @param[out]  error   pointer to an integer that specify result of function
   * @retval bool 0 fail / 1 for success
   */
@@ -987,7 +987,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetZsftInjectionAmplitude(float zsftInj
  *             in sensorless fashion, this parameter defines the strength of signal injection into the motor to
  *            identify the polarity of the Motor at the startup
  *				.The method refers to the Object Dictionary: 0x3022
- * @param[in] amplitude  a float value between 0.0 to 0.55
+ * @param[in] zsftPolarityAmplitude  a float value between 0.0 to 0.55
  * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -1031,7 +1031,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetObserverGainDc(float observerGain, i
         runtime, by selecting zero the full injection frequency will be applied which allows to reach to
         higher speeds, however for some motors, it’s better to increase this value
         .The method refers to the Object Dictionary: 0x3024
-  * @param[in] filterGain  a long value between 0 to 10
+  * @param[in] zsftInjectionFrequency  a long value between 0 to 10
   * @param[out]  error   pointer to an integer that specify result of function
   * @retval bool 0 fail / 1 for success
   */
@@ -1052,7 +1052,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetZsftInjectionFrequency(long zsftInje
  * @brief  Once in Sensorless speed or torque controlling of a BLDC or PMSM motors, this parameter
  *				defines the speed in which the Low speed algorithm has to switch to high speed algorithm
  *				.The method refers to the Object Dictionary: 0x3025
- * @param[in] speed  a long value between 1 to 5000
+ * @param[in] sensorlessTransitionSpeed  a long value between 1 to 5000
  * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -1382,8 +1382,8 @@ bool SOLOMotorControllersCanopenMcp2515::SetPositionSensorDigitalFilterLevel(lon
 
 /**
  * @brief  This command Set the Digiatal Ouput pin Status. The method refers to the Object Dictionary: 0x3048
- * @param[out] pinNumber   specify the pin you want to controll. (Ensure your SOLO model support this functions)
- * @param[out] DigitalIoState   specify the DigitalIoState you want to set.
+ * @param[in] channel	@ref Channel
+ * @param[in] state	@ref DigitalIoState
  * @param[out] error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -1406,7 +1406,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetDigitalOutputState(Channel channel, 
   soloUtils->ConvertToData(lastOutRegister, informationToSend);
   return _MCP2515->CANOpenSdoTransmit(Address, true, OBJECT_DIGITAL_OUTPUT_REGISTER, 0x00, informationToSend, informatrionToRead, error);
 }
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
   /**
    * @brief  This PDO command sets the desired Position reference in terms of quadrature
    *         pulses while SOLO operates with the Incremental Encoders or in terms of
@@ -1515,7 +1515,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetDigitalOutputState(Channel channel, 
     error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
     return SOLOMotorControllersCanopenMcp2515::SetPdoParameterValue(PdoParameterName::MOTOR_DIRECTION, (long)motorDirection, error);
   }
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
 //---------------------Read---------------------
 long SOLOMotorControllersCanopenMcp2515::GetReadErrorRegister(int &error)
 {
@@ -2867,7 +2867,7 @@ void SOLOMotorControllersCanopenMcp2515::GenericCanbusWrite(uint16_t _ID, uint8_
 {
   _MCP2515->MCP2515_Transmit_Frame(_MCP2515->Mcp2515TxBuffer::TX_BUFFER_0, _ID, *_DLC, _Data, error);
 }
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
   /**
    * @brief  this PDO command give the first in the baffer position of the Motor
    *         to follow in Digital Closed-loop Position mode in terms of quadrature pulses
@@ -2938,4 +2938,4 @@ void SOLOMotorControllersCanopenMcp2515::GenericCanbusWrite(uint16_t _ID, uint8_
   {
     return GetPdoParameterValueFloat(PdoParameterName::BOARD_TEMPERATURE, error);
   }
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560

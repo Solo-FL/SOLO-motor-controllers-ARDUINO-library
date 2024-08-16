@@ -220,8 +220,5 @@ public:
   long GetDigitalInputRegister(int &error = lastError);
   int GetDigitalOutput(int pinNumber, int &error = lastError);
 };
-/**
- * @}
- */
 #endif // SOLO_MOTOR_CONTROLLERS_CANOPEN_NATIVE_H
 #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA

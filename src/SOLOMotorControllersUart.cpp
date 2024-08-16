@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.0
+ * @version 5.4.1
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -287,7 +287,7 @@ bool SOLOMotorControllersUart::SetPowerReference(float powerReference, int &erro
   * @brief  By putting 1 in the DATA section of a packet sent with this command, SOLO will start
             identifying the electrical parameters of the Motor connected
               .The method refers to the Uart Write command: 0x07
-  * @param[in] powerReference  enum that specify Start or Stop of something in SOLO
+  * @param[in] identification  enum that specify Start or Stop of something in SOLO
   * @param[out] error   optional pointer to an integer that specify result of function
   * @retval bool 0 fail / 1 for success
   */
@@ -517,7 +517,7 @@ bool SOLOMotorControllersUart::SetSpeedLimit(long speedLimit, int &error)
 /**
  * @brief  This command sets the type of the feedback control SOLO has to operate
  *           .The method refers to the Uart Write command: 0x13
- * @param[in] mode  enum that specify the type of the feedback control SOLO
+ * @param[in] feedbackControlMode  enum that specify the type of the feedback control SOLO
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -609,7 +609,7 @@ bool SOLOMotorControllersUart::SetCurrentControllerKp(float currentControllerKp,
 /**
  * @brief  This command sets the value for Current Controller Ki or integral gain
  *           .The method refers to the Uart Write command: 0x18
- * @param[in] motorInductance  a float value between 0 to 16000
+ * @param[in] currentControllerKi  a float value between 0 to 16000
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -741,7 +741,7 @@ bool SOLOMotorControllersUart::OverwriteErrorRegister(int &error)
  *            in sensorless fashion, this parameter defines the strength of signal injection into the motor, the
  *            user has to make sure this value is not selected too high or too low
  *           .The method refers to the Uart Write command: 0x21
- * @param[in]  amplitude  a float value between 0.0 to 0.55
+ * @param[in]  zsftInjectionAmplitude  a float value between 0.0 to 0.55
  * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -764,7 +764,7 @@ bool SOLOMotorControllersUart::SetZsftInjectionAmplitude(float zsftInjectionAmpl
  *             in sensorless fashion, this parameter defines the strength of signal injection into the motor to
  *            identify the polarity of the Motor at the startup
  *           .The method refers to the Uart Write command: 0x22
- * @param[in]  amplitude  a float value between 0.0 to 0.55
+ * @param[in]  zsftPolarityAmplitude  a float value between 0.0 to 0.55
  * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -812,7 +812,7 @@ bool SOLOMotorControllersUart::SetObserverGainDc(float observerGain, int &error)
         runtime, by selecting zero the full injection frequency will be applied which allows to reach to
         higher speeds, however for some motors, it’s better to increase this value
  *           .The method refers to the Uart Write command: 0x24
-  * @param[in]  frequency  a long value between 0 to 10
+  * @param[in]  zsftInjectionFrequency  a long value between 0 to 10
   * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -835,7 +835,7 @@ bool SOLOMotorControllersUart::SetZsftInjectionFrequency(long zsftInjectionFrequ
  * @brief  Once in Sensorless speed or torque controlling of a BLDC or PMSM motors, this parameter
  *				defines the speed in which the Low speed algorithm has to switch to high speed algorithm
  *           .The method refers to the Uart Write command: 0x25
- * @param[in]  speed  a long value between 1 to 5000
+ * @param[in]  sensorlessTransitionSpeed  a long value between 1 to 5000
  * @param[out]  error   pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -1154,8 +1154,8 @@ bool SOLOMotorControllersUart::SetMotionProfileVariable5(float MotionProfileVari
 
 /**
  * @brief  This command Set the Digiatal Ouput pin Status. The method refers to the Uart Write command: 0x38
- * @param[out] pinNumber   specify the pin you want to controll. (Ensure your SOLO model support this functions)
- * @param[out] DigitalIoState   specify the DigitalIoState you want to set.
+ * @param[in] channel	@ref Channel
+ * @param[in] state   @ref DigitalIoState
  * @param[out] error   optional pointer to an integer that specify result of function
  * @retval bool 0 fail / 1 for success
  */
@@ -2462,6 +2462,7 @@ float SOLOMotorControllersUart::GetMotionProfileVariable5(int &error)
 /**
  * @brief  This command reads the value of the Digital Outputs Register as a 32 bits register
  *           .The method refers to the Uart Read command: 0xC4
+ * @param[in]  channel  @ref Channel
  * @param[out]  error   pointer to an integer that specify result of function
  * @retval enum @ref DigitalIoState
  */
