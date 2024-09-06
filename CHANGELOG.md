@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.4.2] - 2024-08-16
+### Added
+
+
+### Changed
+
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- naming SetDigitalOutputsState to proper SetDigitalOutputState
+
 ## [5.4.1] - 2024-08-16
 ### Added
 - Mcp2515 pdo support for Arduino Mega

@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.1
+ * @version 5.4.2
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -294,7 +294,7 @@ public:
     float GetMotionProfileVariable3(int &error = lastError);
     float GetMotionProfileVariable4(int &error = lastError);
     float GetMotionProfileVariable5(int &error = lastError);
-    SOLOMotorControllers::DigitalIoState GetDigitalOutputsState(SOLOMotorControllers::Channel channel, int &error = lastError);
+    SOLOMotorControllers::DigitalIoState GetDigitalOutputState(SOLOMotorControllers::Channel channel, int &error = lastError);
     long GetDigitalOutputsRegister(int &error = lastError);
     long GetPT1000SensorVoltage(int &error = lastError);
     SOLOMotorControllers::DisableEnable GetDriveDisableEnable(int &error = lastError);

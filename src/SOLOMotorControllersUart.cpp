@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.1
+ * @version 5.4.2
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -2466,7 +2466,7 @@ float SOLOMotorControllersUart::GetMotionProfileVariable5(int &error)
  * @param[out]  error   pointer to an integer that specify result of function
  * @retval enum @ref DigitalIoState
  */
-SOLOMotorControllers::DigitalIoState SOLOMotorControllersUart::GetDigitalOutputsState(Channel channel, int &error)
+SOLOMotorControllers::DigitalIoState SOLOMotorControllersUart::GetDigitalOutputState(Channel channel, int &error)
 {
   long lastOutRegister;
   lastOutRegister = GetDigitalOutputsRegister(error);
@@ -2503,7 +2503,7 @@ int SOLOMotorControllersUart::GetDigitalOutput(int pinNumber, int &error)
     return -1;
   }
 
-  uint8_t informationReceived = (uint8_t)GetDigitalOutputsState((Channel)pinNumber, error);
+  uint8_t informationReceived = (uint8_t)GetDigitalOutputState((Channel)pinNumber, error);
   if (error != SOLOMotorControllers::Error::NO_ERROR_DETECTED)
   {
     return -1;

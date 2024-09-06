@@ -140,7 +140,7 @@ GetPT1000SensorVoltage KEYWORD2
 GetDigitalInputRegister KEYWORD2
 GetPositionSensorDigitalFilterLevel KEYWORD2
 GetAnalogueInput KEYWORD2
-GetDigitalOutputsState KEYWORD2
+GetDigitalOutputState KEYWORD2
 
 # CANOPEN
 GetGuardTime KEYWORD2

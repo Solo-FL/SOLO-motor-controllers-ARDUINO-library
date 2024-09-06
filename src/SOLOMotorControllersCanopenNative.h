@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.0
+ * @version 5.4.2
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -35,7 +35,7 @@ private:
   long millisecondsTimeout;
   // used to list internally object value for every PDO
   int pdoParameterObjectByPdoParameterName[PDO_PARAMETER_NAME_COUNT];
-  SOLOMotorControllers::DigitalIoState GetDigitalOutputsState(SOLOMotorControllers::Channel chaneel, int &error);
+  SOLOMotorControllers::DigitalIoState GetDigitalOutputState(SOLOMotorControllers::Channel chaneel, int &error);
 
 public:
   #ifdef ARDUINO_PORTENTA_C33

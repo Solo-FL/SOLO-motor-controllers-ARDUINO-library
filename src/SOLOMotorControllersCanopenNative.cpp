@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.0
+ * @version 5.4.2
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -2654,7 +2654,7 @@ long SOLOMotorControllersCanopenNative::GetDigitalOutputsRegister(int &error)
 //   _canbus->MCP2515_Transmit_Frame(_canbus->Mcp2515TxBuffer::TX_BUFFER_0, _ID, *_DLC, _Data, error);
 // }
 
-SOLOMotorControllers::DigitalIoState SOLOMotorControllersCanopenNative::GetDigitalOutputsState(Channel chaneel, int &error)
+SOLOMotorControllers::DigitalIoState SOLOMotorControllersCanopenNative::GetDigitalOutputState(Channel chaneel, int &error)
 {
   uint8_t informationToSend[4] = {0x00, 0x00, 0x00, 0x00};
   uint8_t informationReceived[4] = {0x00, 0x00, 0x00, 0x00};
@@ -2679,7 +2679,7 @@ int SOLOMotorControllersCanopenNative::GetDigitalOutput(int pinNumber, int &erro
     return -1;
   }
 
-  uint8_t informationReceived = GetDigitalOutputsState((Channel)pinNumber, error);
+  uint8_t informationReceived = GetDigitalOutputState((Channel)pinNumber, error);
   if (error != SOLOMotorControllers::Error::NO_ERROR_DETECTED)
   {
     return -1;

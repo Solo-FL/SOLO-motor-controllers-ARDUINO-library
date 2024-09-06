@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.0
+ * @version 5.4.2
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -419,7 +419,7 @@ public:
 
 	virtual float GetMotionProfileVariable5(int &error );
 
-	virtual SOLOMotorControllers::DigitalIoState GetDigitalOutputsState(SOLOMotorControllers::Channel chaneel, int &error );
+	virtual SOLOMotorControllers::DigitalIoState GetDigitalOutputState(SOLOMotorControllers::Channel chaneel, int &error );
 
 	virtual SOLOMotorControllers::DisableEnable GetDriveDisableEnable(int &error );
 
