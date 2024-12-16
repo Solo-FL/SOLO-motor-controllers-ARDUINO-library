@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.2
+ * @version 5.4.3
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -784,6 +784,20 @@ bool SOLOMotorControllersCanopenMcp2515::ResetFactory(int &error)
   uint8_t informatrionToRead[4] = {0x00, 0x00, 0x00, 0x00};
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
   return _MCP2515->CANOpenSdoTransmit(Address, true, OBJECT_RESET_FACTORY, 0x00, informationToSend, informatrionToRead, error);
+}
+
+/**
+  * @brief  This command resets SOLO position
+        .The method refers to the Object Dictionary: 0x301F
+  * @param[out]  error   optional pointer to an integer that specify result of function
+  * @retval bool 0 fail / 1 for success
+  */
+bool SOLOMotorControllersCanopenMcp2515::ResetPositionToZero(int &error)
+{
+  uint8_t informationToSend[4] = {0x00, 0x00, 0x00, 0x01};
+  uint8_t informatrionToRead[4] = {0x00, 0x00, 0x00, 0x00};
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+  return _MCP2515->CANOpenSdoTransmit(Address, true, OBJECT_RESET_POSITION, 0x00, informationToSend, informatrionToRead, error);
 }
 
 /**

@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.2
+ * @version 5.4.3
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -111,6 +111,7 @@ public:
   bool SetSpeedLimit(long speedLimit, int &error = lastError);
   bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode feedbackControlMode, int &error = lastError);
   bool ResetFactory(int &error = lastError);
+  bool ResetPositionToZero(int &error = lastError);
   bool SetMotorType(SOLOMotorControllers::MotorType motorType, int &error = lastError);
   bool SetControlMode(SOLOMotorControllers::ControlMode controlMode, int &error = lastError);
   bool SetCurrentControllerKp(float currentControllerKp, int &error = lastError);

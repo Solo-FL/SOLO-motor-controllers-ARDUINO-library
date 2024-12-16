@@ -41,6 +41,7 @@ SetIncrementalEncoderLines KEYWORD2
 SetSpeedLimit KEYWORD2
 SetFeedbackControlMode KEYWORD2
 ResetFactory KEYWORD2
+ResetPositionToZero KEYWORD2
 SetMotorType KEYWORD2
 SetControlMode KEYWORD2
 SetCurrentControllerKp KEYWORD2

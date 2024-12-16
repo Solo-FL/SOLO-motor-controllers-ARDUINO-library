@@ -6,7 +6,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.2
+ * @version 5.4.3
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -237,6 +237,8 @@ public:
 	virtual bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode feedbackControlMode, int &error );
 
 	virtual bool ResetFactory(int &error );
+
+	virtual bool ResetPositionToZero(int &error );
 
 	virtual bool SetMotorType(SOLOMotorControllers::MotorType motorType, int &error );
 

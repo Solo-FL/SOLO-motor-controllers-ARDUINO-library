@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.2
+ * @version 5.4.3
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -543,6 +543,20 @@ bool SOLOMotorControllersUart::ResetFactory(int &error)
   error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
 
   unsigned char cmd[] = {addr, WRITE_RESET_FACTORY, 0x00, 0x00, 0x00, 0x01};
+  return SOLOMotorControllersUart::ExeCMD(cmd, error);
+}
+
+/**
+ * @brief  This command resets SOLO position
+         .The method refers to the Uart Write command: 0x1F
+ * @param[out] error   optional pointer to an integer that specify result of function
+ * @retval bool 0 fail / 1 for success
+ */
+bool SOLOMotorControllersUart::ResetPositionToZero(int &error)
+{
+  error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
+
+  unsigned char cmd[] = {addr, WRITE_RESET_POSITION, 0x00, 0x00, 0x00, 0x01};
   return SOLOMotorControllersUart::ExeCMD(cmd, error);
 }
 

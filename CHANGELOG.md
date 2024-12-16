@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.4.3] - 2024-12-16
+### Added
+- add reset position to 0 command to UART and CAN Mcp2515 and Native
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+
 ## [5.4.2] - 2024-09-06
 ### Added
 

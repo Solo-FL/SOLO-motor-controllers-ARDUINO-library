@@ -7,7 +7,7 @@
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
  * @date    Date: 2024
- * @version 5.4.2
+ * @version 5.4.3
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -50,6 +50,7 @@
 #define WRITE_RESET_DEVICE_ADDRESS 0x12
 #define WRITE_FEEDBACK_CONTROL_MODE 0x13
 #define WRITE_RESET_FACTORY 0x14
+#define WRITE_RESET_POSITION 0x1F
 #define WRITE_MOTOR_TYPE 0x15
 #define WRITE_CONTROL_MODE 0x16
 #define WRITE_CURRENT_CONTROLLER_KP 0x17
@@ -59,7 +60,6 @@
 #define WRITE_POSITION_REFERENCE 0x1B
 #define WRITE_POSITION_CONTROLLER_KP 0x1C
 #define WRITE_POSITION_CONTROLLER_KI 0x1D
-#define WRITE_RESET_POSITION_TO_ZERO 0x1F // Home
 #define WRITE_OVERWRITE_ERROR_REGISTER 0x20
 #define WRITE_ZSFT_INJECTION_AMPLITUDE 0x21
 #define WRITE_ZSFT_POLARITY_AMPLITUDE 0x22
@@ -195,6 +195,7 @@ public:
     bool SetSpeedLimit(long speedLimit, int &error = lastError);
     bool SetFeedbackControlMode(SOLOMotorControllers::FeedbackControlMode feedbackControlMode, int &error = lastError);
     bool ResetFactory(int &error = lastError);
+    bool ResetPositionToZero(int &error = lastError);
     bool SetMotorType(SOLOMotorControllers::MotorType motorType, int &error = lastError);
     bool SetControlMode(SOLOMotorControllers::ControlMode controlMode, int &error = lastError);
     bool SetCurrentControllerKp(float currentControllerKp, int &error = lastError);
