@@ -165,7 +165,7 @@ private:
     SOLOMotorControllersUtils *soloUtils;
 
 public:
-    SOLOMotorControllersUart(unsigned char _deviceAddress = 0, HardwareSerial &_serial = Serial, SOLOMotorControllers::UartBaudrate _baudrate = SOLOMotorControllers::UartBaudrate::RATE_115200, long _millisecondsTimeout = 50, int _packetFailureTrialAttempts = 5);
+    SOLOMotorControllersUart(unsigned char _deviceAddress = 0, HardwareSerial &_serial = SERIAL_PORT_HARDWARE, SOLOMotorControllers::UartBaudrate _baudrate = SOLOMotorControllers::UartBaudrate::RATE_115200, long _millisecondsTimeout = 50, int _packetFailureTrialAttempts = 5);
     static int lastError;
 
 private:
