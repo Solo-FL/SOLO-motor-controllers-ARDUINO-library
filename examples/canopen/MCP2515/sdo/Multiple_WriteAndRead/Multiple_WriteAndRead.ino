@@ -4,8 +4,8 @@
 /*
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
-*    Date: 2024
-*    Code version: 5.4.0
+*    Date: 2025
+*    Code version: 5.5.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -35,9 +35,9 @@ void setup()
   Serial.begin(115200); // selectable baudrate of SOLO
 
   // Initialize the SOLO object
-  int SOLOdeviceAddress = 0;
+  int SOLODeviceAddress = 0;
   int chipSelectPin = 9;
-  SOLO_Obj1 = new SOLOMotorControllersCanopenMcp2515(SOLOdeviceAddress, chipSelectPin);
+  SOLO_Obj1 = new SOLOMotorControllersCanopenMcp2515(SOLODeviceAddress, chipSelectPin);
 }
 
 void loop()

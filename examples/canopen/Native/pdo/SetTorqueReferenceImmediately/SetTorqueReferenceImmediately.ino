@@ -1,11 +1,11 @@
-// Copyright: (c) 2024-present, SOLO motor controllers project
+// Copyright: (c) 2025-present, SOLO motor controllers project
 // MIT License (see LICENSE file for more details)
 
 /*
  *    Title: Torque Control of PMSM equipped with Incremental Encoders using Arduino and SOLO
  *    Author: SOLOMOTORCONTROLLERS
- *    Date: 2024
- *    Code version: 5.4.0
+ *    Date: 2025
+ *    Code version: 5.5.0
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO
@@ -16,7 +16,7 @@
 
 SOLOMotorControllersCanopenNative *solo;
 
-int error;
+int errorSolo;
 
 void setup()
 {
@@ -24,8 +24,8 @@ void setup()
   Serial.begin(115200);
 
   // Initialize the SOLO object
-  int SOLOdeviceAddress = 0;
-  solo = new SOLOMotorControllersCanopenNative(SOLOdeviceAddress);
+  int SOLODeviceAddress = 0;
+  solo = new SOLOMotorControllersCanopenNative(SOLODeviceAddress);
 
   // 1 time needed CONFIGURATION:
   Serial.println("PdoParameterConfig:");
@@ -36,7 +36,7 @@ void setup()
   config.isRrtParameterEnable = true;
   config.syncParameterCount = 0;
   // send the configuration to SOLO
-  solo->SetPdoParameterConfig(config, error);
+  solo->SetPdoParameterConfig(config, errorSolo);
   delay(100);
 
   // if CONFIGURATION already done you can avoid and use the next commad:
@@ -46,15 +46,15 @@ void setup()
 void loop()
 {
   // ACTIVE section
-  solo->SetPdoTorqueReferenceIq(2, error);
+  solo->SetPdoTorqueReferenceIq(2, errorSolo);
   Serial.print("Set value: 2 ERROR: ");
-  Serial.println(error);
+  Serial.println(errorSolo);
 
-  long getValue = solo->GetTorqueReferenceIq(error);
+  long getValue = solo->GetTorqueReferenceIq(errorSolo);
   Serial.print("Get value: ");
   Serial.print(getValue);
   Serial.print(" ERROR: ");
-  Serial.println(error);
+  Serial.println(errorSolo);
 
   delay(1000);
 }

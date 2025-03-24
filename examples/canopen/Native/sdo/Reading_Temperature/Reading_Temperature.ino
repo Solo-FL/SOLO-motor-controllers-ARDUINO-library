@@ -4,8 +4,8 @@
 /*
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
-*    Date: 2024
-*    Code version: 5.4.0
+*    Date: 2025
+*    Code version: 5.5.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -23,27 +23,27 @@ please visit:  https://www.SOLOMotorControllers.com/
 SOLOMotorControllersCanopenNative *SOLO_Obj1;
 
 float Temperature = 0;
-int error;
+int errorSolo;
 
 void setup()
 {
   Serial.begin(115200);
 
   // Initialize the SOLO object
-  int SOLOdeviceAddress = 0;
-  SOLO_Obj1 = new SOLOMotorControllersCanopenNative(SOLOdeviceAddress);
+  int SOLODeviceAddress = 0;
+  SOLO_Obj1 = new SOLOMotorControllersCanopenNative(SOLODeviceAddress);
 }
 
 void loop()
 {
   // Reading
-  Temperature = SOLO_Obj1->GetBoardTemperature(error);
+  Temperature = SOLO_Obj1->GetBoardTemperature(errorSolo);
 
   // Print
   Serial.println("Read from SOLO");
   Serial.println(Temperature, 2);
   Serial.println("Error");
-  Serial.println(error);
+  Serial.println(errorSolo);
 
   delay(1000);
 }

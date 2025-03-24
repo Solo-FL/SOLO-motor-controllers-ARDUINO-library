@@ -4,8 +4,8 @@
 /*
      Title: Position Control of a BLDC-PMSM Motor with Arduino and SOLO - Position Profile
      Author: SOLOMOTORCONTROLLERS
-     Date: 2024
-     Code version: 5.4.0
+     Date: 2025
+     Code version: 5.5.0
      Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
      Totorial article at: https://www.solomotorcontrollers.com/blog/canopen-brushless-motor-position-profile-controlling-arduino/
 
@@ -76,9 +76,9 @@ void setup()
   Serial.begin(115200);
 
   // Initialize the SOLO object
-  int SOLOdeviceAddress = 0;
+  int SOLODeviceAddress = 0;
   int chipSelectPin = 9; // SPI CS pin for CANshield
-  SOLO_Obj1 = new SOLOMotorControllersCanopenMcp2515(SOLOdeviceAddress, chipSelectPin);
+  SOLO_Obj1 = new SOLOMotorControllersCanopenMcp2515(SOLODeviceAddress, chipSelectPin);
 
   Serial.println("\n Trying to Connect To SOLO");
   delay(1000);

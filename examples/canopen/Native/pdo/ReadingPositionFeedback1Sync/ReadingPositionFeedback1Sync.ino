@@ -1,11 +1,11 @@
-// Copyright: (c) 2024-present, SOLO motor controllers project
+// Copyright: (c) 2025-present, SOLO motor controllers project
 // MIT License (see LICENSE file for more details)
 
 /*
  *    Title: Torque Control of PMSM equipped with Incremental Encoders using Arduino and SOLO
  *    Author: SOLOMOTORCONTROLLERS
- *    Date: 2024
- *    Code version: 5.4.0
+ *    Date: 2025
+ *    Code version: 5.5.0
  *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *    Please make sure you are applying the right wiring between SOLO and your ARDUINO
  *    The Code below has been tested on Arduino UNO
@@ -15,7 +15,7 @@
 #include <SOLOMotorControllersCanopenNative.h>
 SOLOMotorControllersCanopenNative *solo;
 
-int error;
+int errorSolo;
 
 void setup()
 {
@@ -23,8 +23,8 @@ void setup()
   Serial.begin(115200);
 
   // Initialize the SOLO object
-  int SOLOdeviceAddress = 0;
-  solo = new SOLOMotorControllersCanopenNative(SOLOdeviceAddress, SOLOMotorControllers::CanbusBaudrate::RATE_1000);
+  int SOLODeviceAddress = 0;
+  solo = new SOLOMotorControllersCanopenNative(SOLODeviceAddress, SOLOMotorControllers::CanbusBaudrate::RATE_1000);
 
   // 1 time needed CONFIGURATION:
   Serial.println("PdoParameterConfig:");
@@ -35,7 +35,7 @@ void setup()
   config.isRrtParameterEnable = true;
   config.syncParameterCount = 0;
   // send the configuration to SOLO
-  solo->SetPdoParameterConfig(config, error);
+  solo->SetPdoParameterConfig(config, errorSolo);
   delay(50);
 
   // if CONFIGURATION already done you can avoid and use the next commad:
@@ -47,27 +47,27 @@ void loop()
   // put your main code here, to run repeatedly:
   // ACTIVE section
   // send the sync message
-  solo->SendPdoSync(error);
+  solo->SendPdoSync(errorSolo);
 
   delay(50);
 
   // read the older value in the PDO buffer
-  long getValue = solo->GetPdoPositionCountsFeedback(error);
+  long getValue = solo->GetPdoPositionCountsFeedback(errorSolo);
   Serial.print("READ VALUE: ");
   Serial.print(getValue);
   Serial.print(" ERROR: ");
-  Serial.println(error);
+  Serial.println(errorSolo);
 
   // send the sync message
-  solo->SendPdoSync(error);
+  solo->SendPdoSync(errorSolo);
   delay(50);
 
   // read the older value in the PDO buffer
-  getValue = solo->GetPdoPositionCountsFeedback(error);
+  getValue = solo->GetPdoPositionCountsFeedback(errorSolo);
   Serial.print("READ VALUE: ");
   Serial.print(getValue);
   Serial.print(" ERROR: ");
-  Serial.println(error);
+  Serial.println(errorSolo);
 
   delay(1000);
 }

@@ -5,15 +5,15 @@
  * @brief   This file contains all the functions prototypes for communicate Native CANopen
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
- * @date    Date: 2024
- * @version 5.4.0
+ * @date    Date: 2025
+ * @version 5.5.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
  * MIT License (see LICENSE file for more details)
  *******************************************************************************
  */
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_PORTENTA_H7_M7)
 #include "CanBus.hpp"
 
 #define MSG_BUFF_SIZE 50
@@ -228,4 +228,4 @@ void CanBus::storeCanMessages()
         }
     }
 }
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_PORTENTA_H7_M7

@@ -6,8 +6,8 @@
  *          CANopen communications.
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
- * @date    Date: 2024
- * @version 5.4.3
+ * @date    Date: 2025
+ * @version 5.5.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -40,9 +40,9 @@ SOLOMotorControllersCanopenMcp2515::SOLOMotorControllersCanopenMcp2515(
   _MCP2515 = new MCP2515(_chipSelectPin, _baudrate, _interruptPin, _frequency, _millisecondsTimeout);
   _MCP2515->Init();
 
-  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
+  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_PORTENTA_H7_M7)
     InitPdoConfig();
-  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
+  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560 ARDUINO_PORTENTA_H7_M7
 
   soloUtils = new SOLOMotorControllersUtils();
   delay(1000);
@@ -86,7 +86,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetProducerHeartbeatTime(long producerH
   soloUtils->ConvertToData(producerHeartbeatTime, informationToSend);
   return _MCP2515->CANOpenSdoTransmit(Address, true, OBJECT_PRODUCER_HEARTBEAT_TIME, 0x00, informationToSend, informatrionToRead, error);
 }
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_PORTENTA_H7_M7)
   /**
    * @brief  This command determine the validity of count of SYNC message
    * @param[in]  parameterName	enum that specifies the name of the PDO parameter that wants to set CobId value
@@ -417,7 +417,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetProducerHeartbeatTime(long producerH
     }
     return -1;
   }
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560 ARDUINO_PORTENTA_H7_M7
 
 /**
  * @brief  This command sets the desired device address for a SOLO unit
@@ -1420,7 +1420,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetDigitalOutputState(Channel channel, 
   soloUtils->ConvertToData(lastOutRegister, informationToSend);
   return _MCP2515->CANOpenSdoTransmit(Address, true, OBJECT_DIGITAL_OUTPUT_REGISTER, 0x00, informationToSend, informatrionToRead, error);
 }
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_PORTENTA_H7_M7)
   /**
    * @brief  This PDO command sets the desired Position reference in terms of quadrature
    *         pulses while SOLO operates with the Incremental Encoders or in terms of
@@ -1529,7 +1529,7 @@ bool SOLOMotorControllersCanopenMcp2515::SetDigitalOutputState(Channel channel, 
     error = SOLOMotorControllers::Error::NO_PROCESSED_COMMAND;
     return SOLOMotorControllersCanopenMcp2515::SetPdoParameterValue(PdoParameterName::MOTOR_DIRECTION, (long)motorDirection, error);
   }
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560 ARDUINO_PORTENTA_H7_M7
 //---------------------Read---------------------
 long SOLOMotorControllersCanopenMcp2515::GetReadErrorRegister(int &error)
 {
@@ -2881,7 +2881,7 @@ void SOLOMotorControllersCanopenMcp2515::GenericCanbusWrite(uint16_t _ID, uint8_
 {
   _MCP2515->MCP2515_Transmit_Frame(_MCP2515->Mcp2515TxBuffer::TX_BUFFER_0, _ID, *_DLC, _Data, error);
 }
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_PORTENTA_H7_M7)
   /**
    * @brief  this PDO command give the first in the baffer position of the Motor
    *         to follow in Digital Closed-loop Position mode in terms of quadrature pulses
@@ -2952,4 +2952,4 @@ void SOLOMotorControllersCanopenMcp2515::GenericCanbusWrite(uint16_t _ID, uint8_
   {
     return GetPdoParameterValueFloat(PdoParameterName::BOARD_TEMPERATURE, error);
   }
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560 ARDUINO_PORTENTA_H7_M7

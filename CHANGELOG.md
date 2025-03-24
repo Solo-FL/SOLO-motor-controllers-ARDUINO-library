@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.5.0] - 2025-03-24
+### Added
+- add CAN support over Arduino H7 
+
+### Changed
+- example code from error to errorSolo for canopen native example (name in use for H7)
+- example code from SOLOdeviceAddress to SOLODeviceAddress 
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+
 ## [5.4.3] - 2024-12-16
 ### Added
 - add reset position to 0 command to UART and CAN Mcp2515 and Native

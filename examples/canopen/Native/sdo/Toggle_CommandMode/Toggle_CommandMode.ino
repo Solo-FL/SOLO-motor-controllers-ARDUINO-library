@@ -4,8 +4,8 @@
 /*
 *    Title: SOLO Motor Controllers Arduino Library
 *    Author: SOLOMotorControllers
-*    Date: 2024
-*    Code version: 5.4.0
+*    Date: 2025
+*    Code version: 5.5.0
 *    Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
 
 This Library is made by SOLOMotorControllers.COM
@@ -14,12 +14,12 @@ please visit:  https://www.SOLOMotorControllers.com/
 */
 
 // In this example we want:
-//     STEP 1: to print the command mode of SOLO and the error status of the reading operation
-//     STEP 2: if we read the command mode without error we want to change the command mode of SOLO.
+//     STEP 1: to print the command mode of SOLO and the errorSolo status of the reading operation
+//     STEP 2: if we read the command mode without errorSolo we want to change the command mode of SOLO.
 #include "SOLOMotorControllersCanopenNative.h"
 
 SOLOMotorControllersCanopenNative *solo;
-int error;
+int errorSolo;
 long commandMode;
 bool setIsSuccesfull;
 
@@ -29,8 +29,8 @@ void setup()
   Serial.println("Serial Init");
 
   // Initialize the SOLO object
-  int SOLOdeviceAddress = 0;
-  solo = new SOLOMotorControllersCanopenNative(SOLOdeviceAddress);
+  int SOLODeviceAddress = 0;
+  solo = new SOLOMotorControllersCanopenNative(SOLODeviceAddress);
 }
 
 void loop()
@@ -39,21 +39,21 @@ void loop()
 
   // STEP 1
   // response : is the Command Mode reading from SOLO device
-  // error : after the execution of the fuction will have the error status of the execution
-  commandMode = solo->GetCommandMode(error);
+  // errorSolo : after the execution of the fuction will have the errorSolo status of the execution
+  commandMode = solo->GetCommandMode(errorSolo);
   
-  // error is not mandatory, we can call the function without it, as other examples:
+  // errorSolo is not mandatory, we can call the function without it, as other examples:
   // response = solo->GetCommandMode();
 
   // we print the info:
-  Serial.println((String) "COMMAND MODE: " + commandMode + " ERROR: " + error);
+  Serial.println((String) "COMMAND MODE: " + commandMode + " ERROR: " + errorSolo);
 
   // STEP 2
-  // if we have no error we want to change the command mode of SOLO
-  // we can compare error with SOLOMotorControllersError enum or int value. Equal code:
-  //     error == SOLOMotorControllers::SOLOMotorControllersError::NO_ERROR_DETECTED
-  //     error == 0
-  if (error == SOLOMotorControllers::Error::NO_ERROR_DETECTED)
+  // if we have no errorSolo we want to change the command mode of SOLO
+  // we can compare errorSolo with SOLOMotorControllersError enum or int value. Equal code:
+  //     errorSolo == SOLOMotorControllers::SOLOMotorControllersError::NO_ERROR_DETECTED
+  //     errorSolo == 0
+  if (errorSolo == SOLOMotorControllers::Error::NO_ERROR_DETECTED)
   {
     // we check the commandMode readed value.
     // we can compare commandMode with CommandMode enum or int value. Equal code:
@@ -64,16 +64,16 @@ void loop()
 
       // setIsSuccesfull : set return if the set was succesfull
       // SOLOMotorControllers::CommandMode::DIGITAL : is the command mode i want to set to SOLO.
-      // error : after the execution of the fuction will have the error status of the execution
-      setIsSuccesfull = solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL, error);
+      // errorSolo : after the execution of the fuction will have the errorSolo status of the execution
+      setIsSuccesfull = solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL, errorSolo);
 
-      // error is not mandatory, we can call the function without it, as for the setIsSuccesfull, other examples:
+      // errorSolo is not mandatory, we can call the function without it, as for the setIsSuccesfull, other examples:
       // setIsSuccesfull = solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL);
-      // solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL, error);
+      // solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL, errorSolo);
       // solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL);
 
       // we print the info:
-      Serial.println((String) "SET COMMAND SUCCESS: " + setIsSuccesfull + " ERROR: " + error);
+      Serial.println((String) "SET COMMAND SUCCESS: " + setIsSuccesfull + " ERROR: " + errorSolo);
     }
     else
     {
@@ -82,9 +82,9 @@ void loop()
       solo->SetCommandMode(SOLOMotorControllers::CommandMode::ANALOGUE);
 
       // Alternative are:
-      // setIsSuccesfull = solo->SetCommandMode(SOLOMotorControllers::CommandMode::ANALOGUE, error);
+      // setIsSuccesfull = solo->SetCommandMode(SOLOMotorControllers::CommandMode::ANALOGUE, errorSolo);
       // setIsSuccesfull = solo->SetCommandMode(SOLOMotorControllers::CommandMode::ANALOGUE);
-      // solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL, error);
+      // solo->SetCommandMode(SOLOMotorControllers::CommandMode::DIGITAL, errorSolo);
     }
   }
 }

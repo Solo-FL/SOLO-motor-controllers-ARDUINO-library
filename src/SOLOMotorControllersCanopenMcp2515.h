@@ -6,8 +6,8 @@
  *          CANopen communications.
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
- * @date    Date: 2024
- * @version 5.4.3
+ * @date    Date: 2025
+ * @version 5.5.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -51,7 +51,7 @@ public:
   static int lastError;
 
 private:
-  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
+  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_PORTENTA_H7_M7)
     bool SetPdoParameterCobbIdInputValidation(PdoParameterName parameterName, int parameterCobbId, int &error = lastError);
     bool SetSyncParameterCountInputValidation(uint8_t parameterCount, int &error = lastError);
     long GetPdoParameterValueLong(PdoParameterName parameterName, int &error = lastError);
@@ -61,7 +61,7 @@ private:
     long GetPdoParameterCobId(PdoParameterName parameterName, int &error = lastError);
     bool SetPdoParameterValue(PdoParameterName parameterName, long value, int &error = lastError);
     bool SetPdoParameterValue(PdoParameterName parameterName, float value, int &error = lastError);
-  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560
+  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_AVR_MEGA2560 ARDUINO_PORTENTA_H7_M7
 
 public:
   //----------Write  SOLOMotorControllersCanopen----------
@@ -69,7 +69,7 @@ public:
   bool SetLifeTimeFactor(long lifeTimeFactor, int &error = lastError);
   bool SetProducerHeartbeatTime(long producerHeartbeatTime, int &error = lastError);
 
-  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560)
+  #if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_AVR_MEGA2560) || defined(ARDUINO_PORTENTA_H7_M7)
     bool UpdatePdoParameterCobIdByPdoParameterName();
     bool SetPdoParameterConfig(PdoParameterConfig config, int &error = lastError);
     bool SendPdoSync(int &error = lastError);
@@ -89,7 +89,7 @@ public:
     long GetPdoErrorRegister(int &error = lastError);
     float GetPdoBoardTemperature(int &error = lastError);
     SOLOMotorControllersCanopen::PdoParameterConfig GetPdoParameterConfig(SOLOMotorControllersCanopen::PdoParameterName parameterName, int &error = lastError);
-  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA  ARDUINO_AVR_MEGA2560
+  #endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA  ARDUINO_AVR_MEGA2560 ARDUINO_PORTENTA_H7_M7
 
   //----------Write  SOLOMotorControllers----------
   bool SetDeviceAddress(unsigned char deviceAddress, int &error = lastError);

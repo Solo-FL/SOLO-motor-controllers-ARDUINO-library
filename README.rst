@@ -10,9 +10,9 @@ SOLO Motor Controller's ARDUINO Library that can be used with Arduino Family of 
 
 - SOLOMotorControllersUart class let you use the UART protocol
 
-- SOLOMotorControllersCanopenMcp2515 class let you use the CANopen protocol with CAN shields (PDO support ARDUINO rev4 and ARDUINO PRO C33)
+- SOLOMotorControllersCanopenMcp2515 class let you use the CANopen protocol with CAN shields (PDO support ARDUINO rev4 and ARDUINO PRO C33 and ARDUINO H7)
 
-- SOLOMotorControllersCanopenNative* class let you use the CANopen protocol with native CAN if supported by specific Arduino Solutions. (Support ARDUINO rev4 and ARDUINO PRO C33)
+- SOLOMotorControllersCanopenNative* class let you use the CANopen protocol with native CAN if supported by specific Arduino Solutions. (Support ARDUINO rev4 and ARDUINO PRO C33 and ARDUINO H7)
 
 * SOLOMotorControllersCanopenNative is currently in beta. The new release will improve usability.
 

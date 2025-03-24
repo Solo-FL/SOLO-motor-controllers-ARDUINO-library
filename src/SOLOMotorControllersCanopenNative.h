@@ -6,8 +6,8 @@
  *          CANopen communications.
  *          Availability: https://github.com/Solo-FL/SOLO-motor-controllers-ARDUINO-library
  *
- * @date    Date: 2024
- * @version 5.4.3
+ * @date    Date: 2025
+ * @version 5.5.0
  * *******************************************************************************
  * @attention
  * Copyright: (c) 2021-present, SOLO motor controllers project
@@ -15,7 +15,7 @@
  *******************************************************************************
  */
 
-#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
+#if defined(ARDUINO_PORTENTA_C33) || defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA) || defined(ARDUINO_PORTENTA_H7_M7)
 #ifndef SOLO_MOTOR_CONTROLLERS_CANOPEN_NATIVE_H
 #define SOLO_MOTOR_CONTROLLERS_CANOPEN_NATIVE_H
 
@@ -38,7 +38,7 @@ private:
   SOLOMotorControllers::DigitalIoState GetDigitalOutputState(SOLOMotorControllers::Channel chaneel, int &error);
 
 public:
-  #ifdef ARDUINO_PORTENTA_C33
+  #if defined(ARDUINO_PORTENTA_C33) 
     SOLOMotorControllersCanopenNative(
         unsigned char _deviceAddress = 0,
         SOLOMotorControllers::CanbusBaudrate _baudrate = SOLOMotorControllers::CanbusBaudrate::RATE_1000,
@@ -222,4 +222,4 @@ public:
   int GetDigitalOutput(int pinNumber, int &error = lastError);
 };
 #endif // SOLO_MOTOR_CONTROLLERS_CANOPEN_NATIVE_H
-#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA
+#endif // ARDUINO_PORTENTA_C33 ARDUINO_UNOWIFIR4 ARDUINO_MINIMA ARDUINO_PORTENTA_H7_M7
